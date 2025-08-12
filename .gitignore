@@ -1,0 +1,44 @@
+# Build
+bin/
+obj/
+[Ll]og/
+[Ll]ogs/
+
+# VS Code
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET
+wwwroot/
+
+# Backup & generated files
+*.bak
+*.tmp
+*.swp
+*.pdb
+*.cache
+*.dbmdl
+
+# NuGet
+*.nupkg
+packages/
+
+# Rider
+.idea/
+
+# VS for Mac
+.vscode/
+*.userprefs
+
+# Entity Framework
+*Migrations/*Snapshot.cs
+
+#publish
+publish/
+
+docker/*.sh

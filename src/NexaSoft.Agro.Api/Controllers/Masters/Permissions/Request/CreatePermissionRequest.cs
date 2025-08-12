@@ -1,0 +1,8 @@
+namespace NexaSoft.Agro.Api.Controllers.Masters.Permissions.Request;
+
+public sealed record CreatePermissionRequest
+(
+    string? Name,
+    string? Description,
+    string? ReferenciaControl
+);
