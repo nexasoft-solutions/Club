@@ -1,11 +1,12 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'mcr.microsoft.com/dotnet/sdk:8.0'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
-    environment {
-        SSH_USER = 'ubuntu'
-        SSH_HOST = '192.168.10.16'
-        APP_DIR = '/opt/nexasoft'
-        API_PORT = '5050'
+    environment {       
         VAULT_ROLE_ID = credentials('vault-role-id')
         VAULT_SECRET_ID = credentials('vault-secret-id')
     }
