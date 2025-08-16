@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NexaSoft.Agro.Application.Abstractions.Auth;
 using NexaSoft.Agro.Application.Masters.Auths.Queries.AuthToken;
@@ -12,18 +13,39 @@ using NexaSoft.Agro.Domain.Abstractions;
 using NexaSoft.Agro.Domain.Auth;
 using NexaSoft.Agro.Domain.Masters.Roles;
 using NexaSoft.Agro.Domain.Masters.Users;
+using NexaSoft.Agro.Infrastructure.ConfigSettings;
 using BC = BCrypt.Net.BCrypt;
 
 namespace NexaSoft.Agro.Infrastructure.Abstractions.Auth;
 
-public class AuthService(
-    ApplicationDbContext _dbContext,
-    IConfiguration _configuration,
-    IGenericRepository<RefreshToken> _repository,
-    IGenericRepository<User> _userRepository,
-    IUserRoleRepository _userRoleRepository,
-    IUnitOfWork _unitOfWork) : IAuthService
+public class AuthService : IAuthService
 {
+
+    private readonly ApplicationDbContext _dbContext;
+    private readonly IConfiguration _configuration;
+    private readonly IGenericRepository<RefreshToken> _repository;
+    private readonly IGenericRepository<User> _userRepository;
+    private readonly IUserRoleRepository _userRoleRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly JwtOptions _jwtOptions;
+
+    public AuthService(
+        ApplicationDbContext dbContext,
+        IConfiguration configuration,
+        IGenericRepository<RefreshToken> repository,
+        IGenericRepository<User> userRepository,
+        IUserRoleRepository userRoleRepository,
+        IUnitOfWork unitOfWork,
+        IOptions<JwtOptions> jwtOptions)  // <-- Usa IOptions aquí
+    {
+        _dbContext = dbContext;
+        _configuration = configuration;
+        _repository = repository;
+        _userRepository = userRepository;
+        _userRoleRepository = userRoleRepository;
+        _unitOfWork = unitOfWork;
+        _jwtOptions = jwtOptions.Value; // Accede al objeto real
+    }
 
     public async Task<Result<User?>> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
@@ -181,25 +203,14 @@ public class AuthService(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Issuer"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(int.Parse(_configuration["Jwt:Expires"]!)),
+            //expires: DateTime.UtcNow.AddHours(int.Parse(_configuration["Jwt:Expires"]!)),
+            expires: DateTime.UtcNow.AddHours(_jwtOptions.GetExpiresInt()),
             signingCredentials: credentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    /*public async Task<string> GenerateAccessToken(User user, Guid activeRoleId, CancellationToken cancellationToken)
-    {
-        var roles = await _userRoleRepository.GetUserRolesAsync(user.Id, cancellationToken);
-        var activeRole = roles.FirstOrDefault(r => r.Id == activeRoleId);
-
-        if (activeRole is null)
-            throw new InvalidOperationException("El usuario no posee el rol activo solicitado.");
-
-        var permissions = await _userRoleRepository.GetPermissionsForDefaultRoleAsync(user.Id, activeRoleId, cancellationToken);
-
-        return GenerateAccessToken(user, roles, permissions);
-    }*/
 
     public async Task<string> GenerateAccessToken(User user, Guid activeRoleId, CancellationToken cancellationToken)
     {
@@ -211,7 +222,7 @@ public class AuthService(
 
         var permissions = await _userRoleRepository.GetPermissionsForDefaultRoleAsync(user.Id, activeRoleId, cancellationToken);
 
-        return GenerateAccessToken(user, roles, permissions, activeRoleId); 
+        return GenerateAccessToken(user, roles, permissions, activeRoleId);
     }
 
     private string GenerateRefreshToken()
@@ -240,7 +251,7 @@ public class AuthService(
             var permissions = await _userRoleRepository.GetPermissionsForDefaultRoleAsync(user.Id, selectedRole.Id, cancellationToken);
 
             // Crear nuevo access token
-            var accessToken = GenerateAccessToken(user, roles, permissions,newRoleId);
+            var accessToken = GenerateAccessToken(user, roles, permissions, newRoleId);
 
             // Revocar refresh tokens anteriores
 

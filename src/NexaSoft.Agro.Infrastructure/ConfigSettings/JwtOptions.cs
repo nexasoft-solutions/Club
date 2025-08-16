@@ -2,16 +2,13 @@ namespace NexaSoft.Agro.Infrastructure.ConfigSettings;
 
 public class JwtOptions
 {
-    public JwtOptions() {} 
+    public JwtOptions() { }
 
     public string Secret { get; set; } = null!;
     public string Issuer { get; set; } = null!;
-    public int Expires { get; set; } // en horas
+    public string Expires { get; set; } = null!;
+    
+    public int GetExpiresInt() => int.TryParse(Expires, out var val) ? val : 8;
 }
-/*public sealed record JwtOptions
-(
-    string Issuer,
-    string Secret,
-    int Expires
-);*/
+
 

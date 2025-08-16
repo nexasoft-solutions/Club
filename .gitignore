@@ -42,3 +42,7 @@ packages/
 publish/
 
 docker/*.sh
+vault/secrets/*
+
+
+src/NexaSoft.Agro.Api/environments/appsettings.Development.json

@@ -1,0 +1,37 @@
+services:
+  vault-agent:
+    image: hashicorp/vault:1.15
+    container_name: vault-agent
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./vault/config:/vault/config
+      - ./vault/secrets:/run/secrets
+    command: agent -config=/vault/config/vault-agent.hcl
+    restart: unless-stopped
+    networks:
+      - nexanet
+
+  nexasoft-api:
+    container_name: nexasoft-api
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "5050:5050"
+    depends_on:
+      - vault-agent
+    environment:
+      - Vault__Address=http://vault:18200
+      - VAULT_TOKEN_FILE=/run/secrets/vault_token
+      - ASPNETCORE_URLS=http://+:5050
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./vault/secrets:/run/secrets
+    restart: unless-stopped
+    networks:
+      - nexanet
+
+networks:
+  nexanet:
+    external: true

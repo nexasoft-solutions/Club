@@ -17,7 +17,7 @@ public class ConsultoraController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateConsultora(CreateConsultoraRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateConsultora(CreateConsultoraRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateConsultoraCommand(
              request.NombreConsultora,
@@ -32,7 +32,7 @@ public class ConsultoraController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateConsultora(UpdateConsultoraRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateConsultora(UpdateConsultoraRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateConsultoraCommand(
            request.Id,
@@ -48,7 +48,7 @@ public class ConsultoraController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete("{id:Guid}")]
-   public async Task<IActionResult> DeleteConsultora(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteConsultora(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteConsultoraCommand(
              id
@@ -71,11 +71,11 @@ public class ConsultoraController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:Guid}")]
-   public async Task<IActionResult> GetConsultora(
-       Guid id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:Guid}")]
+    public async Task<IActionResult> GetConsultora(
+        Guid id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetConsultoraQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);
