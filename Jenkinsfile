@@ -49,7 +49,7 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh "docker build -t nexasoft/agro:${VERSION_TAG} ."
+        sh "docker build -t nexasoft/agro:${env.VERSION_NUMBER} -f docker/Dockerfile ."
       }
     }
 
