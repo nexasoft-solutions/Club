@@ -95,30 +95,32 @@ pipeline {
                 ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} <<EOF
 set -euxo pipefail
 
+# Config vars
 export APP_DIR=${APP_DIR}
 export VAULT_ROLE_ID=${VAULT_ROLE_ID}
 export VAULT_SECRET_ID=${VAULT_SECRET_ID}
 export GIT_USER=${GIT_USER}
 export GIT_PASS=${GIT_PASS}
 
+# 1️⃣ Eliminar completamente el directorio anterior
+sudo rm -rf \$APP_DIR
 sudo mkdir -p \$APP_DIR
 sudo chown ${SSH_USER}:${SSH_USER} \$APP_DIR
 cd \$APP_DIR
 
-if [ -d ".git" ]; then
-  git pull
-else
-  git clone https://\$GIT_USER:\$GIT_PASS@github.com/nexasoft-solutions/agro.git .
-fi
+# 2️⃣ Clonar repo limpio
+git clone https://\$GIT_USER:\$GIT_PASS@github.com/nexasoft-solutions/agro.git .
 
+# 3️⃣ Generar configuración de Vault
 echo "Generating vault-agent.hcl..."
 cd \$APP_DIR/vault/config
 envsubst < vault-agent.template.hcl > vault-agent.hcl
 
+# 4️⃣ Volver a desplegar contenedores desde cero
 cd \$APP_DIR
-sudo docker compose down || true
+sudo docker compose down --volumes --remove-orphans || true
+sudo docker system prune -af || true
 sudo docker compose up -d --build
-
 EOF
                 """
             }
