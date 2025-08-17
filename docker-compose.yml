@@ -6,8 +6,7 @@ services:
       - IPC_LOCK
     volumes:
       - ./vault/config:/vault/config
-      - type: tmpfs
-        target: /run/secrets
+      - ./vault/secrets:/vault/secrets
     command: agent -config=/vault/config/vault-agent.hcl
     restart: unless-stopped
     networks:
@@ -23,13 +22,12 @@ services:
     depends_on:
       - vault-agent
     environment:
-      - Vault__Address=http://vault-agent:8200
+      - Vault__Address=http://vault:18200
       - VAULT_TOKEN_FILE=/run/secrets/vault_token
       - ASPNETCORE_URLS=http://+:5050
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
-      - type: tmpfs
-        target: /run/secrets
+      - ./vault/secrets:/run/secrets
     restart: unless-stopped
     networks:
       - nexanet
