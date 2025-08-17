@@ -111,23 +111,27 @@ cd \$APP_DIR
 # 2️⃣ Clonar repo limpio
 git clone https://\$GIT_USER:\$GIT_PASS@github.com/nexasoft-solutions/agro.git .
 
-# 3️⃣ Generar configuración de Vault
-echo "Generating vault-agent.hcl..."
+# 3️⃣ Generar secretos necesarios para Vault Agent
+mkdir -p \$APP_DIR/vault/secrets
+echo "\$VAULT_ROLE_ID" > \$APP_DIR/vault/secrets/role_id
+echo "\$VAULT_SECRET_ID" > \$APP_DIR/vault/secrets/secret_id
+
+# 4️⃣ Generar configuración de Vault
 cd \$APP_DIR/vault/config
 envsubst < vault-agent.template.hcl > vault-agent.hcl
 
-# 4️⃣ Volver a desplegar contenedores desde cero
+# 5️⃣ Volver a desplegar contenedores desde cero
 cd \$APP_DIR
 sudo docker compose down --volumes --remove-orphans || true
 sudo docker system prune -af || true
 sudo docker compose up -d --build
+
 EOF
-                """
-            }
+        """
+                }
             }
         }
     }
-  }
 
   post {
     failure {
