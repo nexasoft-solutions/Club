@@ -42,7 +42,7 @@ packages/
 publish/
 
 docker/*.sh
-vault/secrets/*
+#vault/secrets/*
 
 
 */appsettings.Development.json
