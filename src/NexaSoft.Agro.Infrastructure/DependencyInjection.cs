@@ -65,9 +65,9 @@ public static class DependencyInjection
 
         var vaultService = new VaultService(vaultAddress, vaultToken);
 
-        var dbSecrets = vaultService.GetSecretsAsync("dev/db").Result;
-        var jwtSettings = vaultService.GetSecretAsObjectAsync<JwtOptions>("dev/jwt").Result!;
-        var storageSettings = vaultService.GetSecretAsObjectAsync<StorageOptions>("dev/storage").Result!;
+        var dbSecrets = vaultService.GetSecretsAsync("qa/db").Result;
+        var jwtSettings = vaultService.GetSecretAsObjectAsync<JwtOptions>("qa/jwt").Result!;
+        var storageSettings = vaultService.GetSecretAsObjectAsync<StorageOptions>("qa/storage").Result!;
 
 
         /*Console.WriteLine("🔐 Vault DB Secrets:");
@@ -76,10 +76,11 @@ public static class DependencyInjection
         // Console.WriteLine($"Password: {dbSecrets["Password"]}"); // ⚠️ Evitar en producción
         Console.WriteLine($"Database: {dbSecrets["Database"]}");*/
 
-        var isDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+        /*var isDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
         var dbHost = isDocker ? "host.docker.internal" : dbSecrets["Host"] ;//"localhost";
                                  
-        var connectionString = $"Host={dbHost};" +//$"Host={dbSecrets["Host"]};" +
+        var connectionString = $"Host={dbHost};" +//$"Host={dbSecrets["Host"]};" +*/
+        var connectionString = $"Host={dbSecrets["Host"]};" +
                                $"Username={dbSecrets["Username"]};" +
                                $"Password={dbSecrets["Password"]};" +
                                $"Database={dbSecrets["Database"]}";

@@ -34,4 +34,4 @@ services:
 
 networks:
   nexanet:
-    external: true
+    driver: bridge
