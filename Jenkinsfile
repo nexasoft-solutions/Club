@@ -30,15 +30,21 @@ pipeline {
     }
 
     stage('Run Tests') {
-      steps {
-        sh 'dotnet restore'
-        sh '''
-          for proj in $(find ./test -name "*.csproj"); do
-            echo "🧪 Testing: $proj"
-            dotnet test "$proj" --no-build
-          done
-        '''
-      }
+        steps {
+            script {
+                echo '🧪 Ejecutando pruebas .NET proyecto por proyecto...'
+                sh 'dotnet --version'
+                sh 'dotnet restore'
+
+                sh '''
+                    set -e
+                    for proj in $(find ./test -name "*.csproj"); do
+                        echo "🧪 Testing: $proj"
+                        dotnet test "$proj" --no-build --verbosity normal
+                    done
+                '''
+            }
+        }
     }
 
     stage('Build Docker Image') {

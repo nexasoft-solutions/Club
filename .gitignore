@@ -45,4 +45,4 @@ docker/*.sh
 vault/secrets/*
 
 
-src/NexaSoft.Agro.Api/appsettings.Development.json
+/appsettings.Development.json
