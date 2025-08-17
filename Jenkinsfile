@@ -17,16 +17,34 @@ pipeline {
     }
 
     stage('Set Version') {
-      steps {
-        script {
-          def lastTag = sh(script: 'git describe --tags --abbrev=0 || echo v0.0.0', returnStdout: true).trim()
-          def parts = lastTag.replace("v", "").tokenize('.')
-          def version = (parts.size() == 3) ?
-            "${parts[0]}.${parts[1]}.${parts[2].toInteger() + 1}" : "0.0.1"
-          env.VERSION_TAG = "v${version}"
-          currentBuild.displayName = env.VERSION_TAG
+        steps {
+            script {
+                def lastTag = sh(script: 'git describe --tags --abbrev=0 || echo v0.0.0', returnStdout: true).trim()
+                echo "Último tag encontrado: ${lastTag}"
+
+                def parts = lastTag.replace("v", "").tokenize('.')
+                def version = "0.0.1"
+
+                if (parts.size() == 3) {
+                    def major = parts[0].toInteger()
+                    def minor = parts[1].toInteger()
+                    def patch = parts[2].toInteger() + 1
+                    version = "${major}.${minor}.${patch}"
+                } else {
+                    echo "⚠️ Tag con formato inesperado. Usando ${version}"
+                }
+
+                // 🔥 Fijate en esto
+                env.VERSION_NUMBER = version
+                env.VERSION_TAG = "v${version}"
+
+                currentBuild.displayName = env.VERSION_TAG
+                currentBuild.description = "Versión: ${env.VERSION_TAG}"
+
+                echo "✅ VERSION_NUMBER = ${env.VERSION_NUMBER}"
+                echo "✅ VERSION_TAG    = ${env.VERSION_TAG}"
+            }
         }
-      }
     }
 
     stage('Run Tests') {
@@ -48,22 +66,26 @@ pipeline {
     }
 
     stage('Build Docker Image') {
-      steps {
-        sh "docker build -t nexasoft/agro:${env.VERSION_NUMBER} -f docker/Dockerfile ."
-      }
+        when {
+            expression { currentBuild.currentResult == 'SUCCESS' }
+        }
+        steps {
+            echo "Construyendo imagen con tag: nexasoft/agro:${env.VERSION_TAG}"
+            sh "docker build -t nexasoft/agro:${env.VERSION_TAG} -f docker/Dockerfile ."
+        }
     }
 
     stage('Push Git Tag') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-          sh """
-            git config user.name "Jenkins CI"
-            git config user.email "jenkins@example.com"
-            git tag -a ${VERSION_TAG} -m "Release ${VERSION_TAG}"
-            git push https://${GIT_USER}:${GIT_PASS}@github.com/nexasoft-solutions/agro.git --tags
-          """
+        steps {
+            withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                sh """
+                    git config user.name "Aldo Robles"
+                    git config user.email "aldoroblesarana@gmail.com"
+                    git tag -a ${env.VERSION_TAG} -m "Release ${env.VERSION_TAG}"
+                    git push https://${GIT_USER}:${GIT_PASS}@github.com/nexasoft-solutions/agro.git --tags
+                """
+            }
         }
-      }
     }
 
     stage('Prepare & Deploy') {
