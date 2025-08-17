@@ -88,51 +88,42 @@ pipeline {
     }
 
     stage('Prepare & Deploy') {
-      steps {
-        sshagent(['ssh-proxmox-key']) {
-          withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-            sh """
-              ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << EOF
-                set -euxo pipefail
+        steps {
+            sshagent(['ssh-proxmox-key']) {
+            withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                sh """
+                ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} <<EOF
+set -euxo pipefail
 
-                # Variables
-                APP_DIR=${APP_DIR}
-                VAULT_ROLE_ID='${VAULT_ROLE_ID}'
-                VAULT_SECRET_ID='${VAULT_SECRET_ID}'
-                GIT_USER='${GIT_USER}'
-                GIT_PASS='${GIT_PASS}'
+export APP_DIR=${APP_DIR}
+export VAULT_ROLE_ID=${VAULT_ROLE_ID}
+export VAULT_SECRET_ID=${VAULT_SECRET_ID}
+export GIT_USER=${GIT_USER}
+export GIT_PASS=${GIT_PASS}
 
-                sudo mkdir -p \$APP_DIR
-                sudo chown ${SSH_USER}:${SSH_USER} \$APP_DIR
-                cd \$APP_DIR
+sudo mkdir -p \$APP_DIR
+sudo chown ${SSH_USER}:${SSH_USER} \$APP_DIR
+cd \$APP_DIR
 
-                # Clonar o actualizar repo
-                if [ -d ".git" ]; then
-                  git pull
-                else
-                  git clone https://\$GIT_USER:\$GIT_PASS@github.com/nexasoft-solutions/agro.git .
-                fi
+if [ -d ".git" ]; then
+  git pull
+else
+  git clone https://\$GIT_USER:\$GIT_PASS@github.com/nexasoft-solutions/agro.git .
+fi
 
-                # Crear archivos secretos para Vault Agent
-                mkdir -p \$APP_DIR/vault/secrets
-                echo "\$VAULT_ROLE_ID" > \$APP_DIR/vault/secrets/role_id
-                echo "\$VAULT_SECRET_ID" > \$APP_DIR/vault/secrets/secret_id
-                chmod 600 \$APP_DIR/vault/secrets/role_id \$APP_DIR/vault/secrets/secret_id
+echo "Generating vault-agent.hcl..."
+cd \$APP_DIR/vault/config
+envsubst < vault-agent.template.hcl > vault-agent.hcl
 
-                # Copiar plantilla de configuración (si no existe)
-                if [ ! -f \$APP_DIR/vault/config/vault-agent.hcl ]; then
-                  cp \$APP_DIR/vault/config/vault-agent.template.hcl \$APP_DIR/vault/config/vault-agent.hcl
-                fi
+cd \$APP_DIR
+sudo docker compose down || true
+sudo docker compose up -d --build
 
-                # Levantar contenedores
-                sudo docker compose down || true
-                sudo docker compose up -d --build
-
-              EOF
-            """
-          }
+EOF
+                """
+            }
+            }
         }
-      }
     }
   }
 
