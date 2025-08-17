@@ -10,6 +10,7 @@ pipeline {
   }
 
   stages {
+
     stage('Checkout') {
       steps {
         checkout scm
@@ -93,40 +94,46 @@ pipeline {
           withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
             sh """
               ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} <<EOF
-                set -euxo pipefail
+set -euxo pipefail
 
-                export APP_DIR=${APP_DIR}
-                export VAULT_ROLE_ID=${VAULT_ROLE_ID}
-                export VAULT_SECRET_ID=${VAULT_SECRET_ID}
-                export GIT_USER=${GIT_USER}
-                export GIT_PASS=${GIT_PASS}
+export APP_DIR=${APP_DIR}
+export VAULT_ROLE_ID=${VAULT_ROLE_ID}
+export VAULT_SECRET_ID=${VAULT_SECRET_ID}
+export GIT_USER=${GIT_USER}
+export GIT_PASS=${GIT_PASS}
 
-                sudo mkdir -p \$APP_DIR
-                sudo chown ${SSH_USER}:${SSH_USER} \$APP_DIR
-                cd \$APP_DIR
+sudo mkdir -p \$APP_DIR
+sudo chown ${SSH_USER}:${SSH_USER} \$APP_DIR
+cd \$APP_DIR
 
-                if [ -d ".git" ]; then
-                  git pull
-                else
-                  git clone https://\$GIT_USER:\$GIT_PASS@github.com/nexasoft-solutions/agro.git .
-                fi
+if [ -d ".git" ]; then
+  git pull
+else
+  git clone https://\$GIT_USER:\$GIT_PASS@github.com/nexasoft-solutions/agro.git .
+fi
 
-                echo "Generating vault-agent.hcl..."
-                cd \$APP_DIR/vault/config
-                envsubst < vault-agent.template.hcl > vault-agent.hcl
+echo "Generating vault-agent.hcl..."
+cd \$APP_DIR/vault/config
+envsubst < vault-agent.template.hcl > vault-agent.hcl
 
-                cd \$APP_DIR
-                sudo docker compose down || true
-                sudo docker compose up -d --build
-              EOF
+cd \$APP_DIR
+sudo docker compose down || true
+sudo docker compose up -d --build
+EOF
             """
           }
         }
       }
     }
+
   }
 
   post {
-    failure { echo 'Pipeline falló.' }
+    failure {
+      echo '❌ Pipeline falló.'
+    }
+    success {
+      echo '✅ Pipeline ejecutado correctamente.'
+    }
   }
 }
