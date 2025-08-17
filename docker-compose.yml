@@ -4,11 +4,10 @@ services:
     container_name: vault-agent
     cap_add:
       - IPC_LOCK
-    user: "1000:1000"
     volumes:
       - ./vault/config:/vault/config
       - ./vault/secrets:/vault/secrets
-      - ./vault/secrets:/run/secrets      
+      - ./vault/secrets:/run/secrets
     command: agent -config=/vault/config/vault-agent.hcl
     restart: unless-stopped
     networks:
