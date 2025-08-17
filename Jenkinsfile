@@ -89,43 +89,42 @@ pipeline {
     }
 
     stage('Prepare & Deploy') {
-      steps {
-        sshagent(['ssh-proxmox-key']) {
-          withEnv([
-            "VAULT_ROLE_ID=${VAULT_ROLE_ID}",
-            "VAULT_SECRET_ID=${VAULT_SECRET_ID}"
-          ]) {
-            sh '''
-              ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+        steps {
+            sshagent(['ssh-proxmox-key']) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << 'EOF'
                 set -euxo pipefail
 
+                APP_DIR="/opt/nexasoft"
+                VAULT_ROLE_ID="${VAULT_ROLE_ID}"
+                VAULT_SECRET_ID="${VAULT_SECRET_ID}"
+
                 # Crear el directorio si no existe
-                mkdir -p $APP_DIR
+                mkdir -p "\$APP_DIR"
 
                 # Clonar si no existe, o hacer pull si ya está
-                if [ ! -d "$APP_DIR/.git" ]; then
-                  git clone https://github.com/nexasoft-solutions/agro.git $APP_DIR
+                if [ ! -d "\$APP_DIR/.git" ]; then
+                    git clone https://github.com/nexasoft-solutions/agro.git "\$APP_DIR"
                 else
-                  cd $APP_DIR
-                  git pull
+                    cd "\$APP_DIR"
+                    git pull
                 fi
 
                 # Generar archivo vault-agent.hcl usando envsubst
                 echo "Generating vault-agent.hcl..."
-                cd $APP_DIR/vault/config
-                export VAULT_ROLE_ID="$VAULT_ROLE_ID"
-                export VAULT_SECRET_ID="$VAULT_SECRET_ID"
+                cd "\$APP_DIR/vault/config"
+                export VAULT_ROLE_ID
+                export VAULT_SECRET_ID
                 envsubst < vault-agent.template.hcl > vault-agent.hcl
 
                 # Levantar los contenedores
-                cd $APP_DIR
+                cd "\$APP_DIR"
                 docker compose down || true
                 docker compose up -d --build
-              EOF
-            '''
-          }
+                EOF
+            """
+            }
         }
-      }
     }
 
   }
