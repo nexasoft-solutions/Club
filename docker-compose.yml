@@ -23,7 +23,7 @@ services:
     depends_on:
       - vault-agent
     environment:
-      - Vault__Address=http://vault:8200
+      - Vault__Address=http://192.168.10.17:8200
       - VAULT_TOKEN_FILE=/run/secrets/vault_token
       - ASPNETCORE_URLS=http://+:5050
       - ASPNETCORE_ENVIRONMENT=Development
