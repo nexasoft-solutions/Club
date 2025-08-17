@@ -88,11 +88,11 @@ pipeline {
     }
 
     stage('Prepare & Deploy') {
-        steps {
-            sshagent(['ssh-proxmox-key']) {
-            withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                sh """
-                ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} <<EOF
+      steps {
+        sshagent(['ssh-proxmox-key']) {
+          withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+            sh """
+              ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} <<EOF
 set -euxo pipefail
 
 # Config vars
@@ -125,13 +125,13 @@ cd \$APP_DIR
 sudo docker compose down --volumes --remove-orphans || true
 sudo docker system prune -af || true
 sudo docker compose up -d --build
-
 EOF
-        """
-                }
-            }
+            """
+          }
         }
+      }
     }
+  }
 
   post {
     failure {
