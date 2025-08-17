@@ -40,7 +40,7 @@ pipeline {
                     set -e
                     for proj in $(find ./test -name "*.csproj"); do
                         echo "🧪 Testing: $proj"
-                        dotnet test "$proj" --no-build --verbosity normal
+                        dotnet test "$proj" --verbosity normal
                     done
                 '''
             }
