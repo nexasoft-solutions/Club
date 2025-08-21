@@ -41,10 +41,9 @@ public static class DependencyInjection
         // 1. Cargar secretos desde Vault
         // -----------------------------------
 
-        //var vaultAddress = configuration["Vault:Address"] ?? "http://127.0.0.1:18200";
-        /*var vaultToken = Environment.GetEnvironmentVariable("VAULT_TOKEN")
-                         ?? throw new InvalidOperationException("VAULT_TOKEN no definido");*/
+        var environment = "qa"; // puede ser "dev", "qa", "prod"
 
+        
         var vaultAddress = configuration["Vault:Address"] ?? "http://127.0.0.1:18200";
         var vaultToken = Environment.GetEnvironmentVariable("VAULT_TOKEN");
 
@@ -65,9 +64,9 @@ public static class DependencyInjection
 
         var vaultService = new VaultService(vaultAddress, vaultToken);
 
-        var dbSecrets = vaultService.GetSecretsAsync("qa/db").Result;
-        var jwtSettings = vaultService.GetSecretAsObjectAsync<JwtOptions>("qa/jwt").Result!;
-        var storageSettings = vaultService.GetSecretAsObjectAsync<StorageOptions>("qa/storage").Result!;
+        var dbSecrets = vaultService.GetSecretsAsync($"{environment}/db").Result;
+        var jwtSettings = vaultService.GetSecretAsObjectAsync<JwtOptions>($"{environment}/jwt").Result!;
+        var storageSettings = vaultService.GetSecretAsObjectAsync<StorageOptions>($"{environment}/storage").Result!;
 
 
         /*Console.WriteLine("🔐 Vault DB Secrets:");

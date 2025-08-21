@@ -14,7 +14,7 @@ services:
       - nexanet
 
   nexasoft-api:
-    container_name: nexasoft-api
+    container_name: colvida-mvp-api #nexasoft-api
     build:
       context: .
       dockerfile: docker/Dockerfile
