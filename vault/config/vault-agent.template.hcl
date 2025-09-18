@@ -12,7 +12,7 @@ cache {
 }
 
 # ✅ Archivo PID opcional
-pid_file = "/var/run/vault-agent.pid"
+#pid_file = "/var/run/vault-agent.pid"
 
 # ✅ Método de autenticación: AppRole
 auto_auth {
