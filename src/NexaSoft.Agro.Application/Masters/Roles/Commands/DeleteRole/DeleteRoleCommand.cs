@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Application.Masters.Roles.Commands.DeleteRole;
 
 public sealed record DeleteRoleCommand
 (
-    Guid Id
+    long Id
 ): ICommand<bool>;

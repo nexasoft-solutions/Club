@@ -15,7 +15,7 @@ public interface IAuthService
 
     Task<Result<AuthTokenResponse>> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
 
-    Task<string> GenerateAccessToken(User user, Guid activeRoleId, CancellationToken cancellationToken);
+    Task<string> GenerateAccessToken(User user, long activeRoleId, CancellationToken cancellationToken);
     
-    Task<Result<AuthTokenResponse>> ChangeActiveRoleAsync(Guid userId, Guid newRoleId, CancellationToken cancellationToken);
+    Task<Result<AuthTokenResponse>> ChangeActiveRoleAsync(long userId, long newRoleId, CancellationToken cancellationToken);
 }

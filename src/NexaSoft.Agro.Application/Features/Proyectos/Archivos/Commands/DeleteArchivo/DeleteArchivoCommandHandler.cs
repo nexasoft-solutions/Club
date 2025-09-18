@@ -23,7 +23,7 @@ public class DeleteArchivoCommandHandler(
                 return Result.Failure<bool>(ArchivoErrores.NoEncontrado);
             }
 
-         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
 
         try
         {

@@ -13,9 +13,9 @@ public class CreateColaboradorCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateColaboradorCommandHandler> _logger
-) : ICommandHandler<CreateColaboradorCommand, Guid>
+) : ICommandHandler<CreateColaboradorCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateColaboradorCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateColaboradorCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de Colaborador");
@@ -33,19 +33,19 @@ public class CreateColaboradorCommandHandler(
         bool existsNombresColaborador = await _repository.ExistsAsync(c => c.NombresColaborador == command.NombresColaborador, cancellationToken);
         if (existsNombresColaborador)
         {
-            return Result.Failure<Guid>(ColaboradorErrores.Duplicado);
+            return Result.Failure<long>(ColaboradorErrores.Duplicado);
         }
 
         bool existsApellidosColaborador = await _repository.ExistsAsync(c => c.ApellidosColaborador == command.ApellidosColaborador, cancellationToken);
         if (existsApellidosColaborador)
         {
-            return Result.Failure<Guid>(ColaboradorErrores.Duplicado);
+            return Result.Failure<long>(ColaboradorErrores.Duplicado);
         }
 
         bool existsNumeroDocumentoIdentidad = await _repository.ExistsAsync(c => c.NumeroDocumentoIdentidad == command.NumeroDocumentoIdentidad, cancellationToken);
         if (existsNumeroDocumentoIdentidad)
         {
-            return Result.Failure<Guid>(ColaboradorErrores.Duplicado);
+            return Result.Failure<long>(ColaboradorErrores.Duplicado);
         }
 
         var entity = Colaborador.Create(
@@ -67,7 +67,8 @@ public class CreateColaboradorCommandHandler(
             command.Comentarios,
             command.ConsultoraId,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -84,7 +85,7 @@ public class CreateColaboradorCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Colaborador");
-            return Result.Failure<Guid>(ColaboradorErrores.ErrorSave);
+            return Result.Failure<long>(ColaboradorErrores.ErrorSave);
         }
     }
 }

@@ -5,5 +5,6 @@ public sealed record CreateEstudioAmbientalRequest(
     DateOnly FechaInicio,
     DateOnly FechaFin,
     string? Detalles,
-    Guid EmpresaId
+    long EmpresaId,
+    string? UsuarioCreacion
 );

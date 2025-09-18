@@ -1,13 +1,13 @@
 namespace NexaSoft.Agro.Application.Masters.Constantes.Queries.GetConstesMultiple;
 
-public sealed record ConstamtesAgrupadasResponse
+public sealed record ConstantesAgrupadasResponse
 (
     string Tipo,
-    List<ConstanteClaveValorResponse> Valores
+    List<ConstantesClaveValorResponse> Valores
 );
 
 
-public sealed record ConstanteClaveValorResponse
+public sealed record ConstantesClaveValorResponse
 (
     int Clave,
     string Valor

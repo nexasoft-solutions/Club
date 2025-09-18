@@ -1,7 +1,7 @@
 namespace NexaSoft.Agro.Api.Controllers.Masters.Consultoras.Colaboradores.Request;
 
 public sealed record UpdateColaboradorRequest(
-   Guid Id,
+   long Id,
     string? NombresColaborador,
     string? ApellidosColaborador,
     int TipoDocumentoId,
@@ -18,5 +18,6 @@ public sealed record UpdateColaboradorRequest(
     decimal? Salario,
     DateOnly? FechaCese,
     string? Comentarios,
-    Guid ConsultoraId
+    long ConsultoraId,
+    string? UsuarioModificacion
 );

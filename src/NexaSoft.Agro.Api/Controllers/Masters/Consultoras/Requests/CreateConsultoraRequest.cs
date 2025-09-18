@@ -5,5 +5,7 @@ public sealed record CreateConsultoraRequest(
     string? DireccionConsultora,
     string? RepresentanteConsultora,
     string? RucConsultora,
-    string? CorreoOrganizacional
+    string? CorreoOrganizacional,
+    string? UsuarioCreacion
+
 );

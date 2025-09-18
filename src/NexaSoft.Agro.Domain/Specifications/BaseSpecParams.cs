@@ -14,9 +14,9 @@ namespace NexaSoft.Agro.Domain.Specifications
             set => _search = value?.ToLower();
         }
 
-        public Guid? Id { get; set; }
+        public long? Id { get; set; }
         public bool NoPaging { get; set; } = false;
-        //public Guid? PadreId { get; set; }
+        //public long? PadreId { get; set; }
     }
 
     public class BaseSpecParams<TKey> : BaseSpecParams

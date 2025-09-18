@@ -27,7 +27,8 @@ public class UpdateConstanteCommandHandler(
             command.Id,
             command.TipoConstante,
             command.Valor,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try

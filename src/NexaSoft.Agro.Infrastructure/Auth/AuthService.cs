@@ -99,7 +99,7 @@ public class AuthService : IAuthService
             var accessToken = GenerateAccessToken(entity.Value, roles, permissions, roleDefault.Id);
             var refreshTokenStr = GenerateRefreshToken();
 
-            var refresh = RefreshToken.Create(refreshTokenStr, entity.Value.Id, DateTime.UtcNow.AddHours(8));
+            var refresh = RefreshToken.Create(refreshTokenStr, entity.Value.Id, DateTime.UtcNow.AddHours(8),userName);
             await _repository.AddAsync(refresh, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
@@ -130,7 +130,7 @@ public class AuthService : IAuthService
             tokenEntity.Value.Revoke();
 
             var newRefreshTokenStr = GenerateRefreshToken();
-            var newRefreshToken = RefreshToken.Create(newRefreshTokenStr, user.Id, DateTime.UtcNow.AddHours(8));
+            var newRefreshToken = RefreshToken.Create(newRefreshTokenStr, user.Id, DateTime.UtcNow.AddHours(8),user.UserName!);
             await _repository.AddAsync(newRefreshToken, cancellationToken);
 
             // Obtener roles
@@ -157,7 +157,7 @@ public class AuthService : IAuthService
         }
     }
 
-    private string GenerateAccessToken(User user, List<UserRoleResponse> roles, List<string> permissions, Guid activeRoleId)
+    private string GenerateAccessToken(User user, List<UserRoleResponse> roles, List<string> permissions, long activeRoleId)
     {
         var secret = _configuration["Jwt:Secret"]!;
         var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(secret));
@@ -212,7 +212,7 @@ public class AuthService : IAuthService
     }
 
 
-    public async Task<string> GenerateAccessToken(User user, Guid activeRoleId, CancellationToken cancellationToken)
+    public async Task<string> GenerateAccessToken(User user, long activeRoleId, CancellationToken cancellationToken)
     {
         var roles = await _userRoleRepository.GetUserRolesAsync(user.Id, cancellationToken);
         var activeRole = roles.FirstOrDefault(r => r.Id == activeRoleId);
@@ -231,7 +231,7 @@ public class AuthService : IAuthService
         return Convert.ToBase64String(bytes);
     }
 
-    public async Task<Result<AuthTokenResponse>> ChangeActiveRoleAsync(Guid userId, Guid newRoleId, CancellationToken cancellationToken)
+    public async Task<Result<AuthTokenResponse>> ChangeActiveRoleAsync(long userId, long newRoleId, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
         if (user == null)
@@ -266,7 +266,7 @@ public class AuthService : IAuthService
 
             // Crear nuevo refresh token
             var refreshTokenStr = GenerateRefreshToken();
-            var newRefreshToken = RefreshToken.Create(refreshTokenStr, user.Id, DateTime.UtcNow.AddHours(8));
+            var newRefreshToken = RefreshToken.Create(refreshTokenStr, user.Id, DateTime.UtcNow.AddHours(8),user.UserName!);
             await _repository.AddAsync(newRefreshToken, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);

@@ -9,18 +9,18 @@ public static class SwaggerExtensions
     {
         var openApi = new OpenApiInfo
         {
-            Title = "MVP-Colvida",//"NexaSoft Agro API",
+            Title = "NexaSoft Agro API",//"MVP-Colvida",//
             Version = "V1",
-            Description = "Sistema de Gestion de Seguros API 2025",//"Sistema de Gestion de Agro API 2025",
+            Description = "Sistema de Gestion de Agro API 2025", //"Sistema de Gestion de Seguros API 2025",//
             TermsOfService = new Uri("https://opensource.org/licenses/NIT"),
             Contact = new OpenApiContact
             {
-                Name = "SEGUROS COLVIDA S.A.",
+                /*Name = "SEGUROS COLVIDA S.A.",
                 Email = "colvidacontato@colvidaseguros.com.ec",
-                Url = new Uri("https://colvidaseguros.com.ec")
-                /*Name = "NEXASOFT SOLUTIONS S.A.C.",
+                Url = new Uri("https://colvidaseguros.com.ec")*/
+                Name = "NEXASOFT SOLUTIONS S.A.C.",
                 Email = "arobles@nexasoft.com.pe",
-                Url = new Uri("https://nexasoft.com.pe")*/
+                Url = new Uri("https://nexasoft.com.pe")
             },
             License = new OpenApiLicense
             {

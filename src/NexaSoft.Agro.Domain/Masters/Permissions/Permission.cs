@@ -17,32 +17,38 @@ public class Permission : Entity
 
     private Permission() { }
     public Permission(
-        Guid id,
         string? name,
         string? description,
         string? referenciaControl,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         Name = name;
         Description = description;
         ReferenciaControl = referenciaControl;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Permission Create(
         string? name,
         string? description,
         string? referenciaControl,
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var entity = new Permission(
-            Guid.NewGuid(),
             name,
             description,
             referenciaControl,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
         return entity;
     }
@@ -51,18 +57,20 @@ public class Permission : Entity
          string? name,
          string? description,
          string? referenciaControl,
-         DateTime utcNow
+         DateTime utcNow,
+         string? usuarioModificacion
      )
     {
         Name = name;
         Description = description;
         ReferenciaControl = referenciaControl;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
         return Result.Success();
     }
 
     // Métodos para manejar la relación con roles
-    public void AddRole(Guid roleId)
+    public void AddRole(long roleId)
     {
         if (!_rolePermissions.Any(rp => rp.RoleId == roleId))
         {
@@ -70,7 +78,7 @@ public class Permission : Entity
         }
     }
 
-    public void RemoveRole(Guid roleId)
+    public void RemoveRole(long roleId)
     {
         var rp = _rolePermissions.FirstOrDefault(rp => rp.RoleId == roleId);
         if (rp != null)

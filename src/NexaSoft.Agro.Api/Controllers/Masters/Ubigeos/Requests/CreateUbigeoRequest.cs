@@ -5,5 +5,6 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Ubigeos.Request;
 public sealed record CreateUbigeoRequest(
     string? Descripcion,
     int Nivel,
-    Guid? PadreId
+    long? PadreId,
+    string? UsuarioCreacion
 );

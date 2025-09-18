@@ -35,28 +35,28 @@ public class EmpresaConfiguration : IEntityTypeConfiguration<Empresa>
             .IsRequired();
 
 
-         builder.HasOne(x => x.DepartamentoEmpresa)
-                .WithMany()
-                .HasForeignKey(x => x.DepartamentoEmpresaId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.DepartamentoEmpresa)
+               .WithMany()
+               .HasForeignKey(x => x.DepartamentoEmpresaId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.ProvinciaEmpresaId)
             .IsRequired();
 
 
-         builder.HasOne(x => x.ProvinciaEmpresa)
-                .WithMany()
-                .HasForeignKey(x => x.ProvinciaEmpresaId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.ProvinciaEmpresa)
+               .WithMany()
+               .HasForeignKey(x => x.ProvinciaEmpresaId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.DistritoEmpresaId)
             .IsRequired();
 
 
-         builder.HasOne(x => x.DistritoEmpresa)
-                .WithMany()
-                .HasForeignKey(x => x.DistritoEmpresaId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.DistritoEmpresa)
+               .WithMany()
+               .HasForeignKey(x => x.DistritoEmpresaId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.Direccion)
             .HasMaxLength(220)
@@ -75,10 +75,22 @@ public class EmpresaConfiguration : IEntityTypeConfiguration<Empresa>
             .IsRequired();
 
 
-         builder.HasOne(x => x.Organizacion)
-                .WithMany()
-                .HasForeignKey(x => x.OrganizacionId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Organizacion)
+               .WithMany()
+               .HasForeignKey(x => x.OrganizacionId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioEliminacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
 
         builder.HasIndex(x => x.RazonSocial)
             .HasDatabaseName("ix_empresa_razonsocial");

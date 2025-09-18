@@ -2,10 +2,10 @@ namespace NexaSoft.Agro.Domain.Masters.Menus;
 
 public class MenuRole
 {
-    public Guid MenuItemOptionId { get; private set; }
-    public Guid RoleId { get; private set; }
+    public long MenuItemOptionId { get; private set; }
+    public long RoleId { get; private set; }
 
-    public MenuRole(Guid menuItemOptionId, Guid roleId)
+    public MenuRole(long menuItemOptionId, long roleId)
     {
         MenuItemOptionId = menuItemOptionId;
         RoleId = roleId;

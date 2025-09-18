@@ -38,7 +38,10 @@ public class EstructuraRepository(ApplicationDbContext _dbContext) : IEstructura
              c.PadreEstructuraId,
              c.SubCapituloId,
              c.TipoEstructuraId,
-             c.FechaCreacion
+             c.FechaCreacion,
+             c.FechaModificacion,
+             c.UsuarioCreacion,
+             c.UsuarioModificacion
          );
 
       var items = await query.ToListAsync(cancellationToken);

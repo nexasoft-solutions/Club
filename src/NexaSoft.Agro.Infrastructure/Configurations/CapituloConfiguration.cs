@@ -35,7 +35,18 @@ public class CapituloConfiguration : IEntityTypeConfiguration<Capitulo>
                .HasForeignKey(x => x.EstudioAmbientalId)
                .OnDelete(DeleteBehavior.Restrict);
 
-        
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
         builder.HasIndex(x => x.NombreCapitulo)
             .HasDatabaseName("ix_capitulo_nombre");
             

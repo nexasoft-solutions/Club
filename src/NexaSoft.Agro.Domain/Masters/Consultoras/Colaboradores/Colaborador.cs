@@ -1,5 +1,4 @@
 using NexaSoft.Agro.Domain.Abstractions;
-using NexaSoft.Agro.Domain.Masters.Consultoras.Colaboradores.Events;
 using NexaSoft.Agro.Domain.Masters.Users;
 using static NexaSoft.Agro.Domain.Shareds.Enums;
 
@@ -24,7 +23,7 @@ public class Colaborador : Entity
     public decimal? Salario { get; private set; }
     public DateOnly? FechaCese { get; private set; }
     public string? Comentarios { get; private set; }
-    public Guid ConsultoraId { get; private set; }
+    public long ConsultoraId { get; private set; }
     public int EstadoColaborador { get; private set; }
     public Consultora? Consultora { get; private set; }
 
@@ -33,7 +32,6 @@ public class Colaborador : Entity
     private Colaborador() { }
 
     private Colaborador(
-        Guid id,
         string? nombresColaborador,
         string? apellidosColaborador,
         string? nombreCompletoColaborador,
@@ -51,11 +49,14 @@ public class Colaborador : Entity
         decimal? salario,
         DateOnly? fechaCese,
         string? comentarios,
-        Guid consultoraId,
+        long consultoraId,
         string? userName,
         int estadoColaborador,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         NombresColaborador = nombresColaborador;
         ApellidosColaborador = apellidosColaborador;
@@ -78,6 +79,9 @@ public class Colaborador : Entity
         UserName = userName;
         EstadoColaborador = estadoColaborador;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Colaborador Create(
@@ -97,16 +101,16 @@ public class Colaborador : Entity
         decimal? salario,
         DateOnly? fechaCese,
         string? comentarios,
-        Guid consultoraId,
+        long consultoraId,
         int estadoColaborador,
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var nombreCompleto = UserService.CreateNombreCompleto(apellidosColaborador ?? "", nombresColaborador ?? "");
         var userName = UserService.CreateUserName(apellidosColaborador ?? "", nombresColaborador ?? "");
 
         var entity = new Colaborador(
-            Guid.NewGuid(),
             nombresColaborador,
             apellidosColaborador,
             nombreCompleto,
@@ -127,14 +131,15 @@ public class Colaborador : Entity
             consultoraId,
             userName,
             estadoColaborador,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new ColaboradorCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new ColaboradorCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         string? nombresColaborador,
         string? apellidosColaborador,
         int tipoDocumentoId,
@@ -151,8 +156,9 @@ public class Colaborador : Entity
         decimal? salario,
         DateOnly? fechaCese,
         string? comentarios,
-        Guid consultoraId,
-        DateTime utcNow
+        long consultoraId,
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         var nombreCompleto = UserService.CreateNombreCompleto(apellidosColaborador ?? "", nombresColaborador ?? "");
@@ -178,16 +184,18 @@ public class Colaborador : Entity
         UserName = userName;
         ConsultoraId = consultoraId;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new ColaboradorUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new ColaboradorUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow, string usuarioEliminacion)
     {
         EstadoColaborador = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 }

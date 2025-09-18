@@ -32,24 +32,17 @@ public class SubCapituloConfiguration : IEntityTypeConfiguration<SubCapitulo>
         builder.HasIndex(x => x.NombreSubCapitulo)
           .HasDatabaseName("ix_subcapitulo_nombre");
 
-        /*builder.HasOne(x => x.Capitulo)
-               .WithMany()
-               .HasForeignKey(x => x.CapituloId)
-               .OnDelete(DeleteBehavior.Restrict);*/
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
 
-        /*builder.HasOne(s => s.Capitulo)
-            .WithMany(c => c.SubCapitulos)
-            .HasForeignKey(s => s.CapituloId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
 
-        builder.HasMany(sc => sc.Estructuras)
-                .WithOne(e => e.SubCapitulo)
-                .HasForeignKey(e => e.SubCapituloId);
-
-        builder.HasMany(sc => sc.Archivos)
-               .WithOne(a => a.SubCapitulo)
-               .HasForeignKey(a => a.SubCapituloId)
-               .OnDelete(DeleteBehavior.Restrict);*/
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
 
     }
 }

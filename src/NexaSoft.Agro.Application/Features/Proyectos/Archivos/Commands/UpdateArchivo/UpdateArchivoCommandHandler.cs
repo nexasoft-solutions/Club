@@ -25,8 +25,10 @@ public class UpdateArchivoCommandHandler(
 
         entity.Update(
             command.Id,
-            command.DescripcionArchivo,       
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            command.DescripcionArchivo,
+            command.NombreCorto,
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try

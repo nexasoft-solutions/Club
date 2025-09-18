@@ -42,6 +42,18 @@ public class MenuItemOptionConfiguration : IEntityTypeConfiguration<MenuItemOpti
             .HasForeignKey(x => x.MenuItemOptionId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);            
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
         builder.HasIndex(x => x.Label)
             .HasDatabaseName("ix_menu_label");
     }

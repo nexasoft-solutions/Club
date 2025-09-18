@@ -4,8 +4,8 @@ namespace NexaSoft.Agro.Application.Features.Proyectos.Planos.Commands.UpdatePla
 
 public sealed record UpdatePlanoDetalleCommand
 (
-    Guid Id,
-    Guid planoId,
+    long Id,
+    long planoId,
     string? Descripcion,
     Geometry Coordenadas
 );

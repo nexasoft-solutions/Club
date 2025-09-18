@@ -10,8 +10,8 @@ public class Estructura : Entity
     public int TipoEstructuraId { get; private set; }
     public string? NombreEstructura { get; private set; }
     public string? DescripcionEstructura { get; private set; }
-    public Guid? PadreEstructuraId { get; private set; }
-    public Guid SubCapituloId { get; private set; }
+    public long? PadreEstructuraId { get; private set; }
+    public long SubCapituloId { get; private set; }
     public int EstadoEstructura { get; private set; }
     public SubCapitulo? SubCapitulo { get; private set; }
 
@@ -23,15 +23,17 @@ public class Estructura : Entity
     private Estructura() { }
 
     private Estructura(
-        Guid id,
         int tipoEstructuraId,
         string? nombreEstructura,
         string? descripcionEstructura,
-        Guid? padreEstructuraId,
-        Guid subCapituloId,
+        long? padreEstructuraId,
+        long subCapituloId,
         int estadoEstructura,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         TipoEstructuraId = tipoEstructuraId;
         NombreEstructura = nombreEstructura;
@@ -40,40 +42,45 @@ public class Estructura : Entity
         SubCapituloId = subCapituloId;
         EstadoEstructura = estadoEstructura;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Estructura Create(
         int tipoEstructuraId,
         string? nombreEstructura,
         string? descripcionEstructura,
-        Guid? padreEstructuraId,
-        Guid subCapituloId,
+        long? padreEstructuraId,
+        long subCapituloId,
         int estadoEstructura,
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var entity = new Estructura(
-            Guid.NewGuid(),
             tipoEstructuraId,
             nombreEstructura,
             descripcionEstructura,
             padreEstructuraId,
             subCapituloId,
             estadoEstructura,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new EstructuraCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new EstructuraCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         int tipoEstructuraId,
         string? nombreEstructura,
         string? descripcionEstructura,
-        Guid? padreEstructuraId,
-        Guid subCapituloId,
-        DateTime utcNow
+        long? padreEstructuraId,
+        long subCapituloId,
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         TipoEstructuraId = tipoEstructuraId;
@@ -82,16 +89,18 @@ public class Estructura : Entity
         PadreEstructuraId = padreEstructuraId;
         SubCapituloId = subCapituloId;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new EstructuraUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new EstructuraUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow,string usuarioEliminacion)
     {
         EstadoEstructura = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 }

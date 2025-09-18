@@ -15,15 +15,15 @@ public class DeleteEmpresaCommandHandler(
 {
     public async Task<Result<bool>> Handle(DeleteEmpresaCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de eliminación de Empresa con ID {EmpresaId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de eliminación de Empresa con ID {EmpresaId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("Empresa con ID {EmpresaId} no encontrado", command.Id);
-                return Result.Failure<bool>(EmpresaErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(EmpresaErrores.NoEncontrado);
+        }
 
-         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
 
         try
         {
@@ -37,7 +37,7 @@ public class DeleteEmpresaCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al eliminar Empresa con ID {EmpresaId}", command.Id);
+            _logger.LogError(ex, "Error al eliminar Empresa con ID {EmpresaId}", command.Id);
             return Result.Failure<bool>(EmpresaErrores.ErrorDelete);
         }
     }

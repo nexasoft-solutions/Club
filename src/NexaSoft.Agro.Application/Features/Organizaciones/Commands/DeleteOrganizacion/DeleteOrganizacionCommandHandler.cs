@@ -23,7 +23,7 @@ public class DeleteOrganizacionCommandHandler(
             return Result.Failure<bool>(OrganizacionErrores.NoEncontrado);
         }
 
-        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
 
         try
         {

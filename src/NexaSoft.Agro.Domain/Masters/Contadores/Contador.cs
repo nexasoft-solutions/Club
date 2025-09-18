@@ -13,15 +13,17 @@ public class Contador : Entity
     private Contador() { }
 
     private Contador(
-        Guid id,
         string? entidad,
         string? prefijo,
         long valorActual,
-        string? agrupador,        
+        string? agrupador,
         string? tipoDato,
         int? valorRpeticion,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         Entidad = entidad;
         Prefijo = prefijo;
@@ -29,6 +31,9 @@ public class Contador : Entity
         Agrupador = agrupador;
         TipoDato = tipoDato;
         ValorRpeticion = valorRpeticion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Contador Create(
@@ -38,18 +43,19 @@ public class Contador : Entity
         string? agrupador,
         string? tipoDato,
         int? valorRpeticion,
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         return new Contador(
-            Guid.NewGuid(),
             entidad,
             prefijo,
             valorInicial,
             agrupador,
             tipoDato,
             valorRpeticion,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
     }
 
@@ -58,27 +64,30 @@ public class Contador : Entity
         string? agrupador,
         string? tipoDato,
         int? valorRpeticion,
-        DateTime utcNow
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         if (!string.IsNullOrWhiteSpace(prefijo))
-            Prefijo = prefijo;
+            Prefijo = prefijo.ToUpper();
 
         if (!string.IsNullOrWhiteSpace(agrupador))
             Agrupador = agrupador;
-        
+
         if (!string.IsNullOrWhiteSpace(tipoDato))
             TipoDato = tipoDato;
 
         ValorRpeticion = valorRpeticion;
-        FechaModificacion = utcNow; 
+        FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion; 
     }
 
 
-    public string Incrementar(DateTime utcNow)
+    public string Incrementar(DateTime utcNow,string usuarioModificacion)
     {
         ValorActual++;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
         var anio = DateTime.UtcNow.Year;
         if (TipoDato == "string")
             return $"{Prefijo}{anio}{ValorActual.ToString().PadLeft(ValorRpeticion ?? 0, '0')}";

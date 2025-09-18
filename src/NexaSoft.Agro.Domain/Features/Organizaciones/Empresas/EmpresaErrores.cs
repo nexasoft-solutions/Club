@@ -39,4 +39,10 @@ public class EmpresaErrores
         "Empresa.ErrorConsulta",
         "Error al listar Empresa"
     );
+
+    public static readonly Error NoHayConincidencias = new
+    (
+        "Empresa.NoHayConincidencias",
+        "No hay items para exportar"
+    );
 }

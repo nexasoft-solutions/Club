@@ -64,8 +64,14 @@ public class OrganizacionSpecification : BaseSpecification<Organizacion, Organiz
                x.NombreOrganizacion,
                x.ContactoOrganizacion,
                x.TelefonoContacto,
+               x.RucOrganizacion,
+               x.Observaciones,
                null,
-               x.FechaCreacion
+               x.SectorId,
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

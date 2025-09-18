@@ -9,6 +9,8 @@ using NexaSoft.Agro.Application.Features.Proyectos.Archivos.Queries.GetArchivos;
 using NexaSoft.Agro.Domain.Specifications;
 using NexaSoft.Agro.Api.Extensions;
 using NexaSoft.Agro.Application.Features.Proyectos.Archivos.Queries.GetArchivoDownload;
+using NexaSoft.Agro.Application.Features.Proyectos.Archivos.Queries.GetArchivoByNombre;
+using NexaSoft.Agro.Api.Controllers.Features.Proyectos.Archivos.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Features.Proyectos.Archivos;
 
@@ -26,11 +28,13 @@ public class ArchivoController(ISender _sender) : ControllerBase
         var command = new CreateArchivoCommand(
              request.Archivo.FileName,
              request.DescripcionArchivo,
-             request.TipoArchivo,
+             request.TipoArchivoId,
              request.SubCapituloId,
              request.EstructuraId,
+             request.NombreCorto,
              stream,
-             request.Archivo.ContentType
+             request.Archivo.ContentType,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -42,18 +46,21 @@ public class ArchivoController(ISender _sender) : ControllerBase
     {
         var command = new UpdateArchivoCommand(
              request.Id,
-             request.DescripcionArchivo
+             request.DescripcionArchivo,
+             request.NombreCorto,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteArchivo(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteArchivo(DeleteArchivoRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteArchivoCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion!
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -73,9 +80,9 @@ public class ArchivoController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetArchivo(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {
@@ -85,8 +92,20 @@ public class ArchivoController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
+    [HttpGet("search")]
+    public async Task<IActionResult> GetArchivoByNombreCorto(
+        [FromQuery] GetArchivoByNombreRequest request,
+        CancellationToken cancellationToken
+    )
+    {     
+        var query = new GetArchivoByNombreQuery(request.EstudioAmbientalId,request.Filtro);
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.ToActionResult(this);
+    }
+
     [HttpGet("{id}/descargar")]
-    public async Task<IActionResult> DescargarArchivo(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DescargarArchivo(long id, CancellationToken cancellationToken)
     {
 
         var query = new GetArchivoDownloadQuery(id);

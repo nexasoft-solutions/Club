@@ -31,7 +31,8 @@ public class UpdateUserCommandHandler(
             command.Email,
             command.UserDni,
             command.UserTelefono,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try

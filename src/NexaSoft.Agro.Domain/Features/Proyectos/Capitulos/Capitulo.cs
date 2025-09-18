@@ -1,5 +1,4 @@
 using NexaSoft.Agro.Domain.Abstractions;
-using NexaSoft.Agro.Domain.Features.Proyectos.Capitulos.Events;
 using NexaSoft.Agro.Domain.Features.Proyectos.EstudiosAmbientales;
 using static NexaSoft.Agro.Domain.Shareds.Enums;
 
@@ -10,7 +9,7 @@ public class Capitulo : Entity
     public string? NombreCapitulo { get; private set; }
     public string? DescripcionCapitulo { get; private set; }
     public int EstadoCapitulo { get; private set; }
-    public Guid EstudioAmbientalId { get; private set; }
+    public long EstudioAmbientalId { get; private set; }
     public EstudioAmbiental? EstudioAmbiental { get; private set; }
 
     //public ICollection<SubCapitulo> SubCapitulos { get; private set; } = new List<SubCapitulo>();
@@ -18,63 +17,73 @@ public class Capitulo : Entity
     private Capitulo() { }
 
     private Capitulo(
-        Guid id,
         string? nombreCapitulo,
         string? descripcionCapitulo,
         int estadoCapitulo,
-        Guid estudioAmbientalId,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        long estudioAmbientalId,
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
+
     {
         NombreCapitulo = nombreCapitulo;
         DescripcionCapitulo = descripcionCapitulo;
         EstadoCapitulo = estadoCapitulo;
         EstudioAmbientalId = estudioAmbientalId;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Capitulo Create(
         string? nombreCapitulo,
         string? descripcionCapitulo,
         int estadoCapitulo,
-        Guid estudioAmbientalId,
-        DateTime fechaCreacion
+        long estudioAmbientalId,
+        DateTime fechaCreacion,        
+        string? usuarioCreacion
     )
     {
         var entity = new Capitulo(
-            Guid.NewGuid(),
             nombreCapitulo,
             descripcionCapitulo,
             estadoCapitulo,
             estudioAmbientalId,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new CapituloCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new CapituloCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         string? nombreCapitulo,
         string? descripcionCapitulo,
-        Guid estudioAmbientalId,
-        DateTime utcNow
+        long estudioAmbientalId,
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         NombreCapitulo = nombreCapitulo;
         DescripcionCapitulo = descripcionCapitulo;
         EstudioAmbientalId = estudioAmbientalId;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new CapituloUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new CapituloUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow, string usuarioEliminacion)
     {
         EstadoCapitulo = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 using NexaSoft.Agro.Application.Abstractions.Messaging;
 using NexaSoft.Agro.Application.Abstractions.Time;
 using NexaSoft.Agro.Application.Exceptions;
@@ -13,9 +14,9 @@ public class CreateEstructuraCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateEstructuraCommandHandler> _logger
-) : ICommandHandler<CreateEstructuraCommand, Guid>
+) : ICommandHandler<CreateEstructuraCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateEstructuraCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateEstructuraCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de Estructura");
@@ -29,15 +30,19 @@ public class CreateEstructuraCommandHandler(
             throw new ValidationExceptions(errors);
         }
 
+        long? padreId = null;
+        if (command.PadreEstructuraId > 0)
+            padreId = command.PadreEstructuraId;
 
         var entity = Estructura.Create(
             command.TipoEstructuraId,
             command.NombreEstructura,
             command.DescripcionEstructura,
-            command.PadreEstructuraId,
+            padreId,
             command.SubCapituloId,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -54,7 +59,7 @@ public class CreateEstructuraCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Estructura");
-            return Result.Failure<Guid>(EstructuraErrores.ErrorSave);
+            return Result.Failure<long>(EstructuraErrores.ErrorSave);
         }
     }
 }

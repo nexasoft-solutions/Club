@@ -4,5 +4,5 @@ using NexaSoft.Agro.Domain.Features.Proyectos.SubCapitulos;
 namespace NexaSoft.Agro.Application.Features.Proyectos.SubCapitulos.Queries.GetSubCapitulo;
 
 public sealed record GetSubCapituloQuery(
-    Guid Id
+    long Id
 ) : IQuery<SubCapituloResponse>;

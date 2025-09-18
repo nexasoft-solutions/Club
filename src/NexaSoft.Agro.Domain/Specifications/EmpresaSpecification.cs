@@ -72,7 +72,10 @@ public class EmpresaSpecification : BaseSpecification<Empresa, EmpresaResponse>
                x.ProvinciaEmpresaId,
                x.DistritoEmpresaId,
                x.OrganizacionId,
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

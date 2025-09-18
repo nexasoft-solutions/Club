@@ -9,73 +9,79 @@ public class SubCapitulo : Entity
 {
     public string? NombreSubCapitulo { get; private set; }
     public string? DescripcionSubCapitulo { get; private set; }
-    public Guid CapituloId { get; private set; }
+    public long CapituloId { get; private set; }
     public int EstadoSubCapitulo { get; private set; }
     public Capitulo? Capitulo { get; private set; }
-
-    //public ICollection<Estructura> Estructuras { get; private set; } = new List<Estructura>();
-    //public ICollection<Archivo> Archivos { get; private set; } = new List<Archivo>();
 
     private SubCapitulo() { }
 
     private SubCapitulo(
-        Guid id, 
-        string? nombreSubCapitulo, 
-        string? descripcionSubCapitulo, 
-        Guid capituloId, 
-        int estadoSubCapitulo, 
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        string? nombreSubCapitulo,
+        string? descripcionSubCapitulo,
+        long capituloId,
+        int estadoSubCapitulo,
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         NombreSubCapitulo = nombreSubCapitulo;
         DescripcionSubCapitulo = descripcionSubCapitulo;
         CapituloId = capituloId;
         EstadoSubCapitulo = estadoSubCapitulo;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static SubCapitulo Create(
         string? nombreSubCapitulo, 
         string? descripcionSubCapitulo, 
-        Guid capituloId, 
+        long capituloId, 
         int estadoSubCapitulo, 
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var entity = new SubCapitulo(
-            Guid.NewGuid(),
             nombreSubCapitulo,
             descripcionSubCapitulo,
             capituloId,
             estadoSubCapitulo,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new SubCapituloCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new SubCapituloCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         string? nombreSubCapitulo, 
         string? descripcionSubCapitulo, 
-        Guid capituloId, 
-        DateTime utcNow
+        long capituloId, 
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         NombreSubCapitulo = nombreSubCapitulo;
         DescripcionSubCapitulo = descripcionSubCapitulo;
         CapituloId = capituloId;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new SubCapituloUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new SubCapituloUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow,string usuarioEliminacion)
     {
         EstadoSubCapitulo = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 }

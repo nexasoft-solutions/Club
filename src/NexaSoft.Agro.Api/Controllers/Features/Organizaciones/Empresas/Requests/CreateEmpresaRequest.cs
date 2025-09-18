@@ -5,11 +5,12 @@ public sealed record CreateEmpresaRequest(
     string? RucEmpresa,
     string? ContactoEmpresa,
     string? TelefonoContactoEmpresa,
-    Guid DepartamentoEmpresaId,
-    Guid ProvinciaEmpresaId,
-    Guid DistritoEmpresaId,
+    long DepartamentoEmpresaId,
+    long ProvinciaEmpresaId,
+    long DistritoEmpresaId,
     string? Direccion,
     double LatitudEmpresa,
     double LongitudEmpresa,
-    Guid OrganizacionId
+    long OrganizacionId,
+    string? UsuarioCreacion
 );

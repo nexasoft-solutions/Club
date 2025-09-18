@@ -3,7 +3,8 @@ using NexaSoft.Agro.Application.Abstractions.Messaging;
 namespace NexaSoft.Agro.Application.Masters.Constantes.Commands.UpdateConstante;
 
 public sealed record UpdateConstanteCommand(
-    Guid Id,
+    long Id,
     string? TipoConstante,
-    string? Valor
+    string? Valor,
+    string? UsuarioModificacion
 ) : ICommand<bool>;

@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Masters.Constantes.Events;
 
 public sealed record ConstanteCreateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

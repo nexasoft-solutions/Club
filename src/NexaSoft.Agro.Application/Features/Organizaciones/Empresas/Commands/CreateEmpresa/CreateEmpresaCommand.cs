@@ -7,11 +7,12 @@ public sealed record CreateEmpresaCommand(
     string? RucEmpresa,
     string? ContactoEmpresa,
     string? TelefonoContactoEmpresa,
-    Guid DepartamentoEmpresaId,
-    Guid ProvinciaEmpresaId,
-    Guid DistritoEmpresaId,
+    long DepartamentoEmpresaId,
+    long ProvinciaEmpresaId,
+    long DistritoEmpresaId,
     string? Direccion,
     double LatitudEmpresa,
     double LongitudEmpresa,
-    Guid OrganizacionId
-) : ICommand<Guid>;
+    long OrganizacionId,
+    string? UsuarioCreacion
+) : ICommand<long>;

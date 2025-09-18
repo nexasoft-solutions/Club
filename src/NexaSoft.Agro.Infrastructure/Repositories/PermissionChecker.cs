@@ -8,7 +8,7 @@ namespace NexaSoft.Agro.Infrastructure.Repositories;
 
 public class PermissionChecker(ApplicationDbContext _dbContext) : IPermissionChecker
 {
-    public async Task<bool> HasPermissionForRoleAsync(Guid userId, string roleName, string permissionName)
+    public async Task<bool> HasPermissionForRoleAsync(long userId, string roleName, string permissionName)
     {
         var result = await (
             from ur in _dbContext.Set<UserRole>()

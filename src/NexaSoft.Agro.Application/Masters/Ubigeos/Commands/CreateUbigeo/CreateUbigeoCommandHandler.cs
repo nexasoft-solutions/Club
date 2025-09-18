@@ -13,9 +13,9 @@ public class CreateUbigeoCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateUbigeoCommandHandler> _logger
-) : ICommandHandler<CreateUbigeoCommand, Result<Guid>>
+) : ICommandHandler<CreateUbigeoCommand, long>
 {
-    public async Task<Result<Result<Guid>>> Handle(CreateUbigeoCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateUbigeoCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de Ubigeo");
@@ -33,17 +33,18 @@ public class CreateUbigeoCommandHandler(
         bool existsDescripcin = await _repository.ExistsAsync(c => c.Nivel == command.Nivel && c.Descripcion == command.Descripcion, cancellationToken);
         if (existsDescripcin)
         {
-            return Result.Failure<Guid>(UbigeoErrores.Duplicado);
+            return Result.Failure<long>(UbigeoErrores.Duplicado);
         }
 
-        var padre = command.Nivel == 1 ? (Guid?)null : command.PadreId;
+        var padre = command.Nivel == 1 ? (long?)null : command.PadreId;
 
         var entity = Ubigeo.Create(
             command.Descripcion,
             command.Nivel,
             padre,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -60,7 +61,7 @@ public class CreateUbigeoCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Ubigeo");
-            return Result.Failure<Guid>(UbigeoErrores.ErrorSave);
+            return Result.Failure<long>(UbigeoErrores.ErrorSave);
         }
     }
 }

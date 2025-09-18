@@ -11,6 +11,8 @@ using NexaSoft.Agro.Api.Extensions;
 using NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Queries.GetEstudioAmbientalById;
 using NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Queries.GetEstudioAmbientalCapitulosById;
 using NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Queries.GetEstudioEstructurasById;
+using NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Queries.GetEstudiosReport;
+using NexaSoft.Agro.Api.Controllers.Features.Proyectos.EstudiosAmbientales.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Features.Proyectos.EstudiosAmbientales;
 
@@ -27,7 +29,8 @@ public class EstudioAmbientalController(ISender _sender) : ControllerBase
              request.FechaInicio,
              request.FechaFin,
              request.Detalles,
-             request.EmpresaId
+             request.EmpresaId,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -43,18 +46,20 @@ public class EstudioAmbientalController(ISender _sender) : ControllerBase
              request.FechaInicio,
              request.FechaFin,
              request.Detalles,
-             request.EmpresaId
+             request.EmpresaId,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteEstudioAmbiental(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteEstudioAmbiental(DeleteEstudioAmbientalRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteEstudioAmbientalCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -74,9 +79,9 @@ public class EstudioAmbientalController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetEstudioAmbiental(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {
@@ -86,9 +91,9 @@ public class EstudioAmbientalController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
-    [HttpGet("detalle/{id:Guid}")]
+    [HttpGet("detalle/{id:long}")]
     public async Task<IActionResult> GetEstudioAmbientalById(
-      Guid id,
+      long id,
       CancellationToken cancellationToken
    )
     {
@@ -98,9 +103,9 @@ public class EstudioAmbientalController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
-    [HttpGet("estudio-ambiental-capitulos/{id:Guid}")]
+    [HttpGet("estudio-ambiental-capitulos/{id:long}")]
     public async Task<IActionResult> GetEstudioAmbientalCapitulosById(
-     Guid id,
+     long id,
      CancellationToken cancellationToken
     )
     {
@@ -110,16 +115,36 @@ public class EstudioAmbientalController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
-     [HttpGet("estudio-ambiental-estructuras/{id:Guid}")]
+    [HttpGet("estudio-ambiental-estructuras/{id:long}")]
     public async Task<IActionResult> GetEstudioAmbientalEstrucuturasById(
-     Guid id,
-     CancellationToken cancellationToken
-    )
+    long id,
+    CancellationToken cancellationToken
+   )
     {
         var query = new GetEstudioEstructurasByIdQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);
 
         return resultado.ToActionResult(this);
+    }
+
+    [HttpGet("reporte")]
+    public async Task<IActionResult> GetEstudiosAmbientalesReport(
+       [FromQuery] long Id,
+       CancellationToken cancellationToken
+    )
+    {
+        var query = new GetEstudioReportQuery(Id);
+        var result = await _sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+            return result.ToActionResult(this);
+
+        // Retornar el PDF como archivo descargable
+        return File(
+            fileContents: result.Value,
+            contentType: "application/pdf",
+            fileDownloadName: "Reporte_Estudio.pdf"
+        );
     }
 
 }

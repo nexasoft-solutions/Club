@@ -29,7 +29,10 @@ public class UpdateOrganizacionCommandHandler(
             command.ContactoOrganizacion,
             command.TelefonoContacto,
             command.SectorId,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            command.RucOrganizacion,
+            command.Observaciones,
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try

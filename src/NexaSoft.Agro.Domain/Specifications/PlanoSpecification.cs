@@ -25,9 +25,9 @@ public class PlanoSpecification : BaseSpecification<Plano, PlanoResponse>
                         AddCriteria(x => x.NombrePlano != null && x.NombrePlano.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "archivo":
-                        if (Guid.TryParse(specParams.Search, out var guid))
+                        if (long.TryParse(specParams.Search, out var longx))
                         {
-                            AddCriteria(x => x.ArchivoId == guid);
+                            AddCriteria(x => x.ArchivoId == longx);
                         }
                         else
                         {
@@ -73,7 +73,8 @@ public class PlanoSpecification : BaseSpecification<Plano, PlanoResponse>
                x.Colaborador!.UserName!,
                x.ArchivoId,
                new(),
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.UsuarioCreacion
          ));
     }
 }

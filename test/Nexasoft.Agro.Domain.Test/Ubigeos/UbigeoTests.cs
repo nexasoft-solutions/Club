@@ -11,7 +11,7 @@ public class UbigeoTests
     {
         // Arrange
         var descripcion = "Lima";
-        Guid? padreId = null;
+        long? padreId = null;
         var nivel = 1; // Nivel.Departamento → reemplazado por su valor numérico
         var estado = (int)EstadosEnum.Activo;
         var fechaCreacion = DateTime.UtcNow;
@@ -41,7 +41,7 @@ public class UbigeoTests
 
         var nuevaDescripcion = "Lima Metropolitana";
         var nuevoNivel = 2;
-        var nuevoPadreId = Guid.NewGuid();
+        var nuevoPadreId = long.NewGuid();
         var fechaModificacion = DateTime.UtcNow;
 
         // Act

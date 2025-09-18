@@ -8,6 +8,8 @@ using NexaSoft.Agro.Application.Features.Organizaciones.Empresas.Queries.GetEmpr
 using NexaSoft.Agro.Application.Features.Organizaciones.Empresas.Queries.GetEmpresas;
 using NexaSoft.Agro.Domain.Specifications;
 using NexaSoft.Agro.Api.Extensions;
+using NexaSoft.Agro.Application.Features.Organizaciones.Empresas.Queries.GetEmpresasReport;
+using NexaSoft.Agro.Api.Controllers.Features.Organizaciones.Empresas.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Features.Organizaciones.Empresas;
 
@@ -17,7 +19,7 @@ public class EmpresaController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateEmpresa(CreateEmpresaRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateEmpresa(CreateEmpresaRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateEmpresaCommand(
              request.RazonSocial,
@@ -30,7 +32,8 @@ public class EmpresaController(ISender _sender) : ControllerBase
              request.Direccion,
              request.LatitudEmpresa,
              request.LongitudEmpresa,
-             request.OrganizacionId
+             request.OrganizacionId,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -38,7 +41,7 @@ public class EmpresaController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateEmpresa(UpdateEmpresaRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateEmpresa(UpdateEmpresaRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateEmpresaCommand(
            request.Id,
@@ -52,18 +55,20 @@ public class EmpresaController(ISender _sender) : ControllerBase
              request.Direccion,
              request.LatitudEmpresa,
              request.LongitudEmpresa,
-             request.OrganizacionId
+             request.OrganizacionId,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-   public async Task<IActionResult> DeleteEmpresa(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteEmpresa(DeleteEmpresaRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteEmpresaCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion!
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -83,16 +88,36 @@ public class EmpresaController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:Guid}")]
-   public async Task<IActionResult> GetEmpresa(
-       Guid id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetEmpresa(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetEmpresaQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);
 
         return resultado.ToActionResult(this);
+    }
+
+    [HttpGet("reporte")]
+    public async Task<IActionResult> GetEmpresasReport(
+        [FromQuery] BaseSpecParams specParams,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetEmpresasReportQuery(specParams);
+        var result = await _sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+            return result.ToActionResult(this);
+
+        // Retornar el PDF como archivo descargable
+        return File(
+            fileContents: result.Value,
+            contentType: "application/pdf",
+            fileDownloadName: "Reporte_Empresas.pdf"
+        );
     }
 
 }

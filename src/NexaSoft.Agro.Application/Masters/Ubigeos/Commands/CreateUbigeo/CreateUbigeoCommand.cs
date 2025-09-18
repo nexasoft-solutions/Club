@@ -6,5 +6,6 @@ namespace NexaSoft.Agro.Application.Masters.Ubigeos.Commands.CreateUbigeo;
 public sealed record CreateUbigeoCommand(
     string? Descripcion,
     int Nivel,
-    Guid? PadreId
-) : ICommand<Result<Guid>>;
+    long? PadreId,
+    string? UsuarioCreacion
+) : ICommand<long>;

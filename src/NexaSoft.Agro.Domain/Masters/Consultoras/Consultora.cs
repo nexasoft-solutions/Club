@@ -1,5 +1,4 @@
 using NexaSoft.Agro.Domain.Abstractions;
-using NexaSoft.Agro.Domain.Masters.Consultoras.Events;
 using static NexaSoft.Agro.Domain.Shareds.Enums;
 
 namespace NexaSoft.Agro.Domain.Masters.Consultoras;
@@ -16,15 +15,17 @@ public class Consultora : Entity
     private Consultora() { }
 
     private Consultora(
-        Guid id, 
-        string? nombreConsultora, 
-        string? direccionConsultora, 
-        string? representanteConsultora, 
-        string? rucConsultora, 
-        string? correoOrganizacional, 
-        int estadoConsultora, 
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        string? nombreConsultora,
+        string? direccionConsultora,
+        string? representanteConsultora,
+        string? rucConsultora,
+        string? correoOrganizacional,
+        int estadoConsultora,
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         NombreConsultora = nombreConsultora;
         DireccionConsultora = direccionConsultora;
@@ -33,6 +34,9 @@ public class Consultora : Entity
         CorreoOrganizacional = correoOrganizacional;
         EstadoConsultora = estadoConsultora;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Consultora Create(
@@ -42,31 +46,33 @@ public class Consultora : Entity
         string? rucConsultora, 
         string? correoOrganizacional, 
         int estadoConsultora, 
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var entity = new Consultora(
-            Guid.NewGuid(),
             nombreConsultora,
             direccionConsultora,
             representanteConsultora,
             rucConsultora,
             correoOrganizacional,
             estadoConsultora,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new ConsultoraCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new ConsultoraCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         string? nombreConsultora, 
         string? direccionConsultora, 
         string? representanteConsultora, 
         string? rucConsultora, 
         string? correoOrganizacional, 
-        DateTime utcNow
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         NombreConsultora = nombreConsultora;
@@ -75,16 +81,18 @@ public class Consultora : Entity
         RucConsultora = rucConsultora;
         CorreoOrganizacional = correoOrganizacional;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new ConsultoraUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new ConsultoraUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow, string usuarioEliminacion)
     {
         EstadoConsultora = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 }

@@ -23,7 +23,10 @@ public class GetConstanteQueryHandler(
                    x.Clave,
                    x.Valor,
                    x.EstadoConstante,
-                   x.FechaCreacion
+                   x.FechaCreacion,
+                   x.FechaModificacion,
+                   x.UsuarioCreacion,
+                   x.UsuarioModificacion
                )
            );
             var entity = await _repository.GetEntityWithSpec(spec, cancellationToken);

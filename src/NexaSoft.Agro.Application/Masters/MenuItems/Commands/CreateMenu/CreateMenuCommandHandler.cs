@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using NexaSoft.Agro.Application.Abstractions.Messaging;
 using NexaSoft.Agro.Application.Abstractions.Time;
@@ -12,9 +13,9 @@ public class CreateMenuCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateMenuCommandHandler> _logger
-) : ICommandHandler<CreateMenuCommand, Guid>
+) : ICommandHandler<CreateMenuCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateMenuCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateMenuCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Iniciando proceso de creación de Menu");
         var validator = new CreateMenuCommandValidator();
@@ -31,7 +32,7 @@ public class CreateMenuCommandHandler(
         bool existsValor = await _repository.ExistsAsync(c => c.Label == command.Label, cancellationToken);
         if (existsValor)
         {
-            return Result.Failure<Guid>(MenuItemErrores.Duplicado);
+            return Result.Failure<long>(MenuItemErrores.Duplicado);
         }
      
         var entity = MenuItemOption.Create(
@@ -39,7 +40,8 @@ public class CreateMenuCommandHandler(
             command.Icon,
             command.Route,
             command.ParentId,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -56,7 +58,7 @@ public class CreateMenuCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Menu");
-            return Result.Failure<Guid>(MenuItemErrores.ErrorSave);
+            return Result.Failure<long>(MenuItemErrores.ErrorSave);
         }
     }
 }

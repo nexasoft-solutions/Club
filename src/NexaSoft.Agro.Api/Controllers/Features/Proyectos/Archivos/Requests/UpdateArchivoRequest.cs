@@ -1,6 +1,8 @@
 namespace NexaSoft.Agro.Api.Controllers.Features.Proyectos.Archivos.Request;
 
 public sealed record UpdateArchivoRequest(
-    Guid Id,
-    string? DescripcionArchivo 
+    long Id,
+    string? DescripcionArchivo,
+    string? NombreCorto,
+    string? UsuarioModificacion
 );

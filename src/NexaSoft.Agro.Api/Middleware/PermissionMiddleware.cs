@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NexaSoft.Agro.Api.Attributes;
 using NexaSoft.Agro.Api.Controllers.Auth.Request;
 
@@ -10,125 +11,97 @@ public class PermissionMiddleware(RequestDelegate _next)
 {
     public async Task InvokeAsync(HttpContext context)
     {
-        try
+        var endpoint = context.GetEndpoint();
+
+        // 🔓 Si el endpoint permite acceso anónimo, continuar
+        if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() is not null)
         {
-            var endpoint = context.GetEndpoint();
-
-            // 🔓 Omitir validación si el endpoint tiene [AllowAnonymous]
-            if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() is not null)
-            {
-                await _next(context);
-                return;
-            }
-
-            // 🔍 Buscar atributos personalizados
-            var permissionAttribute = endpoint?.Metadata.GetMetadata<RequirePermissionAttribute>();
-            var roleAttribute = endpoint?.Metadata.GetMetadata<RequireRoleAttribute>();
-
-            // ✅ Si no hay ninguno de los atributos, no validamos nada
-            if (roleAttribute is null && permissionAttribute is null)
-            {
-                await _next(context);
-                return;
-            }
-
-            var user = context.User;
-
-            // ❌ Usuario no autenticado
-            if (!user.Identity?.IsAuthenticated ?? true)
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                await context.Response.WriteAsync("Usuario no autenticado.");
-                return;
-            }
-
-            // ✅ Validar rol si se requiere
-            /*if (roleAttribute is not null)
-            {
-                var userRoles = user.Claims
-                    .Where(c => c.Type == ClaimTypes.Role)
-                    .Select(c => c.Value)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                if (!userRoles.Contains(roleAttribute.Role))
-                {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    await context.Response.WriteAsync("Rol no autorizado.");
-                    return;
-                }
-            }*/
-
-            /*foreach (var claim in user.Claims)
-            {
-                Console.WriteLine($"Claim recibido: Type = '{claim.Type}', Value = '{claim.Value}'");
-            }*/
-
-            if (roleAttribute is not null)
-            {
-                var rolesClaim = user.Claims
-                    .FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "roles")?.Value;
-
-                if (rolesClaim is null)
-                {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    await context.Response.WriteAsync("No se encontraron roles en el token.");
-                    return;
-                }
-
-                List<RoleRequest>? roles;
-
-
-
-                try
-                {
-                    roles = JsonSerializer.Deserialize<List<RoleRequest>>(rolesClaim);
-                }
-                catch
-                {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    await context.Response.WriteAsync("Error al deserializar los roles.");
-                    return;
-                }
-
-                foreach (var rol in roles!)
-                {
-                    Console.WriteLine($"Rol  = '{rol.id}', Value = '{rol.name}'");
-                }
-
-                if (!roles!.Any(r => string.Equals(r.name, roleAttribute.Role, StringComparison.OrdinalIgnoreCase)))
-                {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    await context.Response.WriteAsync("Rol no autorizado.");
-                    return;
-                }
-            }
-
-
-            // ✅ Validar permiso si se requiere
-            if (permissionAttribute is not null)
-            {
-                var userPermissions = user.Claims
-                    .Where(c => c.Type == "permission")
-                    .Select(c => c.Value)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                if (!userPermissions.Contains(permissionAttribute.Permission))
-                {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    await context.Response.WriteAsync("Permiso denegado.");
-                    return;
-                }
-            }
-
-            // ✅ Continuar con el pipeline si todo es válido
             await _next(context);
+            return;
         }
-        catch (Exception ex)
+
+        // 🔍 Obtener los atributos personalizados
+        var permissionAttribute = endpoint?.Metadata.GetMetadata<RequirePermissionAttribute>();
+        var roleAttribute = endpoint?.Metadata.GetMetadata<RequireRoleAttribute>();
+
+        // ✅ Si no se requiere ni permiso ni rol, continuar
+        if (permissionAttribute is null && roleAttribute is null)
         {
-            // 🛑 Captura de errores inesperados
-            Console.WriteLine($"[Middleware Error] {ex.Message}");
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            await context.Response.WriteAsync("Error interno en middleware de permisos.");
+            await _next(context);
+            return;
         }
+
+        var user = context.User;
+
+        // ❌ Usuario no autenticado
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            await WriteProblemDetailsAsync(context, StatusCodes.Status401Unauthorized, "No autenticado", "El usuario no está autenticado.");
+            return;
+        }
+
+        // ✅ Validación de roles
+        if (roleAttribute is not null)
+        {
+            var rolesClaim = user.Claims.FirstOrDefault(c =>
+                c.Type == ClaimTypes.Role || c.Type == "roles")?.Value;
+
+            if (string.IsNullOrWhiteSpace(rolesClaim))
+            {
+                await WriteProblemDetailsAsync(context, StatusCodes.Status403Forbidden, "Roles faltantes", "No se encontraron roles en el token.");
+                return;
+            }
+
+            List<RoleRequest>? roles;
+            try
+            {
+                roles = JsonSerializer.Deserialize<List<RoleRequest>>(rolesClaim);
+            }
+            catch (Exception)
+            {
+                await WriteProblemDetailsAsync(context, StatusCodes.Status403Forbidden, "Error al procesar roles", "No se pudieron deserializar los roles del token.");
+                return;
+            }
+
+            if (!roles!.Any(r => string.Equals(r.name, roleAttribute.Role, StringComparison.OrdinalIgnoreCase)))
+            {
+                await WriteProblemDetailsAsync(context, StatusCodes.Status403Forbidden, "Rol no autorizado", $"Se requiere el rol '{roleAttribute.Role}'.");
+                return;
+            }
+        }
+
+        // ✅ Validación de permisos
+        if (permissionAttribute is not null)
+        {
+            var userPermissions = user.Claims
+                .Where(c => c.Type == "permission")
+                .Select(c => c.Value)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            if (!userPermissions.Contains(permissionAttribute.Permission))
+            {
+                await WriteProblemDetailsAsync(context, StatusCodes.Status403Forbidden, "Permiso denegado", $"Se requiere el permiso '{permissionAttribute.Permission}'.");
+                return;
+            }
+        }
+
+        // 🎯 Todo válido → Continuar
+        await _next(context);
+    }
+
+    private static async Task WriteProblemDetailsAsync(HttpContext context, int statusCode, string title, string detail)
+    {
+        var problemDetails = new ProblemDetails
+        {
+            Status = statusCode,
+            Title = title,
+            Detail = detail,
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3" // Para 403 Forbidden
+        };
+
+        context.Response.StatusCode = statusCode;
+        context.Response.ContentType = "application/problem+json";
+
+        await context.Response.WriteAsJsonAsync(problemDetails);
     }
 }

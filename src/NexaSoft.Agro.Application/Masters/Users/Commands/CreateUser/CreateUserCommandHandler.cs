@@ -14,9 +14,9 @@ public class CreateUserCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateUserCommandHandler> _logger
-) : ICommandHandler<CreateUserCommand, Guid>
+) : ICommandHandler<CreateUserCommand, long>
 {
-  public async Task<Result<Guid>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
+  public async Task<Result<long>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
   {
 
     _logger.LogInformation("Iniciando proceso de creación de User");
@@ -36,50 +36,44 @@ public class CreateUserCommandHandler(
     bool existsNombreCompleto = await _repository.ExistsAsync(c => c.NombreCompleto == nombreCompleto, cancellationToken);
     if (existsNombreCompleto)
     {
-      return Result.Failure<Guid>(UserErrores.Duplicado);
+      return Result.Failure<long>(UserErrores.Duplicado);
     }
 
     bool existsUserName = await _repository.ExistsAsync(c => c.UserName == userName, cancellationToken);
     if (existsUserName)
     {
-      return Result.Failure<Guid>(UserErrores.Duplicado);
+      return Result.Failure<long>(UserErrores.Duplicado);
     }
 
-    bool existsPassword = await _repository.ExistsAsync(c => c.Password == command.Password, cancellationToken);
-    if (existsPassword)
-    {
-      return Result.Failure<Guid>(UserErrores.Duplicado);
-    }
-
+  
     bool existsEmail = await _repository.ExistsAsync(c => c.Email == command.Email, cancellationToken);
     if (existsEmail)
     {
-      return Result.Failure<Guid>(UserErrores.Duplicado);
+      return Result.Failure<long>(UserErrores.Duplicado);
     }
 
     bool existsUserDni = await _repository.ExistsAsync(c => c.UserDni == command.UserDni, cancellationToken);
     if (existsUserDni)
     {
-      return Result.Failure<Guid>(UserErrores.Duplicado);
+      return Result.Failure<long>(UserErrores.Duplicado);
     }
 
     bool existsUserTelefono = await _repository.ExistsAsync(c => c.UserTelefono == command.UserTelefono, cancellationToken);
     if (existsUserTelefono)
     {
-      return Result.Failure<Guid>(UserErrores.Duplicado);
+      return Result.Failure<long>(UserErrores.Duplicado);
     }
 
     var entity = User.Create(
         command.UserApellidos,
         command.UserNombres,
-        //command.NombreCompleto,
-        //command.UserName,
         BC.HashPassword(command.Password),
             command.Email,
             command.UserDni,
             command.UserTelefono,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            userName
         );
 
     try
@@ -96,7 +90,7 @@ public class CreateUserCommandHandler(
     {
       await _unitOfWork.RollbackAsync(cancellationToken);
       _logger.LogError(ex, "Error al crear User");
-      return Result.Failure<Guid>(UserErrores.ErrorSave);
+      return Result.Failure<long>(UserErrores.ErrorSave);
     }
   }
 }

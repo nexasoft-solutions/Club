@@ -25,14 +25,14 @@ public class GenericRepository<T>(ApplicationDbContext _dbContext) : IGenericRep
         await Task.CompletedTask;
     }
 
-    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken)
     {
         return await _dbContext.Set<T>()
             .Where(e => e.FechaEliminacion == null) // Aplicar filtro global
             .AnyAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<T?> GetByIdAsync(long id, CancellationToken cancellationToken)
     {
         return await _dbContext.Set<T>()
             .Where(e => e.FechaEliminacion == null) // Aplicar filtro global
@@ -97,5 +97,10 @@ public class GenericRepository<T>(ApplicationDbContext _dbContext) : IGenericRep
     public Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
     {
         return _dbContext.Set<T>().AnyAsync(predicate, cancellationToken);
+    }
+
+    public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
+    {
+        await _dbContext.Set<T>().AddRangeAsync(entities, cancellationToken);
     }
 }

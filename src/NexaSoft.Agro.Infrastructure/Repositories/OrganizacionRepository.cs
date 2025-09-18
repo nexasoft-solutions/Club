@@ -34,8 +34,14 @@ public class OrganizacionRepository(ApplicationDbContext _dbContext) : IOrganiza
                       c.NombreOrganizacion,
                       c.ContactoOrganizacion,
                       c.TelefonoContacto,
+                      c.RucOrganizacion,
+                      c.Observaciones,
                       SectorConst.Valor,
-                      c.FechaCreacion
+                      c.SectorId,
+                      c.FechaCreacion,
+                      c.FechaModificacion,
+                      c.UsuarioCreacion,
+                      c.UsuarioModificacion
                   );
 
       var items = await query.ToListAsync(cancellationToken);

@@ -29,6 +29,18 @@ public class ConstanteConfiguration : IEntityTypeConfiguration<Constante>
         builder.Property(x => x.EstadoConstante)
             .IsRequired();
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
         builder.HasIndex(x => x.TipoConstante)
             .HasDatabaseName("ix_constante_tipoconstante");
 

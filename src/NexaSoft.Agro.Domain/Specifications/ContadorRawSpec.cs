@@ -4,10 +4,10 @@ namespace NexaSoft.Agro.Domain.Specifications;
 
 public class ContadorRawSpec : BaseSpecification<Contador>
 {
-    public ContadorRawSpec(string entidad, string? agrupador = null)
+    public ContadorRawSpec(string entidad, string? prefijo = null)
     {
-        if (!string.IsNullOrEmpty(agrupador))
-            AddCriteria(c => c.Entidad == entidad && c.Agrupador == agrupador);
+        if (!string.IsNullOrEmpty(prefijo))
+            AddCriteria(c => c.Entidad == entidad && c.Prefijo == prefijo);
         else
             AddCriteria(c => c.Entidad == entidad);
     }

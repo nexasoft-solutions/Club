@@ -1,5 +1,4 @@
 using NexaSoft.Agro.Domain.Abstractions;
-using NexaSoft.Agro.Domain.Features.Proyectos.Planos.Events;
 using static NexaSoft.Agro.Domain.Shareds.Enums;
 using NexaSoft.Agro.Domain.Features.Proyectos.Archivos;
 using NexaSoft.Agro.Domain.Masters.Consultoras.Colaboradores;
@@ -12,9 +11,9 @@ public class Plano : Entity
     public string? SistemaProyeccion { get; private set; }
     public string? NombrePlano { get; private set; }
     public string? CodigoPlano { get; private set; }
-    public Guid ArchivoId { get; private set; }
+    public long ArchivoId { get; private set; }
     public Archivo? Archivo { get; private set; }
-    public Guid ColaboradorId { get; private set; }
+    public long ColaboradorId { get; private set; }
     public int EstadoPlano { get; private set; }
     public Colaborador? Colaborador { get; private set; }
 
@@ -23,16 +22,16 @@ public class Plano : Entity
     private Plano() { }
 
     private Plano(
-        Guid id,
         int escalaId,
         string? sistemaProyeccion,
         string? nombrePlano,
         string? codigoPlano,
-        Guid archivoId,
-        Guid colaboradorId,
+        long archivoId,
+        long colaboradorId,
         int estadoPlano,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string usuarioCreacion
+    ) : base(fechaCreacion, usuarioCreacion)
     {
         EscalaId = escalaId;
         SistemaProyeccion = sistemaProyeccion;
@@ -42,6 +41,7 @@ public class Plano : Entity
         ColaboradorId = colaboradorId;
         EstadoPlano = estadoPlano;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
     }
 
     public void AgregarDetalle(PlanoDetalle detalle)
@@ -54,14 +54,14 @@ public class Plano : Entity
         string? sistemaProyeccion,
         string? nombrePlano,
         string? codigoPlano,
-        Guid archivoId,
-        Guid colaboradorId,
+        long archivoId,
+        long colaboradorId,
         int estadoPlano,
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string usuarioCreacion
     )
     {
         var entity = new Plano(
-            Guid.NewGuid(),
             escalaId,
             sistemaProyeccion,
             nombrePlano,
@@ -69,21 +69,23 @@ public class Plano : Entity
             archivoId,
             colaboradorId,
             estadoPlano,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new PlanoCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new PlanoCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         int escalaId,
         string? sistemaProyeccion,
         string? nombrePlano,
         string? codigoPlano,
-        Guid archivoId,
-        Guid colaboradorId,
-        DateTime utcNow
+        long archivoId,
+        long colaboradorId,
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         EscalaId = escalaId;
@@ -93,8 +95,10 @@ public class Plano : Entity
         ArchivoId = archivoId;
         ColaboradorId = colaboradorId;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
+        
 
-        RaiseDomainEvent(new PlanoUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new PlanoUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }

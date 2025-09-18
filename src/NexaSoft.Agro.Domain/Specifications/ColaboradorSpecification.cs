@@ -91,7 +91,10 @@ public class ColaboradorSpecification : BaseSpecification<Colaborador, Colaborad
                x.EstadoCivilColaboradorId,
                x.CargoId,
                x.DepartamentoId,
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

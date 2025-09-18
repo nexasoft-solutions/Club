@@ -32,7 +32,8 @@ public class SincronizarPermisosCommandHandler(
                     permisoInfo.Nombre,
                     permisoInfo.Descripcion,
                     permisoInfo.Controlador,
-                    _dateTimeProvider.CurrentTime.ToUniversalTime()
+                    _dateTimeProvider.CurrentTime.ToUniversalTime(),
+                    string.Empty
                 );
                 nuevosPermisos.Add(nuevoPermiso);
             }
@@ -55,7 +56,7 @@ public class SincronizarPermisosCommandHandler(
             {
                 await _unitOfWork.RollbackAsync(cancellationToken);
                 _logger.LogError(ex, "Error durante la sincronización de permisos.");
-                return Result.Failure<bool>(new Error("Error.Sincronizacion","Error al sincronizar permisos."));
+                return Result.Failure<bool>(new Error("Error.Sincronizacion", "Error al sincronizar permisos."));
             }
         }
         else
@@ -88,7 +89,7 @@ public class SincronizarPermisosCommandHandler(
                 if (hasHttpAttribute)
                 {
                     var nombrePermiso = $"{controllerName}.{method.Name}";
-                    permisos.Add( new PermisoInfo
+                    permisos.Add(new PermisoInfo
                     (
                         nombrePermiso,
                         $"Permiso generado para el método {method.Name} del controlador {controllerName}",

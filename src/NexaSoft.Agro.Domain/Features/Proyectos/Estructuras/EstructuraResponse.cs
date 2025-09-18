@@ -1,13 +1,16 @@
 namespace NexaSoft.Agro.Domain.Features.Proyectos.Estructuras;
 
 public sealed record EstructuraResponse(
-    Guid Id,
+    long Id,
     string? TipoEstructura,
     string? NombreEstructura,
     string? DescripcionEstructura,
     string? NombreSubCapitulo,
-    Guid? PadreEstructuraId,
-    Guid SubCapituloId,
+    long? PadreEstructuraId,
+    long SubCapituloId,
     int TipoEstructuraId,
-    DateTime FechaCreacion
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

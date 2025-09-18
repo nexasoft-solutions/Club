@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Masters.Consultoras.Events;
 
 public sealed record ConsultoraCreateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

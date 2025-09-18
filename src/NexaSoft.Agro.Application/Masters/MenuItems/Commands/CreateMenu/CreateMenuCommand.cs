@@ -8,5 +8,6 @@ public sealed record CreateMenuCommand
     string? Label,
     string? Icon,
     string? Route,
-    Guid? ParentId
-):ICommand<Guid>;
+    long? ParentId,
+    string? UsuarioCreacion
+):ICommand<long>;

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using NexaSoft.Agro.Application.Abstractions.Messaging;
 using NexaSoft.Agro.Application.Abstractions.Time;
@@ -15,15 +16,15 @@ public class DeleteSubCapituloCommandHandler(
 {
     public async Task<Result<bool>> Handle(DeleteSubCapituloCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de eliminación de SubCapitulo con ID {SubCapituloId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de eliminación de SubCapitulo con ID {SubCapituloId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("SubCapitulo con ID {SubCapituloId} no encontrado", command.Id);
-                return Result.Failure<bool>(SubCapituloErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(SubCapituloErrores.NoEncontrado);
+        }
 
-         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(), command.UsuarioEliminacion);
 
         try
         {
@@ -37,7 +38,7 @@ public class DeleteSubCapituloCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al eliminar SubCapitulo con ID {SubCapituloId}", command.Id);
+            _logger.LogError(ex, "Error al eliminar SubCapitulo con ID {SubCapituloId}", command.Id);
             return Result.Failure<bool>(SubCapituloErrores.ErrorDelete);
         }
     }

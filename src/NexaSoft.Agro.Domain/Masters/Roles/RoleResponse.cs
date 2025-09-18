@@ -2,7 +2,11 @@ namespace NexaSoft.Agro.Domain.Masters.Roles;
 
 public sealed record RoleResponse
 (
-    Guid Id,
+    long Id,
     string? Name,
-    string? Description
+    string? Description,
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Masters.Users.Events;
 
 public sealed record UserCreateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

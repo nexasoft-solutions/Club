@@ -47,7 +47,7 @@ namespace NexaSoft.Agro.Api.Controllers.Auth
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (!Guid.TryParse(userIdStr, out var userId))
+            if (!long.TryParse(userIdStr, out var userId))
                 return Unauthorized("Usuario inválido.");
 
             var query = new ChangeActiveRoleQuery(userId, request.NewRoleId);

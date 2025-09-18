@@ -39,4 +39,9 @@ public class EstudioAmbientalErrores
         "EstudioAmbiental.ErrorConsulta",
         "Error al listar EstudioAmbiental"
     );
+    public static readonly Error NoHayConincidencias = new
+    (
+        "EstudioAmbiental.NoHayConincidencias",
+        "No hay items para exportar"
+    );
 }

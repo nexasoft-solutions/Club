@@ -37,11 +37,21 @@ public class ContadorConfiguration : IEntityTypeConfiguration<Contador>
             .HasMaxLength(50)
             .IsRequired(false);
 
-        
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);        
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
 
         // Index para buscar por entidad y agrupador
-        builder.HasIndex(x => new { x.Entidad, x.Agrupador })
-            .HasDatabaseName("ix_contador_entidad_agrupador");
+        builder.HasIndex(x => new { x.Entidad, x.Prefijo })
+            .HasDatabaseName("ix_contador_entidad_prefijo");
     
     }
 }

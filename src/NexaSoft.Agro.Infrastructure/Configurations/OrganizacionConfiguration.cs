@@ -30,11 +30,34 @@ public class OrganizacionConfiguration : IEntityTypeConfiguration<Organizacion>
         builder.Property(x => x.SectorId)
             .IsRequired();
 
+        builder.Property(x => x.RucOrganizacion)
+          .HasMaxLength(11)
+          .IsRequired(false);
+
+        builder.Property(x => x.Observaciones)
+         .HasMaxLength(550)
+         .IsRequired(false);
+
         builder.Property(x => x.EstadoOrganizacion)
             .IsRequired();
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
         builder.HasIndex(x => x.NombreOrganizacion)
             .HasDatabaseName("ix_organizacion_nombreorganizacion");
+            
+        builder.HasIndex(x => x.RucOrganizacion)
+            .HasDatabaseName("ix_organizacion_rucorganizacion");
 
     }
 }

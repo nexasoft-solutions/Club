@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Application.Masters.Permissions.Commands.DeletePermissio
 
 public sealed record DeletePermissionCommand
 (
-    Guid Id
+    long Id
 ): ICommand<bool>;

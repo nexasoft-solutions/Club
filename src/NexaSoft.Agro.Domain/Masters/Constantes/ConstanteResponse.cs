@@ -1,10 +1,13 @@
 namespace NexaSoft.Agro.Domain.Masters.Constantes;
 
 public sealed record ConstanteResponse(
-    Guid Id,
+    long Id,
     string? TipoConstante,
     int Clave,
     string? Valor,
     int EstadoConstante,
-    DateTime FechaCreacion
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

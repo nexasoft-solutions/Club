@@ -26,6 +26,18 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
 
         builder.Ignore(p => p.RolePermissions);
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);       
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false); 
+
         builder.HasMany<RolePermission>("_rolePermissions")
             .WithOne()
             .HasForeignKey(rp => rp.PermissionId)

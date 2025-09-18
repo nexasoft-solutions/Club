@@ -1,10 +1,16 @@
 namespace NexaSoft.Agro.Domain.Features.Organizaciones;
 
 public sealed record OrganizacionResponse(
-    Guid Id,
+    long Id,
     string? NombreOrganizacion,
     string? ContactoOrganizacion,
     string? TelefonoContacto,
+    string? RucOrganizacion,
+    string? Observaciones,
     string? Sector,
-    DateTime FechaCreacion
+    int SectorId,
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

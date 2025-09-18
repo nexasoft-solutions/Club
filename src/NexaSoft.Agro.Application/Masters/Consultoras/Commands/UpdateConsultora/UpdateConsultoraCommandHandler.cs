@@ -15,13 +15,13 @@ public class UpdateConsultoraCommandHandler(
 {
     public async Task<Result<bool>> Handle(UpdateConsultoraCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de actualización de Consultora con ID {ConsultoraId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de actualización de Consultora con ID {ConsultoraId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("Consultora con ID {ConsultoraId} no encontrado", command.Id);
-                return Result.Failure<bool>(ConsultoraErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(ConsultoraErrores.NoEncontrado);
+        }
 
         entity.Update(
             command.Id,
@@ -30,7 +30,8 @@ public class UpdateConsultoraCommandHandler(
             command.RepresentanteConsultora,
             command.RucConsultora,
             command.CorreoOrganizacional,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try
@@ -46,7 +47,7 @@ public class UpdateConsultoraCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al actualizar Consultora con ID {ConsultoraId}", command.Id);
+            _logger.LogError(ex, "Error al actualizar Consultora con ID {ConsultoraId}", command.Id);
             return Result.Failure<bool>(ConsultoraErrores.ErrorEdit);
         }
     }

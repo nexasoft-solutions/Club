@@ -8,6 +8,7 @@ using NexaSoft.Agro.Application.Masters.Ubigeos.Queries.GetUbigeo;
 using NexaSoft.Agro.Application.Masters.Ubigeos.Queries.GetUbigeos;
 using NexaSoft.Agro.Domain.Specifications;
 using NexaSoft.Agro.Api.Extensions;
+using NexaSoft.Agro.Api.Controllers.Masters.Ubigeos.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Masters.Ubigeos;
 
@@ -22,7 +23,8 @@ public class UbigeoController(ISender _sender) : ControllerBase
         var command = new CreateUbigeoCommand(
              request.Descripcion,
              request.Nivel,
-             request.PadreId
+             request.PadreId,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -36,18 +38,20 @@ public class UbigeoController(ISender _sender) : ControllerBase
            request.Id,
              request.Descripcion,
              request.Nivel,
-             request.PadreId
+             request.PadreId,
+             request.UsuarioModificacion!
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteUbigeo(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteUbigeo(DeleteUbigeoRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteUbigeoCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion       
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -56,7 +60,7 @@ public class UbigeoController(ISender _sender) : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetUbigeos(
-       [FromQuery] BaseSpecParams<Guid> specParams,
+       [FromQuery] BaseSpecParams<long> specParams,
        CancellationToken cancellationToken
     )
     {
@@ -67,9 +71,9 @@ public class UbigeoController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetUbigeo(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {

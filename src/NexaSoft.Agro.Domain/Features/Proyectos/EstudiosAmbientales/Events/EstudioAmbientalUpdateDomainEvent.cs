@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Features.Proyectos.EstudiosAmbientales.Events;
 
 public sealed record EstudioAmbientalUpdateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

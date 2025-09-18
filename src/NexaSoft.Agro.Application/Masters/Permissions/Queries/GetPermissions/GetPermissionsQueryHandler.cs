@@ -19,7 +19,10 @@ public class GetPermissionsQueryHandler(IGenericRepository<Permission> _reposito
                 p.Name,
                 p.Description,
                 p.ReferenciaControl,
-                p.FechaCreacion
+                p.FechaCreacion,
+                p.FechaModificacion,
+                p.UsuarioCreacion,
+                p.UsuarioModificacion
             )).ToList();
 
 

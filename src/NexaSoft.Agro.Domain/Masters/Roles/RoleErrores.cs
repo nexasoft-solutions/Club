@@ -67,7 +67,7 @@ public class RoleErrores
         "Error al limpiar todos los permisos del rol"
     );
 
-    public static Error RolesNoEncontrados(IEnumerable<Guid> missingIds) => new(
+    public static Error RolesNoEncontrados(IEnumerable<long> missingIds) => new(
        "Role.RolesNoEncontrados",
        $"Los siguientes roles no existen: {string.Join(", ", missingIds)}");
 

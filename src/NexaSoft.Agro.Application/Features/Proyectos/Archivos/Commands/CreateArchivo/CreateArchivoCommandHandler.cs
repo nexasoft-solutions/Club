@@ -15,9 +15,9 @@ public class CreateArchivoCommandHandler(
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateArchivoCommandHandler> _logger,
     IFileStorageService _fileStorageService
-) : ICommandHandler<CreateArchivoCommand, Guid>
+) : ICommandHandler<CreateArchivoCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateArchivoCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateArchivoCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de Archivo");
@@ -31,7 +31,7 @@ public class CreateArchivoCommandHandler(
             throw new ValidationExceptions(errors);
         }
 
-        var extension = Path.GetExtension(command.NombreArchivo); 
+        var extension = Path.GetExtension(command.NombreArchivo);
         var nuevoNombre = $"archivo_{Guid.NewGuid()}{extension}";
 
         string rutaArchivo = await _fileStorageService.UploadAsync(
@@ -41,17 +41,27 @@ public class CreateArchivoCommandHandler(
            cancellationToken
         );
 
+        long? subCapituloId = null;
+        long? estructuraId = null;
+
+        if (command.SubCapituloId > 0)
+            subCapituloId = command.SubCapituloId;
+        else
+            estructuraId = command.EstructuraId;
+
 
         var entity = Archivo.Create(
             command.NombreArchivo,
-            command.DescripcionArchivo, 
+            command.DescripcionArchivo,
             nuevoNombre,
             DateOnly.FromDateTime(_dateTimeProvider.CurrentTime.ToUniversalTime()),
-            command.TipoArchivo,
-            command.SubCapituloId,
-            command.EstructuraId,
+            command.TipoArchivoId,
+            subCapituloId,//command.SubCapituloId,
+            estructuraId,//command.EstructuraId,
+            command.NombreCorto,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -68,7 +78,7 @@ public class CreateArchivoCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Archivo");
-            return Result.Failure<Guid>(ArchivoErrores.ErrorSave);
+            return Result.Failure<long>(ArchivoErrores.ErrorSave);
         }
     }
 }

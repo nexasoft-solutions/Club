@@ -8,7 +8,7 @@ namespace NexaSoft.Agro.Infrastructure.Repositories;
 
 public class MenuItemRepository(ApplicationDbContext _dbContext, IUserRoleRepository _userRoleRepository) : IMenuItemRepository
 {
-    public async Task<List<MenuItemResponse>> GetMenuByUser(Guid IdUser, Guid IdRole, CancellationToken cancellationToken)
+    public async Task<List<MenuItemResponse>> GetMenuByUser(long IdUser, long IdRole, CancellationToken cancellationToken)
     {
 
         var userRoles = await _userRoleRepository.GetRolesForUserAsync(IdUser, cancellationToken);
@@ -93,7 +93,10 @@ public class MenuItemRepository(ApplicationDbContext _dbContext, IUserRoleReposi
             menu.Children
                 .Where(c => c.FechaEliminacion == null)
                 .Select(MapToDto)
-                .ToList()
+                .ToList(),
+            menu.FechaCreacion,
+            menu.UsuarioCreacion,
+            menu.UsuarioModificacion
         );
     }
 }

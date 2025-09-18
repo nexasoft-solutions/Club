@@ -17,5 +17,6 @@ public sealed record CreateColaboradorRequest(
     decimal? Salario,
     DateOnly? FechaCese,
     string? Comentarios,
-    Guid ConsultoraId
+    long ConsultoraId,
+    string UsuarioCreacion
 );

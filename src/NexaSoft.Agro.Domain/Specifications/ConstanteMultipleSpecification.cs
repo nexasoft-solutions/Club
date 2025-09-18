@@ -4,9 +4,13 @@ namespace NexaSoft.Agro.Domain.Specifications;
 
 public class ConstanteMultipleSpecification : BaseSpecification<Constante, ConstanteClaveValorResponse>
 {
-    public ConstanteMultipleSpecification(List<string> tipos)
+   public ConstanteMultipleSpecification(List<string>? tipos)
     {
-        AddCriteria(x => tipos.Contains(x.TipoConstante!));
+        if (tipos is { Count: > 0 })
+        {
+            AddCriteria(x => tipos.Contains(x.TipoConstante!));
+        }
+
         AddOrderBy(x => x.TipoConstante!);
         AddOrderBy(x => x.Valor!);
 

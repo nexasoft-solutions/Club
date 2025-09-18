@@ -4,5 +4,5 @@ using NexaSoft.Agro.Domain.Masters.Consultoras;
 namespace NexaSoft.Agro.Application.Masters.Consultoras.Queries.GetConsultora;
 
 public sealed record GetConsultoraQuery(
-    Guid Id
+    long Id
 ) : IQuery<ConsultoraResponse>;

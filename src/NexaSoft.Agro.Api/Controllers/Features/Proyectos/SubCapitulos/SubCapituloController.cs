@@ -8,6 +8,7 @@ using NexaSoft.Agro.Application.Features.Proyectos.SubCapitulos.Queries.GetSubCa
 using NexaSoft.Agro.Application.Features.Proyectos.SubCapitulos.Queries.GetSubCapitulos;
 using NexaSoft.Agro.Domain.Specifications;
 using NexaSoft.Agro.Api.Extensions;
+using NexaSoft.Agro.Api.Controllers.Features.Proyectos.SubCapitulos.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Features.Proyectos.SubCapitulos;
 
@@ -22,7 +23,8 @@ public class SubCapituloController(ISender _sender) : ControllerBase
         var command = new CreateSubCapituloCommand(
              request.NombreSubCapitulo,
              request.DescripcionSubCapitulo,
-             request.CapituloId
+             request.CapituloId,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -36,18 +38,20 @@ public class SubCapituloController(ISender _sender) : ControllerBase
            request.Id,
              request.NombreSubCapitulo,
              request.DescripcionSubCapitulo,
-             request.CapituloId
+             request.CapituloId,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteSubCapitulo(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteSubCapitulo(DeleteSubCapituloRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteSubCapituloCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -67,9 +71,9 @@ public class SubCapituloController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetSubCapitulo(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {

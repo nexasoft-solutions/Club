@@ -4,5 +4,6 @@ namespace NexaSoft.Agro.Application.Masters.Constantes.Commands.CreateConstante;
 
 public sealed record CreateConstanteCommand(
     string? TipoConstante,
-    string? Valor
-) : ICommand<Guid>;
+    string? Valor,
+    string? UsuarioCreacion
+) : ICommand<long>;

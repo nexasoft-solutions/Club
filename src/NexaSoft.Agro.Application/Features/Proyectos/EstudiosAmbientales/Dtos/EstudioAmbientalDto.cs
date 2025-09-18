@@ -2,45 +2,45 @@
 namespace NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Dtos;
 
 public sealed record EstudioAmbientalDetalleResponse(
-    Guid Id,
+    long Id,
     string? Proyecto,
     DateOnly FechaInicio,
     DateOnly FechaFin,
     string? Detalles,
-    Guid EmpresaId,
+    long EmpresaId,
     List<CapituloResponseDto> Capitulos
     //List<ArchivoResponseDto> Archivos // Archivos del estudio ambiental
 );
 
 public sealed record CapituloResponseDto(
-    Guid Id,
+    long Id,
     string Nombre,
     string Descripcion,
-    Guid EstudioAmbientalId,
+    long EstudioAmbientalId,
     List<SubCapituloResponseDto> SubCapitulos
     //List<ArchivoResponseDto> Archivos // Archivos del capítulo
 );
 
 public sealed record SubCapituloResponseDto(
-    Guid Id,
+    long Id,
     string Nombre,
     string Descripcion,
-    Guid CapituloId,
+    long CapituloId,
     List<EstructuraResponseDto> Estructuras,
     List<ArchivoResponseDto> Archivos // Archivos del capítulo
 );
 
 public sealed record EstructuraResponseDto(
-    Guid Id,
+    long Id,
     int Tipo,
     string Descripcion,
-    Guid? PadreEstructuraId,
+    long? PadreEstructuraId,
     List<EstructuraResponseDto> Hijos,
     List<ArchivoResponseDto> Archivos // Archivos del capítulo
 );
 
 public sealed record ArchivoResponseDto(
-    Guid Id,
+    long Id,
     string? NombreArchivo,
     string? DescripcionArchivo,
     string? RutaArchivo,
@@ -51,18 +51,18 @@ public sealed record ArchivoResponseDto(
 
 
 public record PlanoResponseDto(
-    Guid Id,
+    long Id,
     int Escala,
     string? SistemaProyeccion,
     string? NombrePlano,
     string? CodigoPlano,
-    Guid ArchivoId,
-    Guid ColaboradorId,
+    long ArchivoId,
+    long ColaboradorId,
     List<PlanoDetalleResponseDto> Detalles
 );
 
 public record PlanoDetalleResponseDto(
-    Guid Id,
+    long Id,
     string? Descripcion,
     double Latitud,
     double Longitud,

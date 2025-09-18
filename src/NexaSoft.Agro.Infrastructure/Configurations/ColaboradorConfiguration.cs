@@ -80,10 +80,22 @@ public class ColaboradorConfiguration : IEntityTypeConfiguration<Colaborador>
             .IsRequired();
 
 
-         builder.HasOne(x => x.Consultora)
-                .WithMany()
-                .HasForeignKey(x => x.ConsultoraId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Consultora)
+               .WithMany()
+               .HasForeignKey(x => x.ConsultoraId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+        
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
 
         builder.HasIndex(x => x.NombresColaborador)
             .HasDatabaseName("ix_colaborador_nombrescolaborador");

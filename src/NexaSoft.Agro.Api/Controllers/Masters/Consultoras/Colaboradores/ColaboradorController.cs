@@ -8,6 +8,7 @@ using NexaSoft.Agro.Application.Masters.Consultoras.Colaboradores.Queries.GetCol
 using NexaSoft.Agro.Application.Masters.Consultoras.Colaboradores.Queries.GetColaboradores;
 using NexaSoft.Agro.Domain.Specifications;
 using NexaSoft.Agro.Api.Extensions;
+using NexaSoft.Agro.Api.Controllers.Masters.Consultoras.Colaboradores.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Masters.Consultoras.Colaboradores;
 
@@ -36,7 +37,8 @@ public class ColaboradorController(ISender _sender) : ControllerBase
              request.Salario,
              request.FechaCese,
              request.Comentarios,
-             request.ConsultoraId
+             request.ConsultoraId,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -64,18 +66,20 @@ public class ColaboradorController(ISender _sender) : ControllerBase
              request.Salario,
              request.FechaCese,
              request.Comentarios,
-             request.ConsultoraId
+             request.ConsultoraId,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-   public async Task<IActionResult> DeleteColaborador(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+   public async Task<IActionResult> DeleteColaborador(DeleteColaboradorRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteColaboradorCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -95,9 +99,9 @@ public class ColaboradorController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:Guid}")]
+   [HttpGet("{id:long}")]
    public async Task<IActionResult> GetColaborador(
-       Guid id,
+       long id,
        CancellationToken cancellationToken
     )
     {

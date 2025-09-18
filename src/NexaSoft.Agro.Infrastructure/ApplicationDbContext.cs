@@ -27,7 +27,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
         {
             throw new InvalidOperationException("Ya hay una transacción en curso.");
         }
-
+        //await PublishDomainEventsAsync();
         _currentTransaction = await Database.BeginTransactionAsync(cancellationToken);
     }
 
@@ -38,6 +38,13 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
             throw new InvalidOperationException("No se ha iniciado una transacción.");
         }
 
+        // 1. Publica eventos que podrían agregar o modificar entidades
+        await PublishDomainEventsAsync();
+
+        // 2. Guarda lo que hicieron los handlers de eventos
+        await base.SaveChangesAsync(cancellationToken);
+
+        // 3. Cierra la transacción
         await _currentTransaction.CommitAsync(cancellationToken);
         _currentTransaction = null!;  // Limpiar la transacción
     }
@@ -58,7 +65,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
         try
         {
             var result = await base.SaveChangesAsync(cancellationToken);
-            await PublishDomainEventsAsync();
+            //await PublishDomainEventsAsync();
             return result;
         }
         catch (DbUpdateConcurrencyException ex)

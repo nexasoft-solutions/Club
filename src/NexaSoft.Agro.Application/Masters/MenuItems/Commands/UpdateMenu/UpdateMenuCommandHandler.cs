@@ -27,7 +27,8 @@ public class UpdateMenuCommandHandler(
             command.Label,
             command.Icon,
             command.Route,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try

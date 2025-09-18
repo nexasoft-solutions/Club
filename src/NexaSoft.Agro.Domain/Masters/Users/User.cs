@@ -1,5 +1,4 @@
 using NexaSoft.Agro.Domain.Abstractions;
-using NexaSoft.Agro.Domain.Masters.Users.Events;
 using static NexaSoft.Agro.Domain.Shareds.Enums;
 
 namespace NexaSoft.Agro.Domain.Masters.Users;
@@ -16,15 +15,10 @@ public class User : Entity
     public string? UserTelefono { get; private set; }
     public int EstadoUser { get; private set; }
 
-    //public ICollection<UserRole> UserRoles { get; private set; } = new List<UserRole>();
-
-    /*private readonly List<UserRole> _userRoles = new();
-    public IReadOnlyCollection<UserRole> UserRoles => _userRoles.AsReadOnly();*/
 
     private User() { }
 
     private User(
-        Guid id,
         string? userApellidos,
         string? userNombres,
         string? nombreCompleto,
@@ -34,8 +28,11 @@ public class User : Entity
         string? userDni,
         string? userTelefono,
         int estadoUser,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         UserApellidos = userApellidos;
         UserNombres = userNombres;
@@ -47,6 +44,9 @@ public class User : Entity
         UserTelefono = userTelefono;
         EstadoUser = estadoUser;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static User Create(
@@ -57,13 +57,13 @@ public class User : Entity
         string? userDni,
         string? userTelefono,
         int estadoUser,
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var nombreCompleto = UserService.CreateNombreCompleto(userApellidos ?? "", userNombres ?? "");
         var userName = UserService.CreateUserName(userApellidos ?? "", userNombres ?? "");
         var entity = new User(
-            Guid.NewGuid(),
             userApellidos,
             userNombres,
             nombreCompleto,
@@ -73,22 +73,24 @@ public class User : Entity
             userDni,
             userTelefono,
             estadoUser,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new UserCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new UserCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-    Guid Id,
-    string? userApellidos,
-    string? userNombres,
-    string? password,
-    string? email,
-    string? userDni,
-    string? userTelefono,
-    DateTime utcNow
-)
+        long Id,
+        string? userApellidos,
+        string? userNombres,
+        string? password,
+        string? email,
+        string? userDni,
+        string? userTelefono,
+        DateTime utcNow,
+        string? usuarioModificacion
+    )
     {
         UserApellidos = userApellidos;
         UserNombres = userNombres;
@@ -102,52 +104,20 @@ public class User : Entity
         UserDni = userDni;
         UserTelefono = userTelefono;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new UserUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new UserUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow, string usuarioEliminacion)
     {
         EstadoUser = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 
-    /*public void AddRole(Guid roleId)
-    {
-        if (!_userRoles.Any(ur => ur.RoleId == roleId))
-        {
-            _userRoles.Add(new UserRole(Id, roleId));
-        }
-    }
 
-    public bool RemoveRole(Guid roleId)
-    {
-        var userRole = _userRoles.FirstOrDefault(ur => ur.RoleId == roleId);
-        if (userRole != null)
-        {
-            _userRoles.Remove(userRole);
-            return true;
-        }
-        return false;
-    }
-
-    public void ClearRoles()
-    {
-        _userRoles.Clear();
-    }*/
-
-   
-
-    // Para chequear si tiene un permiso
-    /*public bool HasPermission(string permissionName)
-    {
-        return UserRoles.Any(ur =>
-       ur.Role != null &&
-       ur.Role.RolePermissions.Any(rp =>
-           rp.Permission != null &&
-           rp.Permission.Name == permissionName));
-    }*/
 }

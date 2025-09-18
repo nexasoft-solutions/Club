@@ -19,7 +19,8 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Roles
         {
             var command = new CreateRoleCommand(
                  request.Name,
-                 request.Description
+                 request.Description,
+                 request.UsuarioCreacion
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
@@ -32,15 +33,16 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Roles
             var command = new UpdateRoleCommand(
                  request.Id,
                  request.Name,
-                 request.Description
+                 request.Description,
+                 request.UsuarioModificacion
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
             return resultado.ToActionResult(this);
         }
 
-        [HttpDelete("{id:Guid}")]
-        public async Task<IActionResult> DeleteRole(Guid id, CancellationToken cancellationToken)
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> DeleteRole(long id, CancellationToken cancellationToken)
         {
             var command = new DeleteRoleCommand(
                  id

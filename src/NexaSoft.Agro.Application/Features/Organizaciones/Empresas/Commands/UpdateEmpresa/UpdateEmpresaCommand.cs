@@ -3,16 +3,17 @@ using NexaSoft.Agro.Application.Abstractions.Messaging;
 namespace NexaSoft.Agro.Application.Features.Organizaciones.Empresas.Commands.UpdateEmpresa;
 
 public sealed record UpdateEmpresaCommand(
-    Guid Id,
+    long Id,
     string? RazonSocial,
     string? RucEmpresa,
     string? ContactoEmpresa,
     string? TelefonoContactoEmpresa,
-    Guid DepartamentoEmpresaId,
-    Guid ProvinciaEmpresaId,
-    Guid DistritoEmpresaId,
+    long DepartamentoEmpresaId,
+    long ProvinciaEmpresaId,
+    long DistritoEmpresaId,
     string? Direccion,
     double LatitudEmpresa,
     double LongitudEmpresa,
-    Guid OrganizacionId
+    long OrganizacionId,
+    string? UsuarioModificacion
 ) : ICommand<bool>;

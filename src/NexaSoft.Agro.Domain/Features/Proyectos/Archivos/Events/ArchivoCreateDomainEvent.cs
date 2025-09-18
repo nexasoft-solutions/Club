@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Features.Proyectos.Archivos.Events;
 
 public sealed record ArchivoCreateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

@@ -6,6 +6,7 @@ public sealed record CreateEstructuraCommand(
     int TipoEstructuraId,
     string? NombreEstructura,
     string? DescripcionEstructura,
-    Guid? PadreEstructuraId,
-    Guid SubCapituloId
-) : ICommand<Guid>;
+    long? PadreEstructuraId,
+    long SubCapituloId,
+    string? UsuarioCreacion
+) : ICommand<long>;

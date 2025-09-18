@@ -62,7 +62,10 @@ public class ConsultoraSpecification : BaseSpecification<Consultora, ConsultoraR
              x.RepresentanteConsultora,
              x.RucConsultora,
              x.CorreoOrganizacional,
-             x.FechaCreacion
+             x.FechaCreacion,
+             x.FechaModificacion,
+             x.UsuarioCreacion,
+             x.UsuarioModificacion
        ));
    }
 }

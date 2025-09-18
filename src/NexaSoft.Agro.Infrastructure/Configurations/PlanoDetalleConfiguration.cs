@@ -13,5 +13,17 @@ public class PlanoDetalleConfiguration : IEntityTypeConfiguration<PlanoDetalle>
         builder.Property(e => e.Coordenadas)
               .HasColumnType("geometry")
               .IsRequired();
+
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);      
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);        
     }
 }

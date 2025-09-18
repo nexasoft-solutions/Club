@@ -4,6 +4,7 @@ public sealed record CreateEstructuraRequest(
     int TipoEstructuraId,
     string? NombreEstructura,
     string? DescripcionEstructura,
-    Guid? PadreEstructuraId,
-    Guid SubCapituloId
+    long? PadreEstructuraId,
+    long SubCapituloId,
+    string? UsuarioCreacion
 );

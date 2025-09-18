@@ -47,5 +47,17 @@ public class PlanoConfiguration : IEntityTypeConfiguration<Plano>
                 .HasForeignKey(d => d.PlanoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);        
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
     }
 }

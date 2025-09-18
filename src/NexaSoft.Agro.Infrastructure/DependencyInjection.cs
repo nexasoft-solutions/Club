@@ -2,15 +2,21 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NexaSoft.Agro.Application.Abstractions.Auth;
 using NexaSoft.Agro.Application.Abstractions.Data;
 using NexaSoft.Agro.Application.Abstractions.Email;
+using NexaSoft.Agro.Application.Abstractions.Excel;
+using NexaSoft.Agro.Application.Abstractions.Reporting;
 using NexaSoft.Agro.Application.Abstractions.Time;
 using NexaSoft.Agro.Application.Features.Organizaciones;
 using NexaSoft.Agro.Application.Features.Proyectos.Archivos;
 using NexaSoft.Agro.Application.Features.Proyectos.Estructuras;
 using NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales;
+using NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Queries.GetEstudiosReport;
+using NexaSoft.Agro.Application.Features.Proyectos.EventosRegulatorios;
 using NexaSoft.Agro.Application.Features.Proyectos.Planos;
+using NexaSoft.Agro.Application.Masters.Constantes;
 using NexaSoft.Agro.Application.Masters.Consultoras.Colaboradores;
 using NexaSoft.Agro.Application.Masters.MenuItems;
 using NexaSoft.Agro.Application.Masters.Roles;
@@ -20,12 +26,15 @@ using NexaSoft.Agro.Domain.Abstractions;
 using NexaSoft.Agro.Infrastructure.Abstractions.Auth;
 using NexaSoft.Agro.Infrastructure.Abstractions.Data;
 using NexaSoft.Agro.Infrastructure.Abstractions.Email;
+using NexaSoft.Agro.Infrastructure.Abstractions.Excel;
 using NexaSoft.Agro.Infrastructure.Abstractions.Time;
 using NexaSoft.Agro.Infrastructure.ConfigSettings;
 using NexaSoft.Agro.Infrastructure.Repositories;
+using NexaSoft.Agro.Infrastructure.Repositories.Reports;
 using NexaSoft.Agro.Infrastructure.Serialization;
 using NexaSoft.Agro.Infrastructure.Services;
 using Npgsql;
+using QuestPDF.Infrastructure;
 
 namespace NexaSoft.Agro.Infrastructure;
 
@@ -43,7 +52,7 @@ public static class DependencyInjection
 
         var environment = "qa"; // puede ser "dev", "qa", "prod"
 
-        
+
         var vaultAddress = configuration["Vault:Address"] ?? "http://127.0.0.1:18200";
         var vaultToken = Environment.GetEnvironmentVariable("VAULT_TOKEN");
 
@@ -67,6 +76,16 @@ public static class DependencyInjection
         var dbSecrets = vaultService.GetSecretsAsync($"{environment}/db").Result;
         var jwtSettings = vaultService.GetSecretAsObjectAsync<JwtOptions>($"{environment}/jwt").Result!;
         var storageSettings = vaultService.GetSecretAsObjectAsync<StorageOptions>($"{environment}/storage").Result!;
+
+        var brevoEmailOptions = vaultService.GetSecretAsObjectAsync<BrevoOptions>($"{environment}/mail").Result!;
+
+        services.Configure<BrevoOptions>(o =>
+        {
+            o.ApiKey = brevoEmailOptions.ApiKey;
+            o.FromEmail = brevoEmailOptions.FromEmail;
+            o.FromName = brevoEmailOptions.FromName;
+        });
+
 
 
         /*Console.WriteLine("🔐 Vault DB Secrets:");
@@ -114,7 +133,29 @@ public static class DependencyInjection
         services.Configure<StorageOptions>(builtConfiguration.GetSection("Storage"));
 
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
-        services.AddTransient<IEmailService, EmailService>();
+        //services.AddTransient<IEmailService, EmailService>();
+        //services.AddHttpClient<IEmailService, EmailService>();
+        // ✅ Configuración del HttpClient
+        services.AddHttpClient("BrevoClient", (serviceProvider, client) =>
+        {
+            var brevoOptions = serviceProvider.GetRequiredService<IOptions<BrevoOptions>>().Value;
+
+            client.BaseAddress = new Uri("https://api.brevo.com/v3/");
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", brevoOptions.ApiKey);
+            client.DefaultRequestHeaders.Add("accept", "application/json");
+        });
+
+        // ✅ Registro del servicio CON IOptions
+        services.AddScoped<IEmailService>(serviceProvider =>
+        {
+            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+            var httpClient = httpClientFactory.CreateClient("BrevoClient");
+            var brevoOptions = serviceProvider.GetRequiredService<IOptions<BrevoOptions>>();
+
+            return new EmailService(httpClient, brevoOptions);
+        });
+        services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 
         // -----------------------------------
         // 4. PostgreSQL DbContext
@@ -146,9 +187,16 @@ public static class DependencyInjection
         services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
         services.AddScoped<IUserRoleRepository, UserRoleRepository>();
         services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+        services.AddScoped<IEventoRegulatorioRepository, EventoRegulatorioRepository>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped(typeof(IPdfReportGenerator<>), typeof(PdfReportGenerator<>));
+        services.AddScoped<IConstantsPdfReportGenerator, ConstantsPdfReportGenerator>();
+        services.AddScoped<IStudyTreePdfReportGenerator, StudyTreePdfReportGenerator>();
+
         services.AddSingleton<IFileStorageService, MinioStorageService>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped(typeof(IGenericExcelImporter<>), typeof(GenericExcelImporter<>));
+
 
         // -----------------------------------
         // 6. JSON config
@@ -158,6 +206,9 @@ public static class DependencyInjection
             options.TypeInfoResolver = AppJsonContext.Default;
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
+
+        QuestPDF.Settings.License = LicenseType.Community;
+        QuestPDF.Settings.EnableDebugging = true;
 
         return services;
     }

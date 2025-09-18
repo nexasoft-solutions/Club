@@ -7,5 +7,6 @@ public sealed record CreateEstudioAmbientalCommand(
     DateOnly FechaInicio,
     DateOnly FechaFin,
     string? Detalles,
-    Guid EmpresaId
-) : ICommand<Guid>;
+    long EmpresaId,
+    string? UsuarioCreacion
+) : ICommand<long>;

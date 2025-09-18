@@ -5,5 +5,8 @@ public record class MenuItemResponse
     string? Label,
     string? Icon,
     string? Route,
-    List<MenuItemResponse> Items
+    List<MenuItemResponse> Items,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

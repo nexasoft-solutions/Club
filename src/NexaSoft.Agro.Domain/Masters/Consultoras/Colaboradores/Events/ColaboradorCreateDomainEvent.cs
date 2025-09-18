@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Masters.Consultoras.Colaboradores.Events;
 
 public sealed record ColaboradorCreateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

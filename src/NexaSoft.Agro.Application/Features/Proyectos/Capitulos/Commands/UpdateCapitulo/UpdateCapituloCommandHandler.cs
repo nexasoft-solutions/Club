@@ -28,7 +28,8 @@ public class UpdateCapituloCommandHandler(
             command.NombreCapitulo,
             command.DescripcionCapitulo,
             command.EstudioAmbientalId,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try

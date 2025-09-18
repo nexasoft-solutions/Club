@@ -4,5 +4,5 @@ using NexaSoft.Agro.Domain.Masters.Ubigeos;
 namespace NexaSoft.Agro.Application.Masters.Ubigeos.Queries.GetUbigeo;
 
 public sealed record GetUbigeoQuery(
-    Guid Id
-) : IQuery<Result<UbigeoResponse>>;
+    long Id
+) : IQuery<UbigeoResponse>;

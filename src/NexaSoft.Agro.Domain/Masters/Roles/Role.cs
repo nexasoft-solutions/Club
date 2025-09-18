@@ -9,28 +9,35 @@ public class Role : Entity
     private Role() { }
 
     public Role(
-        Guid id,
         string? name,
         string? description,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
+
     {
         Name = name;
         Description = description;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Role Create(
           string? name,
           string? description,
-          DateTime fechaCreacion
+          DateTime fechaCreacion,
+          string? usuarioCreacion
       )
     {
         var entity = new Role(
-            Guid.NewGuid(),
             name,
             description,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
         return entity;
     }
@@ -38,12 +45,14 @@ public class Role : Entity
     public Result Update(
          string? name,
          string? description,
-         DateTime utcNow
+         DateTime utcNow,
+         string? usuarioModificacion
      )
     {
         Name = name;
         Description = description;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
         return Result.Success();
     }
 }

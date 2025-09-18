@@ -7,5 +7,6 @@ public sealed record CreateConsultoraCommand(
     string? DireccionConsultora,
     string? RepresentanteConsultora,
     string? RucConsultora,
-    string? CorreoOrganizacional
-) : ICommand<Guid>;
+    string? CorreoOrganizacional,
+    string? UsuarioCreacion
+) : ICommand<long>;

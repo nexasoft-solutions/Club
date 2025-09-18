@@ -1,5 +1,4 @@
 using NexaSoft.Agro.Domain.Abstractions;
-using NexaSoft.Agro.Domain.Features.Organizaciones.Events;
 using static NexaSoft.Agro.Domain.Shareds.Enums;
 
 namespace NexaSoft.Agro.Domain.Features.Organizaciones;
@@ -10,26 +9,37 @@ public class Organizacion : Entity
     public string? ContactoOrganizacion { get; private set; }
     public string? TelefonoContacto { get; private set; }
     public int SectorId { get; private set; }
+    public string? RucOrganizacion { get; set; }
+    public string? Observaciones { get; set; }
     public int EstadoOrganizacion { get; private set; }
 
     private Organizacion() { }
 
     private Organizacion(
-        Guid id, 
-        string? nombreOrganizacion, 
-        string? contactoOrganizacion, 
-        string? telefonoContacto, 
-        int sectorId, 
-        int estadoOrganizacion, 
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        string? nombreOrganizacion,
+        string? contactoOrganizacion,
+        string? telefonoContacto,
+        int sectorId,
+        string? rucOrganizacion,
+        string? observaciones,
+        int estadoOrganizacion,
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         NombreOrganizacion = nombreOrganizacion;
         ContactoOrganizacion = contactoOrganizacion;
         TelefonoContacto = telefonoContacto;
         SectorId = sectorId;
+        RucOrganizacion = rucOrganizacion;
+        Observaciones = observaciones;
         EstadoOrganizacion = estadoOrganizacion;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Organizacion Create(
@@ -37,47 +47,59 @@ public class Organizacion : Entity
         string? contactoOrganizacion, 
         string? telefonoContacto, 
         int sectorId, 
+        string? rucOrganizacion,
+        string? observaciones, 
         int estadoOrganizacion, 
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var entity = new Organizacion(
-            Guid.NewGuid(),
             nombreOrganizacion,
             contactoOrganizacion,
             telefonoContacto,
             sectorId,
+            rucOrganizacion,
+            observaciones,
             estadoOrganizacion,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new OrganizacionCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new OrganizacionCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         string? nombreOrganizacion, 
         string? contactoOrganizacion, 
         string? telefonoContacto, 
         int sectorId, 
-        DateTime utcNow
+        string? rucOrganizacion,
+        string? observaciones,
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         NombreOrganizacion = nombreOrganizacion;
         ContactoOrganizacion = contactoOrganizacion;
         TelefonoContacto = telefonoContacto;
         SectorId = sectorId;
+        RucOrganizacion = rucOrganizacion;
+        Observaciones = observaciones;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new OrganizacionUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new OrganizacionUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow, string usuarioEliminacion)
     {
         EstadoOrganizacion = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 }

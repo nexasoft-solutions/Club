@@ -4,5 +4,5 @@ using NexaSoft.Agro.Domain.Masters.Users;
 namespace NexaSoft.Agro.Application.Masters.Users.Queries.GetUser;
 
 public sealed record GetUserQuery(
-    Guid Id
+    long Id
 ) : IQuery<UserResponse>;

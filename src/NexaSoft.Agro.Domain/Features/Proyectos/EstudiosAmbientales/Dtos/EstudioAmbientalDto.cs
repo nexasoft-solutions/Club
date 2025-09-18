@@ -3,7 +3,7 @@ namespace NexaSoft.Agro.Domain.Features.Proyectos.EstudiosAmbientales.Dtos;
 public sealed record EstudioAmbientalDto
 {
     public sealed record EstudioAmbientalDtoResponse(
-         Guid Id,
+         long Id,
          string Proyecto,
          DateTime FechaInicio,
          DateTime FechaFin,
@@ -13,7 +13,7 @@ public sealed record EstudioAmbientalDto
      );
 
     public sealed record CapituloDtoResponse(
-        Guid Id,
+        long Id,
         string NombreCapitulo,
         string? DescripcionCapitulo,
         DateTime FechaCreacionCapitulo,
@@ -21,7 +21,7 @@ public sealed record EstudioAmbientalDto
     );
 
     public sealed record SubCapituloDtoResponse(
-        Guid Id,
+        long Id,
         string NombreSubCapitulo,
         string? DescripcionSubCapitulo,
         DateTime FechaCreacionSubCapitulo,
@@ -30,17 +30,18 @@ public sealed record EstudioAmbientalDto
     );
 
     public sealed record EstructuraDtoResponse(
-        Guid Id,
+        long Id,
         int TipoEstructura,
+        string? NombreEstructura,
         string? DescripcionEstructura,
-        Guid? PadreEstructuraId,
-        Guid SubCapituloId,
+        long? PadreEstructuraId,
+        long SubCapituloId,
         EstructuraDtoResponse[]? Hijos,
         ArchivoDtoResponse[]? Archivos
     );
 
     public sealed record ArchivoDtoResponse(
-        Guid Id,
+        long Id,
         string Nombre,
         string? DescripcionArchivo,
         string RutaArchivo,
@@ -51,12 +52,12 @@ public sealed record EstudioAmbientalDto
     );
 
     public sealed record PlanoDtoResponse(
-        Guid Id,
-        decimal Escala,  // Cambiado de string a decimal
+        long Id,
+        decimal Escala, 
         string SistemaProyeccion,
         string NombrePlano,
         string CodigoPlano,
-        Guid ColaboradorId,
+        long ColaboradorId,
         DateTime FechaCreacionPlano,
         PlanoDetalleDtoResponse[]? Detalles = null  // Valor por defecto
     );
@@ -69,32 +70,32 @@ public sealed record EstudioAmbientalDto
     );
 
     public sealed record EstudioAmbientalCapituloResponse(
-        Guid Id,
+        long Id,
         string Proyecto,
         DateOnly FechaInicio,
         DateOnly FechaFin,
         string? Detalles,
         string? codigoEstudio,
         DateTime FechaCreacionEstudio,
-        Guid EmpresaId,
+        long EmpresaId,
         CapitulosResponse[]? Capitulos
         
     );
 
     public sealed record CapitulosResponse(
-        Guid Id,
+        long Id,
         string NombreCapitulo,
         string? DescripcionCapitulo,
         DateTime FechaCreacionCapitulo
     );
     
      public sealed record EstudioAmbientalEstructuraResponse(
-        Guid Id,
+        long Id,
         int TipoEstructura,
         string? NombreEstructura,
         string? DescripcionEstructura,
-        Guid? PadreEstructuraId,
-        Guid SubCapituloId,
+        long? PadreEstructuraId,
+        long SubCapituloId,
         int EstadoEstructura,
         List<EstudioAmbientalEstructuraResponse?> Hijos
         //ArchivoDtoResponse[]? Archivos

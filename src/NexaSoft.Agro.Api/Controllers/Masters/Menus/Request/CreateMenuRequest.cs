@@ -5,6 +5,7 @@ public sealed record CreateMenuRequest
     string? Label,
     string? Icon,
     string? Route,
-    Guid? ParentId
+    long? ParentId,
+    string? UsuarioCreacion
 );
 

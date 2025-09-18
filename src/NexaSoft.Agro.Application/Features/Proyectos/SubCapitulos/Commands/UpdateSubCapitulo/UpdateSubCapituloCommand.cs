@@ -3,8 +3,9 @@ using NexaSoft.Agro.Application.Abstractions.Messaging;
 namespace NexaSoft.Agro.Application.Features.Proyectos.SubCapitulos.Commands.UpdateSubCapitulo;
 
 public sealed record UpdateSubCapituloCommand(
-    Guid Id,
+    long Id,
     string? NombreSubCapitulo,
     string? DescripcionSubCapitulo,
-    Guid CapituloId
+    long CapituloId,
+    string? UsuarioModificacion
 ) : ICommand<bool>;

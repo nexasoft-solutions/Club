@@ -30,6 +30,7 @@ public class UserController(ISender _sender) : ControllerBase
              request.Email,
              request.UserDni,
              request.UserTelefono
+
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -46,18 +47,20 @@ public class UserController(ISender _sender) : ControllerBase
              request.Password,
              request.Email,
              request.UserDni,
-             request.UserTelefono
+             request.UserTelefono,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteUser(DeleteUserRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteUserCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -77,9 +80,9 @@ public class UserController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetUser(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {
@@ -106,8 +109,8 @@ public class UserController(ISender _sender) : ControllerBase
     }
 
     
-    [HttpGet("{userId:guid}/permissions")]
-    public async Task<IActionResult> GetUserPermissions(Guid userId, CancellationToken cancellationToken)
+    [HttpGet("{userId:long}/permissions")]
+    public async Task<IActionResult> GetUserPermissions(long userId, CancellationToken cancellationToken)
     {
         var query = new GetUserRolesAndPermissionsQuery(userId);
         var result = await _sender.Send(query, cancellationToken);

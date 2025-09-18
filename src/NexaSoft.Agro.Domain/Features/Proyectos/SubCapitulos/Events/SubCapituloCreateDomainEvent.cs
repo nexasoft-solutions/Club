@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Features.Proyectos.SubCapitulos.Events;
 
 public sealed record SubCapituloCreateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

@@ -6,5 +6,5 @@ using NexaSoft.Agro.Domain.Masters.Ubigeos;
 namespace NexaSoft.Agro.Application.Masters.Ubigeos.Queries.GetUbigeos;
 
 public sealed record GetUbigeosQuery(
-    BaseSpecParams<Guid> SpecParams
-) : IQuery<Result<Pagination<UbigeoResponse>>>;
+    BaseSpecParams<long> SpecParams
+) : IQuery<Pagination<UbigeoResponse>>;

@@ -2,6 +2,6 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Users.Requests;
 
 public record class RevokeRolesRequest
 (
-    Guid UserId,
-    List<Guid> RoleIds
+    long UserId,
+    List<long> RoleIds
 );

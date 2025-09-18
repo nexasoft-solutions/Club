@@ -29,9 +29,9 @@ public class EstructuraSpecification : BaseSpecification<Estructura, EstructuraR
                         AddCriteria(x => x.DescripcionEstructura != null && x.DescripcionEstructura.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "subcapitulo":
-                        if (Guid.TryParse(specParams.Search, out var guid))
+                        if (long.TryParse(specParams.Search, out var longx))
                         {
-                            AddCriteria(x => x.SubCapituloId == guid);
+                            AddCriteria(x => x.SubCapituloId == longx);
                         }
                         else
                         {
@@ -40,7 +40,7 @@ public class EstructuraSpecification : BaseSpecification<Estructura, EstructuraR
                         }
                         break;
                     case "padre":
-                        if (Guid.TryParse(specParams.Search, out var padreGuid))
+                        if (long.TryParse(specParams.Search, out var padreGuid))
                         {
                             AddCriteria(x => x.PadreEstructuraId == padreGuid);
                         }
@@ -87,7 +87,10 @@ public class EstructuraSpecification : BaseSpecification<Estructura, EstructuraR
                x.PadreEstructuraId,
                x.SubCapituloId,
                x.TipoEstructuraId,
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

@@ -5,5 +5,5 @@ using static NexaSoft.Agro.Domain.Features.Proyectos.EstudiosAmbientales.Dtos.Es
 namespace NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Queries.GetEstudioAmbientalById;
 
 public sealed record GetEstudioAmbientalByIdQuery(
-    Guid Id
+    long Id
 ): IQuery<EstudioAmbientalDtoResponse?>;

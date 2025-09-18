@@ -1,12 +1,12 @@
 namespace NexaSoft.Agro.Api.Controllers.Features.Proyectos.Planos.Request;
 
 public sealed record UpdatePlanoRequest(
-    Guid Id,
+    long Id,
     int EscalaId,
     string? SistemaProyeccion,
     string? NombrePlano,
     string? CodigoPlano,
-    Guid ArchivoId,
-    Guid ColaboradorId,
+    long ArchivoId,
+    long ColaboradorId,
     List<UpdatePlanoRequest> Detalles
 );

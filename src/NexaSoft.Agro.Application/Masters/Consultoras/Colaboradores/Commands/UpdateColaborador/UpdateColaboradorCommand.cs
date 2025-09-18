@@ -3,7 +3,7 @@ using NexaSoft.Agro.Application.Abstractions.Messaging;
 namespace NexaSoft.Agro.Application.Masters.Consultoras.Colaboradores.Commands.UpdateColaborador;
 
 public sealed record UpdateColaboradorCommand(
-    Guid Id,
+    long Id,
     string? NombresColaborador,
     string? ApellidosColaborador,
     int TipoDocumentoId,
@@ -20,5 +20,6 @@ public sealed record UpdateColaboradorCommand(
     decimal? Salario,
     DateOnly? FechaCese,
     string? Comentarios,
-    Guid ConsultoraId
+    long ConsultoraId,
+    string? UsuarioModificacion
 ) : ICommand<bool>;

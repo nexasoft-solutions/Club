@@ -8,6 +8,7 @@ using NexaSoft.Agro.Application.Features.Proyectos.Estructuras.Queries.GetEstruc
 using NexaSoft.Agro.Application.Features.Proyectos.Estructuras.Queries.GetEstructuras;
 using NexaSoft.Agro.Domain.Specifications;
 using NexaSoft.Agro.Api.Extensions;
+using NexaSoft.Agro.Api.Controllers.Features.Proyectos.Estructuras.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Features.Proyectos.Estructuras;
 
@@ -24,7 +25,8 @@ public class EstructuraController(ISender _sender) : ControllerBase
              request.NombreEstructura,
              request.DescripcionEstructura,
              request.PadreEstructuraId,
-             request.SubCapituloId
+             request.SubCapituloId,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -40,18 +42,20 @@ public class EstructuraController(ISender _sender) : ControllerBase
              request.NombreEstructura,
              request.DescripcionEstructura,
              request.PadreEstructuraId,
-             request.SubCapituloId
+             request.SubCapituloId,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteEstructura(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteEstructura(DeleteEstructuraRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteEstructuraCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -71,9 +75,9 @@ public class EstructuraController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetEstructura(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {

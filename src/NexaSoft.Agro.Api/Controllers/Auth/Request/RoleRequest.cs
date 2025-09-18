@@ -1,7 +1,7 @@
 namespace NexaSoft.Agro.Api.Controllers.Auth.Request;
 
-public sealed record RoleRequest
-(
-    string? id,
-    string? name
-);
+public class RoleRequest
+{
+    public long? id { get; set; }
+    public string? name { get; set; }
+}

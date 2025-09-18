@@ -3,15 +3,19 @@ using NexaSoft.Agro.Domain.Features.Proyectos.Planos;
 namespace NexaSoft.Agro.Domain.Features.Proyectos.Archivos;
 
 public sealed record ArchivoResponse(
-    Guid Id,
+    long Id,
     string? NombreArchivo,
     string? DescripcionArchivo,
     string? RutaArchivo,
     DateOnly FechaCarga,
     string? TipoArchivo,
-    Guid? SubCapituloId,
-    Guid? EstructuraId,
+    long? SubCapituloId,
+    long? EstructuraId,
+    string? NombreCorto,
     DateTime FechaCreacion,
-    int TipoArchivoId
+    int TipoArchivoId,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
     //PlanoResponse? Plano = null
 );

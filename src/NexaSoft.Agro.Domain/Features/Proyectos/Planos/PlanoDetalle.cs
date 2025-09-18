@@ -5,39 +5,41 @@ namespace NexaSoft.Agro.Domain.Features.Proyectos.Planos;
 
 public class PlanoDetalle : Entity
 {
-    public Guid PlanoId { get; set; }
+    public long PlanoId { get; set; }
     public string? Descripcion { get;  set; }
     public Geometry Coordenadas { get; set; }   
     public Plano Plano { get; set; } = null!;
 
     public PlanoDetalle(
-        Guid id,
-        Guid planoId,
+        long planoId,
         string? descripcion,
         Geometry coordenadas,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string usuarioCreacion        
+    ) : base(fechaCreacion, usuarioCreacion)
     {
         PlanoId = planoId;
         Descripcion = descripcion;
         Coordenadas = coordenadas;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;  
     }
 
     public static PlanoDetalle Create
     (
-        Guid planoId,
+        long planoId,
         string? descripcion,
         Geometry coordenadas,
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string usuarioCreacion
     )
     {
         return new PlanoDetalle(
-            Guid.NewGuid(),
             planoId,
             descripcion,
             coordenadas,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
     }
 }

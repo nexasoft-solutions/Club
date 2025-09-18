@@ -38,6 +38,18 @@ public class ConsultoraConfiguration : IEntityTypeConfiguration<Consultora>
         builder.Property(x => x.EstadoConsultora)
             .IsRequired();
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
         builder.HasIndex(x => x.NombreConsultora)
             .HasDatabaseName("ix_consultora_nombreconsultora");
 

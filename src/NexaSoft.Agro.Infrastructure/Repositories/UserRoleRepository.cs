@@ -13,12 +13,12 @@ namespace NexaSoft.Agro.Infrastructure.Repositories;
 public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionFactory _sqlConnectionFactory) : IUserRoleRepository
 {
 
-    public async Task AddAsync(Guid userId, Guid roleId, bool isDefault, CancellationToken cancellationToken = default)
+    public async Task AddAsync(long userId, long roleId, bool isDefault, CancellationToken cancellationToken = default)
     {
         await _dbContext.Set<UserRole>().AddAsync(new UserRole(userId, roleId, isDefault), cancellationToken);
     }
 
-    public async Task<int> AddRangeAsync(Guid userId, IEnumerable<RoleDefultResponse> roleDefs, CancellationToken cancellationToken = default)
+    public async Task<int> AddRangeAsync(long userId, IEnumerable<RoleDefultResponse> roleDefs, CancellationToken cancellationToken = default)
     {
         var existingRoles = await _dbContext.Set<UserRole>()
          .Where(ur => ur.UserId == userId)
@@ -67,7 +67,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
         return rolesToAdd.Count + rolesToUpdate.Count;
     }
 
-    public async Task<bool> RemoveAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default)
+    public async Task<bool> RemoveAsync(long userId, long roleId, CancellationToken cancellationToken = default)
     {
         var relation = await _dbContext.Set<UserRole>()
             .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId, cancellationToken);
@@ -80,7 +80,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
         return false;
     }
 
-    public async Task<int> RemoveRangeAsync(Guid userId, IEnumerable<Guid> roleIds, CancellationToken cancellationToken = default)
+    public async Task<int> RemoveRangeAsync(long userId, IEnumerable<long> roleIds, CancellationToken cancellationToken = default)
     {
         var relations = await _dbContext.Set<UserRole>()
             .Where(ur => ur.UserId == userId && roleIds.Contains(ur.RoleId))
@@ -93,7 +93,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
         return relations.Count;
     }
 
-    public async Task ClearForUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task ClearForUserAsync(long userId, CancellationToken cancellationToken = default)
     {
         var relations = await _dbContext.Set<UserRole>()
             .Where(ur => ur.UserId == userId)
@@ -105,7 +105,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
         }
     }
 
-    public async Task ClearForRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+    public async Task ClearForRoleAsync(long roleId, CancellationToken cancellationToken = default)
     {
         var relations = await _dbContext.Set<UserRole>()
             .Where(ur => ur.RoleId == roleId)
@@ -117,13 +117,13 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
         }
     }
 
-    public async Task<bool> ExistsAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(long userId, long roleId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<UserRole>()
             .AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId, cancellationToken);
     }
 
-    public async Task<List<Guid>> GetRolesForUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<List<long>> GetRolesForUserAsync(long userId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<UserRole>()
             .Where(ur => ur.UserId == userId)
@@ -131,7 +131,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<Guid>> GetUsersForRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+    public async Task<List<long>> GetUsersForRoleAsync(long roleId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<UserRole>()
             .Where(ur => ur.RoleId == roleId)
@@ -139,13 +139,13 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> CountRolesForUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<int> CountRolesForUserAsync(long userId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<UserRole>()
             .CountAsync(ur => ur.UserId == userId, cancellationToken);
     }
 
-    public async Task<Dictionary<Guid, List<Guid>>> GetRolesForUsersAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<long, List<long>>> GetRolesForUsersAsync(IEnumerable<long> userIds, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<UserRole>()
             .Where(ur => userIds.Contains(ur.UserId))
@@ -156,7 +156,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
                 cancellationToken);
     }
 
-    public async Task<List<UserRolesPermissionsResponse>> GetUserRolesPermissions(Guid UserId, CancellationToken cancellationToken)
+    public async Task<List<UserRolesPermissionsResponse>> GetUserRolesPermissions(long UserId, CancellationToken cancellationToken)
     {
         using var connection = _sqlConnectionFactory.CreateConnection();
 
@@ -168,7 +168,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
 
     }
 
-    public async Task<List<string>> GetUserPermissionsAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<List<string>> GetUserPermissionsAsync(long userId, CancellationToken cancellationToken)
     {
         var result = await (
             from ur in _dbContext.Set<UserRole>()
@@ -182,7 +182,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
         return result;
     }
 
-    public async Task<List<UserRoleResponse>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<List<UserRoleResponse>> GetUserRolesAsync(long userId, CancellationToken cancellationToken = default)
     {
         var roles = await (
             from ur in _dbContext.Set<UserRole>()
@@ -198,7 +198,7 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
         return roles;
     }
 
-    public async Task<List<string>> GetPermissionsForDefaultRoleAsync(Guid userId, Guid RoleId, CancellationToken cancellationToken = default)
+    public async Task<List<string>> GetPermissionsForDefaultRoleAsync(long userId, long RoleId, CancellationToken cancellationToken = default)
     {
         var permissions = await _dbContext.Set<RolePermission>()
        .Where(rp => rp.RoleId == RoleId)

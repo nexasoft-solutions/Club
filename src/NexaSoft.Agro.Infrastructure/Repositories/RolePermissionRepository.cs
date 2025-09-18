@@ -8,12 +8,12 @@ namespace NexaSoft.Agro.Infrastructure.Repositories;
 
 public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePermissionRepository
 {
-    public async Task AddAsync(Guid roleId, Guid permissionId, CancellationToken cancellationToken = default)
+    public async Task AddAsync(long roleId, long permissionId, CancellationToken cancellationToken = default)
     {
         await _dbContext.Set<RolePermission>().AddAsync(new RolePermission(roleId, permissionId), cancellationToken);
     }
 
-    public async Task<int> AddRangeAsync(Guid roleId, IEnumerable<Guid> permissionIds, CancellationToken cancellationToken = default)
+    public async Task<int> AddRangeAsync(long roleId, IEnumerable<long> permissionIds, CancellationToken cancellationToken = default)
     {
         var existing = await _dbContext.Set<RolePermission>()
            .Where(rp => rp.RoleId == roleId && permissionIds.Contains(rp.PermissionId))
@@ -27,7 +27,7 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
         return toAdd.Count();
     }
 
-    public async Task ClearForRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+    public async Task ClearForRoleAsync(long roleId, CancellationToken cancellationToken = default)
     {
         var relations = await _dbContext.Set<RolePermission>()
             .Where(rp => rp.RoleId == roleId)
@@ -39,19 +39,19 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
         }
     }
 
-    public async Task<int> CountPermissionsForRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+    public async Task<int> CountPermissionsForRoleAsync(long roleId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<RolePermission>()
             .CountAsync(rp => rp.RoleId == roleId, cancellationToken);
     }
 
-    public async Task<bool> ExistsAsync(Guid roleId, Guid permissionId, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(long roleId, long permissionId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<RolePermission>()
            .AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId, cancellationToken);
     }
 
-    public async Task<List<string?>> GetPermissionNamesForRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+    public async Task<List<string?>> GetPermissionNamesForRoleAsync(long roleId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<RolePermission>()
             .Where(rp => rp.RoleId == roleId)
@@ -62,7 +62,7 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<Guid>> GetPermissionsForRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+    public async Task<List<long>> GetPermissionsForRoleAsync(long roleId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<RolePermission>()
            .Where(rp => rp.RoleId == roleId)
@@ -70,7 +70,7 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
            .ToListAsync(cancellationToken);
     }
 
-    public async Task<Dictionary<Guid, List<Guid>>> GetPermissionsForRolesAsync(IEnumerable<Guid> roleIds, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<long, List<long>>> GetPermissionsForRolesAsync(IEnumerable<long> roleIds, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<RolePermission>()
            .Where(rp => roleIds.Contains(rp.RoleId))
@@ -108,7 +108,7 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
         return ordered;
     }
 
-    public async Task<bool> RemoveAsync(Guid roleId, Guid permissionId, CancellationToken cancellationToken = default)
+    public async Task<bool> RemoveAsync(long roleId, long permissionId, CancellationToken cancellationToken = default)
     {
         var relation = await _dbContext.Set<RolePermission>()
            .FirstOrDefaultAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId, cancellationToken);
@@ -121,7 +121,7 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
         return false;
     }
 
-    public async Task<int> RemoveRangeAsync(Guid roleId, IEnumerable<Guid> permissionIds, CancellationToken cancellationToken = default)
+    public async Task<int> RemoveRangeAsync(long roleId, IEnumerable<long> permissionIds, CancellationToken cancellationToken = default)
     {
         var relations = await _dbContext.Set<RolePermission>()
             .Where(rp => rp.RoleId == roleId && permissionIds.Contains(rp.PermissionId))
@@ -134,7 +134,7 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
         return relations.Count;
     }
 
-    public async Task<bool> RoleHasPermissionAsync(Guid roleId, string permissionName, CancellationToken cancellationToken = default)
+    public async Task<bool> RoleHasPermissionAsync(long roleId, string permissionName, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<RolePermission>()
             .Where(rp => rp.RoleId == roleId)

@@ -21,7 +21,8 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Permissions
             var command = new CreatePermissionCommand(
                  request.Name,
                  request.Description,
-                 request.ReferenciaControl
+                 request.ReferenciaControl,
+                 request.UsuarioCreacion
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
@@ -35,15 +36,16 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Permissions
                  request.Id,
                  request.Name,
                  request.Description,
-                 request.ReferenciaControl
+                 request.ReferenciaControl,
+                 request.UsuarioModificacion
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
             return resultado.ToActionResult(this);
         }
 
-        [HttpDelete("{id:Guid}")]
-        public async Task<IActionResult> DeletePermission(Guid id, CancellationToken cancellationToken)
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> DeletePermission(long id, CancellationToken cancellationToken)
         {
             var command = new DeletePermissionCommand(
                  id

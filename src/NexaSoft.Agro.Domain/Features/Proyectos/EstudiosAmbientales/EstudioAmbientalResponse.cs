@@ -1,14 +1,17 @@
 namespace NexaSoft.Agro.Domain.Features.Proyectos.EstudiosAmbientales;
 
 public sealed record EstudioAmbientalResponse(
-    Guid Id,
+    long Id,
     string? Proyecto,
     DateOnly FechaInicio,
     DateOnly FechaFin,
     string? Detalles,
     string? EstadoEstudioAmbiental,
     string? RazonSocial,
-    Guid EmpresaId,
+    long EmpresaId,
     string? CodigoEstudio,
-    DateTime FechaCreacion
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

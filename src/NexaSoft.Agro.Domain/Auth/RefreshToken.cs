@@ -5,35 +5,41 @@ namespace NexaSoft.Agro.Domain.Auth;
 public class RefreshToken : Entity
 {
     public string? Token { get; private set; }
-    public Guid UserId { get; private set; }
+    public long UserId { get; private set; }
     public DateTime Expires { get; private set; }
     public bool Revoked { get; private set; }
 
     private RefreshToken() { }
 
     private RefreshToken(
-        Guid id,
         string token,
-        Guid userId,
+        long userId,
         DateTime expires,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string usuarioCreacion
+    ) : base(fechaCreacion, usuarioCreacion)
     {
         Token = token;
         UserId = userId;
         Expires = expires;
         Revoked = false;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
     }
 
-    public static RefreshToken Create(string token, Guid userId, DateTime expires)
+    public static RefreshToken Create(
+        string token,
+        long userId,
+        DateTime expires,
+        string usuarioCreacion
+    )
     {
         return new RefreshToken(
-            Guid.NewGuid(),
             token,
             userId,
             expires,
-            DateTime.UtcNow
+            DateTime.UtcNow,
+            usuarioCreacion
         );
     }
 

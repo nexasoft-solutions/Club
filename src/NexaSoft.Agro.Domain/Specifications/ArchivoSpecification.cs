@@ -27,13 +27,16 @@ public class ArchivoSpecification : BaseSpecification<Archivo, ArchivoResponse>
                     case "descripcionarchivo":
                         AddCriteria(x => x.DescripcionArchivo != null && x.DescripcionArchivo.ToLower().Contains(specParams.Search.ToLower()));
                         break;
+                    case "nombrecorto":
+                        AddCriteria(x => x.NombreCorto != null && x.NombreCorto.ToLower().Contains(specParams.Search.ToLower()));
+                        break;
                     case "rutaarchivo":
                         AddCriteria(x => x.RutaArchivo != null && x.RutaArchivo.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "subcapitulo":
-                        if (Guid.TryParse(specParams.Search, out var guid))
+                        if (long.TryParse(specParams.Search, out var longt))
                         {
-                            AddCriteria(x => x.SubCapituloId == guid);
+                            AddCriteria(x => x.SubCapituloId == longt);
                         }
                         else
                         {
@@ -42,7 +45,7 @@ public class ArchivoSpecification : BaseSpecification<Archivo, ArchivoResponse>
                         }
                         break;
                     case "estructura":
-                        if (Guid.TryParse(specParams.Search, out var guidId))
+                        if (long.TryParse(specParams.Search, out var guidId))
                         {
                             AddCriteria(x => x.EstructuraId == guidId);
                         }
@@ -89,8 +92,12 @@ public class ArchivoSpecification : BaseSpecification<Archivo, ArchivoResponse>
                null,
                x.EstructuraId,
                x.SubCapituloId,
+               x.NombreCorto,
                x.FechaCreacion,
-               x.TipoArchivoId
+               x.TipoArchivoId,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

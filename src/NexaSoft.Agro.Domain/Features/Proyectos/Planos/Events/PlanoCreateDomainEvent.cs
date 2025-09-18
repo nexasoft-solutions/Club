@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Features.Proyectos.Planos.Events;
 
 public sealed record PlanoCreateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

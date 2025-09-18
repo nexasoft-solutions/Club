@@ -25,7 +25,8 @@ public class UpdateRoleCommandHandler(IGenericRepository<Role> _repository,
         entity.Update(
              command.Name,
              command.Description,
-             _dateTimeProvider.CurrentTime.ToUniversalTime()
+             _dateTimeProvider.CurrentTime.ToUniversalTime(),
+             command.UsuarioModificacion
          );
 
         try

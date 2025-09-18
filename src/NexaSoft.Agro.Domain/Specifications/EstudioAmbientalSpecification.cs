@@ -25,9 +25,9 @@ public class EstudioAmbientalSpecification : BaseSpecification<EstudioAmbiental,
                         AddCriteria(x => x.Proyecto != null && x.Proyecto.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "empresa":
-                        if (Guid.TryParse(specParams.Search, out var guid))
+                        if (long.TryParse(specParams.Search, out var longx))
                         {
-                            AddCriteria(x => x.EmpresaId == guid);
+                            AddCriteria(x => x.EmpresaId == longx);
                         }
                         else
                         {
@@ -57,8 +57,14 @@ public class EstudioAmbientalSpecification : BaseSpecification<EstudioAmbiental,
                 case "proyectodesc":
                     AddOrderByDescending(x => x.Proyecto!);
                     break;
+                 case "idasc":
+                    AddOrderBy(x => x.Id);
+                    break;
+                case "iddesc":
+                    AddOrderByDescending(x => x.Id);
+                    break;
                 default:
-                    AddOrderBy(x => x.Proyecto!);
+                    AddOrderByDescending(x => x.Id);
                     break;
             }
         }
@@ -73,7 +79,10 @@ public class EstudioAmbientalSpecification : BaseSpecification<EstudioAmbiental,
                x.Empresa!.RazonSocial!,
                x.EmpresaId,
                x.CodigoEstudio,
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

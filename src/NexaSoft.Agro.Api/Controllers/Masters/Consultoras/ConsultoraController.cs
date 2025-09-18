@@ -8,6 +8,7 @@ using NexaSoft.Agro.Application.Masters.Consultoras.Queries.GetConsultora;
 using NexaSoft.Agro.Application.Masters.Consultoras.Queries.GetConsultoras;
 using NexaSoft.Agro.Domain.Specifications;
 using NexaSoft.Agro.Api.Extensions;
+using NexaSoft.Agro.Api.Controllers.Masters.Consultoras.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Masters.Consultoras;
 
@@ -24,7 +25,8 @@ public class ConsultoraController(ISender _sender) : ControllerBase
              request.DireccionConsultora,
              request.RepresentanteConsultora,
              request.RucConsultora,
-             request.CorreoOrganizacional
+             request.CorreoOrganizacional,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -40,18 +42,20 @@ public class ConsultoraController(ISender _sender) : ControllerBase
              request.DireccionConsultora,
              request.RepresentanteConsultora,
              request.RucConsultora,
-             request.CorreoOrganizacional
+             request.CorreoOrganizacional,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteConsultora(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteConsultora(DeleteConsultoraRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteConsultoraCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -71,9 +75,9 @@ public class ConsultoraController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetConsultora(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {

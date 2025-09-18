@@ -23,7 +23,7 @@ public class DeleteEstudioAmbientalCommandHandler(
             return Result.Failure<bool>(EstudioAmbientalErrores.NoEncontrado);
         }
 
-        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
 
         try
         {

@@ -2,9 +2,9 @@ namespace NexaSoft.Agro.Domain.Masters.Roles;
 
 public sealed record RolesPermissionsResponse
 (
-    Guid RoleId,
+    long RoleId,
     string? NombreRol,
-    Guid PermissionId,
+    long PermissionId,
     string? NombrePermiso,
     string? ReferenciaControl
 );

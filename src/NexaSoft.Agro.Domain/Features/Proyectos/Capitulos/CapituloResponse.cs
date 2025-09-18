@@ -1,10 +1,13 @@
 namespace NexaSoft.Agro.Domain.Features.Proyectos.Capitulos;
 
 public sealed record CapituloResponse(
-    Guid Id,
+    long Id,
     string? NombreCapitulo,
     string? DescripcionCapitulo,
     string? Proyecto,
-    Guid EstudioAmbientalId,
-    DateTime FechaCreacion
+    long EstudioAmbientalId,
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

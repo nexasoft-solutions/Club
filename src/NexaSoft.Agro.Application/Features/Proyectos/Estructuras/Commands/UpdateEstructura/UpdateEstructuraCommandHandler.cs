@@ -30,7 +30,8 @@ public class UpdateEstructuraCommandHandler(
             command.DescripcionEstructura,
             command.PadreEstructuraId,
             command.SubCapituloId,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try

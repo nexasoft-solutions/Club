@@ -5,9 +5,11 @@ namespace NexaSoft.Agro.Application.Features.Proyectos.Archivos.Commands.CreateA
 public sealed record CreateArchivoCommand(
     string? NombreArchivo,
     string? DescripcionArchivo,
-    int TipoArchivo,
-    Guid? SubCapituloId,
-    Guid? EstructuraId,
+    int TipoArchivoId,
+    long? SubCapituloId,
+    long? EstructuraId,
+    string? NombreCorto,
     Stream ArchivoStream,
-    string ArchivoTipo
-) : ICommand<Guid>;
+    string ArchivoTipo,
+    string? UsuarioCreacion
+) : ICommand<long>;

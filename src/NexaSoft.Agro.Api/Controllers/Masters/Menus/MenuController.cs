@@ -22,7 +22,8 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Menus
                  request.Label,
                  request.Icon,
                  request.Route,
-                 request.ParentId
+                 request.ParentId,
+                 request.UsuarioCreacion
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
@@ -36,18 +37,19 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Menus
                  request.Id,
                  request.Label,
                  request.Icon,
-                 request.Route
+                 request.Route,
+                 request.UsuarioModificacion
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
             return resultado.ToActionResult(this);
         }
 
-        [HttpDelete("{id:Guid}")]
-        public async Task<IActionResult> DeleteMenu(Guid id, CancellationToken cancellationToken)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteMenu(DeleteMenuRequest request, CancellationToken cancellationToken)
         {
 
-            var query = new DeleteMenuCommand(id);
+            var query = new DeleteMenuCommand(request.Id,request.UsuarioEliminacion);
             var resultado = await _sender.Send(query, cancellationToken);
 
             return resultado.ToActionResult(this);
@@ -65,9 +67,9 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Menus
             return resultado.ToActionResult(this);
         }
 
-        //[HttpGet("UserId/{id:Guid}/RoleId/{idRole:Guid}")]
+        //[HttpGet("UserId/{id:long}/RoleId/{idRole:long}")]
         [HttpGet("menu-user-roles")]
-        public async Task<IActionResult> GetMenuByUser(Guid userId, Guid roleId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetMenuByUser(long userId, long roleId, CancellationToken cancellationToken)
         {
 
             var query = new GetMenuByUserQuery(

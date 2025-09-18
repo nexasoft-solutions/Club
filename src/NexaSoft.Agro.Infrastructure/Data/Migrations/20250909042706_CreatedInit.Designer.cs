@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250812150517_init")]
-    partial class init
+    [Migration("20250909042706_CreatedInit")]
+    partial class CreatedInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,10 +29,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Auth.RefreshToken", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("Expires")
                         .HasColumnType("timestamp with time zone")
@@ -58,9 +60,24 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("token");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
                         .HasColumnName("user_id");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
 
                     b.HasKey("Id")
                         .HasName("pk_refresh_tokens");
@@ -79,18 +96,20 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Organizaciones.Empresas.Empresa", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ContactoEmpresa")
                         .HasMaxLength(220)
                         .HasColumnType("character varying(220)")
                         .HasColumnName("contacto_empresa");
 
-                    b.Property<Guid>("DepartamentoEmpresaId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("DepartamentoEmpresaId")
+                        .HasColumnType("bigint")
                         .HasColumnName("departamento_empresa_id");
 
                     b.Property<string>("Direccion")
@@ -98,8 +117,8 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(220)")
                         .HasColumnName("direccion");
 
-                    b.Property<Guid>("DistritoEmpresaId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("DistritoEmpresaId")
+                        .HasColumnType("bigint")
                         .HasColumnName("distrito_empresa_id");
 
                     b.Property<int>("EstadoEmpresa")
@@ -126,12 +145,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("longitud_empresa");
 
-                    b.Property<Guid>("OrganizacionId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("OrganizacionId")
+                        .HasColumnType("bigint")
                         .HasColumnName("organizacion_id");
 
-                    b.Property<Guid>("ProvinciaEmpresaId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("ProvinciaEmpresaId")
+                        .HasColumnType("bigint")
                         .HasColumnName("provincia_empresa_id");
 
                     b.Property<string>("RazonSocial")
@@ -148,6 +167,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("telefono_contacto_empresa");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
 
                     b.HasKey("Id")
                         .HasName("pk_empresas");
@@ -178,10 +212,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Organizaciones.Organizacion", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ContactoOrganizacion")
                         .HasMaxLength(220)
@@ -209,6 +245,16 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(220)")
                         .HasColumnName("nombre_organizacion");
 
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(550)
+                        .HasColumnType("character varying(550)")
+                        .HasColumnName("observaciones");
+
+                    b.Property<string>("RucOrganizacion")
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)")
+                        .HasColumnName("ruc_organizacion");
+
                     b.Property<int>("SectorId")
                         .HasColumnType("integer")
                         .HasColumnName("sector_id");
@@ -218,21 +264,41 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(120)")
                         .HasColumnName("telefono_contacto");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_organizaciones");
 
                     b.HasIndex("NombreOrganizacion")
                         .HasDatabaseName("ix_organizacion_nombreorganizacion");
 
+                    b.HasIndex("RucOrganizacion")
+                        .HasDatabaseName("ix_organizacion_rucorganizacion");
+
                     b.ToTable("organizaciones", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Archivos.Archivo", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("DescripcionArchivo")
                         .HasMaxLength(550)
@@ -243,8 +309,8 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("estado_archivo");
 
-                    b.Property<Guid?>("EstructuraId")
-                        .HasColumnType("uuid")
+                    b.Property<long?>("EstructuraId")
+                        .HasColumnType("bigint")
                         .HasColumnName("estructura_id");
 
                     b.Property<DateOnly>("FechaCarga")
@@ -268,24 +334,44 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(220)")
                         .HasColumnName("nombre_archivo");
 
+                    b.Property<string>("NombreCorto")
+                        .HasMaxLength(180)
+                        .HasColumnType("character varying(180)")
+                        .HasColumnName("nombre_corto");
+
                     b.Property<string>("RutaArchivo")
                         .HasMaxLength(350)
                         .HasColumnType("character varying(350)")
                         .HasColumnName("ruta_archivo");
 
-                    b.Property<Guid?>("SubCapituloId")
-                        .HasColumnType("uuid")
+                    b.Property<long?>("SubCapituloId")
+                        .HasColumnType("bigint")
                         .HasColumnName("sub_capitulo_id");
 
                     b.Property<int>("TipoArchivoId")
                         .HasColumnType("integer")
                         .HasColumnName("tipo_archivo_id");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_archivos");
 
                     b.HasIndex("DescripcionArchivo")
-                        .HasDatabaseName("ix_archivo_descripcion");
+                        .HasDatabaseName("ix_archivo_nombre_corto");
 
                     b.HasIndex("EstructuraId")
                         .HasDatabaseName("ix_archivos_estructura_id");
@@ -298,10 +384,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Capitulos.Capitulo", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("DescripcionCapitulo")
                         .HasMaxLength(550)
@@ -312,8 +400,8 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("estado_capitulo");
 
-                    b.Property<Guid>("EstudioAmbientalId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("EstudioAmbientalId")
+                        .HasColumnType("bigint")
                         .HasColumnName("estudio_ambiental_id");
 
                     b.Property<DateTime>("FechaCreacion")
@@ -333,6 +421,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(220)")
                         .HasColumnName("nombre_capitulo");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_capitulos");
 
@@ -345,12 +448,155 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                     b.ToTable("capitulos", (string)null);
                 });
 
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Cumplimientos.Cumplimiento", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("EstadoCumplimiento")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado_cumplimiento");
+
+                    b.Property<long>("EventoRegulatorioId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("evento_regulatorio_id");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_creacion");
+
+                    b.Property<DateOnly?>("FechaCumplimiento")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_cumplimiento");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_eliminacion");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_modificacion");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(550)
+                        .HasColumnType("character varying(550)")
+                        .HasColumnName("observaciones");
+
+                    b.Property<bool?>("RegistradoaTiempo")
+                        .HasColumnType("boolean")
+                        .HasColumnName("registradoa_tiempo");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cumplimientos");
+
+                    b.HasIndex("EventoRegulatorioId")
+                        .HasDatabaseName("ix_cumplimiento_eventoregulatorioid");
+
+                    b.HasIndex("FechaCumplimiento")
+                        .HasDatabaseName("ix_cumplimiento_fechacumplimiento");
+
+                    b.HasIndex("RegistradoaTiempo")
+                        .HasDatabaseName("ix_cumplimiento_registradoatiempo");
+
+                    b.ToTable("cumplimientos", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Cumplimientos.CumplimientoSeguimiento", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CumplimientoId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("cumplimiento_id");
+
+                    b.Property<int?>("EstadoAnteriorId")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado_anterior_id");
+
+                    b.Property<int>("EstadoNuevoId")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado_nuevo_id");
+
+                    b.Property<DateOnly>("FechaCambio")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_cambio");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_creacion");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_eliminacion");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_modificacion");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(550)
+                        .HasColumnType("character varying(550)")
+                        .HasColumnName("observaciones");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cumplimientos_seguimientos");
+
+                    b.HasIndex("CumplimientoId")
+                        .HasDatabaseName("ix_cumplimientos_seguimientos_cumplimiento_id");
+
+                    b.HasIndex("FechaCambio")
+                        .HasDatabaseName("ix_cumplimiento_segumiento_fechacambio");
+
+                    b.ToTable("cumplimientos_seguimientos", (string)null);
+                });
+
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Estructuras.Estructura", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("DescripcionEstructura")
                         .IsRequired()
@@ -379,17 +625,32 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(220)")
                         .HasColumnName("nombre_estructura");
 
-                    b.Property<Guid?>("PadreEstructuraId")
-                        .HasColumnType("uuid")
+                    b.Property<long?>("PadreEstructuraId")
+                        .HasColumnType("bigint")
                         .HasColumnName("padre_estructura_id");
 
-                    b.Property<Guid>("SubCapituloId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("SubCapituloId")
+                        .HasColumnType("bigint")
                         .HasColumnName("sub_capitulo_id");
 
                     b.Property<int>("TipoEstructuraId")
                         .HasColumnType("integer")
                         .HasColumnName("tipo_estructura_id");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
 
                     b.HasKey("Id")
                         .HasName("pk_estructuras");
@@ -405,10 +666,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.EstudiosAmbientales.EstudioAmbiental", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("CodigoEstudio")
                         .IsRequired()
@@ -420,8 +683,8 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("detalles");
 
-                    b.Property<Guid>("EmpresaId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("EmpresaId")
+                        .HasColumnType("bigint")
                         .HasColumnName("empresa_id");
 
                     b.Property<int>("EstadoEstudioAmbiental")
@@ -454,6 +717,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(220)")
                         .HasColumnName("proyecto");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_estudios_ambientales");
 
@@ -469,23 +747,134 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                     b.ToTable("estudios_ambientales", (string)null);
                 });
 
-            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Planos.Plano", b =>
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.EventosRegulatorios.EventoRegulatorio", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("ArchivoId")
-                        .HasColumnType("uuid")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(550)
+                        .HasColumnType("character varying(550)")
+                        .HasColumnName("descripcion");
+
+                    b.Property<int>("EstadoEventoId")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado_evento_id");
+
+                    b.Property<int>("EstadoEventoRegulatorio")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado_evento_regulatorio");
+
+                    b.Property<long>("EstudioAmbientalId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("estudio_ambiental_id");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_creacion");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_eliminacion");
+
+                    b.Property<DateOnly?>("FechaExpedición")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_expedición");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_modificacion");
+
+                    b.Property<DateOnly?>("FechaVencimiento")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_vencimiento");
+
+                    b.Property<int>("FrecuenciaEventoId")
+                        .HasColumnType("integer")
+                        .HasColumnName("frecuencia_evento_id");
+
+                    b.Property<string>("NombreEvento")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("nombre_evento");
+
+                    b.Property<int>("NotificarDíasAntes")
+                        .HasColumnType("integer")
+                        .HasColumnName("notificar_días_antes");
+
+                    b.Property<long>("ResponsableId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("responsable_id");
+
+                    b.Property<int>("TipoEventoId")
+                        .HasColumnType("integer")
+                        .HasColumnName("tipo_evento_id");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
+                    b.HasKey("Id")
+                        .HasName("pk_eventos_regulatorios");
+
+                    b.HasIndex("EstudioAmbientalId")
+                        .HasDatabaseName("ix_eventoregulatorio_estudioambientalid");
+
+                    b.HasIndex("FechaExpedición")
+                        .HasDatabaseName("ix_eventoregulatorio_fechaexpedición");
+
+                    b.HasIndex("FechaVencimiento")
+                        .HasDatabaseName("ix_eventoregulatorio_fechavencimiento");
+
+                    b.HasIndex("FrecuenciaEventoId")
+                        .HasDatabaseName("ix_eventoregulatorio_fecuenciaeventoid");
+
+                    b.HasIndex("NombreEvento")
+                        .HasDatabaseName("ix_eventoregulatorio_nombreevento");
+
+                    b.HasIndex("ResponsableId")
+                        .HasDatabaseName("ix_eventoregulatorio_responsableid");
+
+                    b.HasIndex("TipoEventoId")
+                        .HasDatabaseName("ix_eventoregulatorio_tipoeventoid");
+
+                    b.ToTable("eventos_regulatorios", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Planos.Plano", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ArchivoId")
+                        .HasColumnType("bigint")
                         .HasColumnName("archivo_id");
 
                     b.Property<string>("CodigoPlano")
                         .HasColumnType("text")
                         .HasColumnName("codigo_plano");
 
-                    b.Property<Guid>("ColaboradorId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("ColaboradorId")
+                        .HasColumnType("bigint")
                         .HasColumnName("colaborador_id");
 
                     b.Property<int>("EscalaId")
@@ -518,6 +907,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(30)")
                         .HasColumnName("sistema_proyeccion");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_planos");
 
@@ -532,10 +936,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Planos.PlanoDetalle", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<Geometry>("Coordenadas")
                         .IsRequired()
@@ -558,9 +964,24 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("fecha_modificacion");
 
-                    b.Property<Guid>("PlanoId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("PlanoId")
+                        .HasColumnType("bigint")
                         .HasColumnName("plano_id");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
 
                     b.HasKey("Id")
                         .HasName("pk_plano_detalle");
@@ -571,15 +992,94 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                     b.ToTable("plano_detalle", (string)null);
                 });
 
-            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.SubCapitulos.SubCapitulo", b =>
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Responsables.Responsable", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("CapituloId")
-                        .HasColumnType("uuid")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CargoResponsable")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("cargo_responsable");
+
+                    b.Property<string>("CorreoResponsable")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("correo_responsable");
+
+                    b.Property<int>("EstadoResponsable")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado_responsable");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_creacion");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_eliminacion");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_modificacion");
+
+                    b.Property<string>("NombreResponsable")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("nombre_responsable");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(550)
+                        .HasColumnType("character varying(550)")
+                        .HasColumnName("observaciones");
+
+                    b.Property<string>("TelefonoResponsable")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("telefono_responsable");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
+                    b.HasKey("Id")
+                        .HasName("pk_responsables");
+
+                    b.HasIndex("CorreoResponsable")
+                        .HasDatabaseName("ix_responsable_correoresponsable");
+
+                    b.HasIndex("NombreResponsable")
+                        .HasDatabaseName("ix_responsable_nombreresponsable");
+
+                    b.ToTable("responsables", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.SubCapitulos.SubCapitulo", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CapituloId")
+                        .HasColumnType("bigint")
                         .HasColumnName("capitulo_id");
 
                     b.Property<string>("DescripcionSubCapitulo")
@@ -608,6 +1108,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(220)")
                         .HasColumnName("nombre_sub_capitulo");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_subcapitulos");
 
@@ -622,10 +1137,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Constantes.Constante", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("Clave")
                         .HasColumnType("integer")
@@ -652,6 +1169,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(30)")
                         .HasColumnName("tipo_constante");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.Property<string>("Valor")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -671,10 +1203,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Consultoras.Colaboradores.Colaborador", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ApellidosColaborador")
                         .HasMaxLength(50)
@@ -689,8 +1223,8 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("comentarios");
 
-                    b.Property<Guid>("ConsultoraId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("ConsultoraId")
+                        .HasColumnType("bigint")
                         .HasColumnName("consultora_id");
 
                     b.Property<string>("CorreoElectronico")
@@ -775,6 +1309,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("user_name");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_colaboradores");
 
@@ -798,10 +1347,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Consultoras.Consultora", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("CorreoOrganizacional")
                         .HasMaxLength(120)
@@ -844,6 +1395,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(11)")
                         .HasColumnName("ruc_consultora");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_consultoras");
 
@@ -861,10 +1427,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Contadores.Contador", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Agrupador")
                         .HasMaxLength(50)
@@ -897,6 +1465,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("tipo_dato");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.Property<long>("ValorActual")
                         .HasMaxLength(16)
                         .HasColumnType("bigint")
@@ -909,18 +1492,20 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_contadores");
 
-                    b.HasIndex("Entidad", "Agrupador")
-                        .HasDatabaseName("ix_contador_entidad_agrupador");
+                    b.HasIndex("Entidad", "Prefijo")
+                        .HasDatabaseName("ix_contador_entidad_prefijo");
 
                     b.ToTable("contadores", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Menus.MenuItemOption", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("EstadoMenu")
                         .HasColumnType("integer")
@@ -949,14 +1534,29 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("label");
 
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uuid")
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint")
                         .HasColumnName("parent_id");
 
                     b.Property<string>("Route")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("route");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
 
                     b.HasKey("Id")
                         .HasName("pk_menu_item_options");
@@ -972,12 +1572,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Menus.MenuRole", b =>
                 {
-                    b.Property<Guid>("MenuItemOptionId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("MenuItemOptionId")
+                        .HasColumnType("bigint")
                         .HasColumnName("menu_item_option_id");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint")
                         .HasColumnName("role_id");
 
                     b.HasKey("MenuItemOptionId", "RoleId")
@@ -991,10 +1591,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Permissions.Permission", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(250)
@@ -1025,6 +1627,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("referencia_control");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_permissions");
 
@@ -1040,10 +1657,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Roles.Role", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(250)
@@ -1068,6 +1687,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_roles");
 
@@ -1080,10 +1714,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Ubigeos.Ubigeo", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(180)
@@ -1110,9 +1746,24 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("nivel");
 
-                    b.Property<Guid?>("PadreId")
-                        .HasColumnType("uuid")
+                    b.Property<long?>("PadreId")
+                        .HasColumnType("bigint")
                         .HasColumnName("padre_id");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
 
                     b.HasKey("Id")
                         .HasName("pk_ubigeos");
@@ -1134,12 +1785,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Users.RolePermission", b =>
                 {
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint")
                         .HasColumnName("role_id");
 
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("PermissionId")
+                        .HasColumnType("bigint")
                         .HasColumnName("permission_id");
 
                     b.HasKey("RoleId", "PermissionId")
@@ -1153,10 +1804,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Users.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Email")
                         .HasMaxLength(150)
@@ -1214,6 +1867,21 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("user_telefono");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_creacion");
+
+                    b.Property<string>("UsuarioEliminacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_eliminacion");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("usuario_modificacion");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -1235,12 +1903,12 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Masters.Users.UserRole", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
                         .HasColumnName("user_id");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint")
                         .HasColumnName("role_id");
 
                     b.Property<bool>("IsDefault")
@@ -1324,6 +1992,30 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                     b.Navigation("EstudioAmbiental");
                 });
 
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Cumplimientos.Cumplimiento", b =>
+                {
+                    b.HasOne("NexaSoft.Agro.Domain.Features.Proyectos.EventosRegulatorios.EventoRegulatorio", "EventoRegulatorio")
+                        .WithMany()
+                        .HasForeignKey("EventoRegulatorioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_cumplimientos_evento_regulatorio_evento_regulatorio_id");
+
+                    b.Navigation("EventoRegulatorio");
+                });
+
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Cumplimientos.CumplimientoSeguimiento", b =>
+                {
+                    b.HasOne("NexaSoft.Agro.Domain.Features.Proyectos.Cumplimientos.Cumplimiento", "Cumplimiento")
+                        .WithMany()
+                        .HasForeignKey("CumplimientoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_cumplimientos_seguimientos_cumplimientos_cumplimiento_id");
+
+                    b.Navigation("Cumplimiento");
+                });
+
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Estructuras.Estructura", b =>
                 {
                     b.HasOne("NexaSoft.Agro.Domain.Features.Proyectos.Estructuras.Estructura", "Padre")
@@ -1354,6 +2046,27 @@ namespace NexaSoft.Agro.Infrastructure.Data.Migrations
                         .HasConstraintName("fk_estudios_ambientales_empresas_empresa_id");
 
                     b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.EventosRegulatorios.EventoRegulatorio", b =>
+                {
+                    b.HasOne("NexaSoft.Agro.Domain.Features.Proyectos.EstudiosAmbientales.EstudioAmbiental", "EstudioAmbiental")
+                        .WithMany()
+                        .HasForeignKey("EstudioAmbientalId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_eventos_regulatorios_estudios_ambientales_estudio_ambiental");
+
+                    b.HasOne("NexaSoft.Agro.Domain.Features.Proyectos.Responsables.Responsable", "Responsable")
+                        .WithMany()
+                        .HasForeignKey("ResponsableId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_eventos_regulatorios_responsable_responsable_id");
+
+                    b.Navigation("EstudioAmbiental");
+
+                    b.Navigation("Responsable");
                 });
 
             modelBuilder.Entity("NexaSoft.Agro.Domain.Features.Proyectos.Planos.Plano", b =>

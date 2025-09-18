@@ -6,9 +6,9 @@ using NexaSoft.Agro.Domain.Specifications;
 
 namespace NexaSoft.Agro.Application.Masters.Constantes.Queries.GetConstesMultiple;
 
-public class GetConstnatesMultipleQueryHandler(IGenericRepository<Constante> _repository) : IQueryHandler<GetConstnatesMultipleQuery, IReadOnlyList<ConstamtesAgrupadasResponse>>
+public class GetConstnatesMultipleQueryHandler(IGenericRepository<Constante> _repository) : IQueryHandler<GetConstnatesMultipleQuery, IReadOnlyList<ConstantesAgrupadasResponse>>
 {
-    public async Task<Result<IReadOnlyList<ConstamtesAgrupadasResponse>>> Handle(GetConstnatesMultipleQuery query, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyList<ConstantesAgrupadasResponse>>> Handle(GetConstnatesMultipleQuery query, CancellationToken cancellationToken)
     {
         try
         {
@@ -17,22 +17,22 @@ public class GetConstnatesMultipleQueryHandler(IGenericRepository<Constante> _re
 
             var agrupadas = list
                 .GroupBy(c => c.TipoConstante)
-                .Select(g => new ConstamtesAgrupadasResponse(
+                .Select(g => new ConstantesAgrupadasResponse(
                     g.Key!,
-                    g.Select(c => new ConstanteClaveValorResponse(
+                    g.Select(c => new ConstantesClaveValorResponse(
                         c.Clave,
                         c.Valor!
                     )).ToList()
                 ))
                 .ToList();
 
-            return Result.Success<IReadOnlyList<ConstamtesAgrupadasResponse>>(agrupadas);
+            return Result.Success<IReadOnlyList<ConstantesAgrupadasResponse>>(agrupadas);
         }
         catch (Exception ex)
         {
 
             var errores = ex.Message;
-            return Result.Failure<IReadOnlyList<ConstamtesAgrupadasResponse>>(ConstanteErrores.ErrorConsulta);
+            return Result.Failure<IReadOnlyList<ConstantesAgrupadasResponse>>(ConstanteErrores.ErrorConsulta);
         }
 
     }

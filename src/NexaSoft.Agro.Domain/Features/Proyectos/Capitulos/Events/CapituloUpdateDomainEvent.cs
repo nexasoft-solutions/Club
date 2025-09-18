@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Features.Proyectos.Capitulos.Events;
 
 public sealed record CapituloUpdateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

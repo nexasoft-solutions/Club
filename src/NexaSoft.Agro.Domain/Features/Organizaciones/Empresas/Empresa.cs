@@ -1,5 +1,4 @@
 using NexaSoft.Agro.Domain.Abstractions;
-using NexaSoft.Agro.Domain.Features.Organizaciones.Empresas.Events;
 using static NexaSoft.Agro.Domain.Shareds.Enums;
 using NexaSoft.Agro.Domain.Masters.Ubigeos;
 
@@ -12,37 +11,39 @@ public class Empresa : Entity
     public string? RucEmpresa { get; private set; }
     public string? ContactoEmpresa { get; private set; }
     public string? TelefonoContactoEmpresa { get; private set; }
-    public Guid DepartamentoEmpresaId { get; private set; }
+    public long DepartamentoEmpresaId { get; private set; }
     public Ubigeo? DepartamentoEmpresa { get; private set; }
-    public Guid ProvinciaEmpresaId { get; private set; }
+    public long ProvinciaEmpresaId { get; private set; }
     public Ubigeo? ProvinciaEmpresa { get; private set; }
-    public Guid DistritoEmpresaId { get; private set; }
+    public long DistritoEmpresaId { get; private set; }
     public Ubigeo? DistritoEmpresa { get; private set; }
     public string? Direccion { get; private set; }
     public double LatitudEmpresa { get; private set; }
     public double LongitudEmpresa { get; private set; }
-    public Guid OrganizacionId { get; private set; }
+    public long OrganizacionId { get; private set; }
     public int EstadoEmpresa { get; private set; }
     public Organizacion? Organizacion { get; private set; }
 
     private Empresa() { }
 
     private Empresa(
-        Guid id, 
-        string? razonSocial, 
-        string? rucEmpresa, 
-        string? contactoEmpresa, 
-        string? telefonoContactoEmpresa, 
-        Guid departamentoEmpresaId, 
-        Guid provinciaEmpresaId, 
-        Guid distritoEmpresaId, 
-        string? direccion, 
-        double latitudEmpresa, 
-        double longitudEmpresa, 
-        Guid organizacionId, 
-        int estadoEmpresa, 
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        string? razonSocial,
+        string? rucEmpresa,
+        string? contactoEmpresa,
+        string? telefonoContactoEmpresa,
+        long departamentoEmpresaId,
+        long provinciaEmpresaId,
+        long distritoEmpresaId,
+        string? direccion,
+        double latitudEmpresa,
+        double longitudEmpresa,
+        long organizacionId,
+        int estadoEmpresa,
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         RazonSocial = razonSocial;
         RucEmpresa = rucEmpresa;
@@ -57,6 +58,9 @@ public class Empresa : Entity
         OrganizacionId = organizacionId;
         EstadoEmpresa = estadoEmpresa;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Empresa Create(
@@ -64,19 +68,19 @@ public class Empresa : Entity
         string? rucEmpresa, 
         string? contactoEmpresa, 
         string? telefonoContactoEmpresa, 
-        Guid departamentoEmpresaId, 
-        Guid provinciaEmpresaId, 
-        Guid distritoEmpresaId, 
+        long departamentoEmpresaId, 
+        long provinciaEmpresaId, 
+        long distritoEmpresaId, 
         string? direccion, 
         double latitudEmpresa, 
         double longitudEmpresa, 
-        Guid organizacionId, 
+        long organizacionId, 
         int estadoEmpresa, 
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var entity = new Empresa(
-            Guid.NewGuid(),
             razonSocial,
             rucEmpresa,
             contactoEmpresa,
@@ -89,26 +93,28 @@ public class Empresa : Entity
             longitudEmpresa,
             organizacionId,
             estadoEmpresa,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new EmpresaCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new EmpresaCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         string? razonSocial, 
         string? rucEmpresa, 
         string? contactoEmpresa, 
         string? telefonoContactoEmpresa, 
-        Guid departamentoEmpresaId, 
-        Guid provinciaEmpresaId, 
-        Guid distritoEmpresaId, 
+        long departamentoEmpresaId, 
+        long provinciaEmpresaId, 
+        long distritoEmpresaId, 
         string? direccion, 
         double latitudEmpresa, 
         double longitudEmpresa, 
-        Guid organizacionId, 
-        DateTime utcNow
+        long organizacionId, 
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         RazonSocial = razonSocial;
@@ -123,16 +129,18 @@ public class Empresa : Entity
         LongitudEmpresa = longitudEmpresa;
         OrganizacionId = organizacionId;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new EmpresaUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new EmpresaUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow, string? usuarioEliminacion)
     {
         EstadoEmpresa = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 }

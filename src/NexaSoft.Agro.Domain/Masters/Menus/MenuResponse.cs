@@ -2,9 +2,9 @@ namespace NexaSoft.Agro.Domain.Masters.Menus;
 
 public sealed record MenuResponse
 (
-    Guid Id,
+    long Id,
     string? Label,
     string? Icon,
     string? Route,
-    Guid? ParentId
+    long? ParentId
 );

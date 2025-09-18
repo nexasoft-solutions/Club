@@ -50,32 +50,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.EstadoUser)
             .IsRequired();
 
-        //builder.Ignore(r => r.UserRoles);
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
 
-        /*
-        builder
-                 .HasMany(typeof(UserRole), "_userRoles")
-                 .WithOne("User")
-                 .HasForeignKey("UserId")
-                 .IsRequired();
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
 
-        builder.Navigation("_userRoles").UsePropertyAccessMode(PropertyAccessMode.Field);*/
 
-        /*builder.HasMany(u => u.UserRoles)
-              .WithOne(ur => ur.User)
-              .HasForeignKey(ur => ur.UserId);*/
-
-        // Configuración de la relación muchos-a-muchos
-    
-        /*builder.HasMany<UserRole>("_userRoles")
-            .WithOne()
-            .HasForeignKey(rp => rp.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Metadata
-            .FindNavigation("_userRoles")
-            ?.SetPropertyAccessMode(PropertyAccessMode.Field);*/
-
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
 
         builder.HasIndex(x => x.NombreCompleto)
             .HasDatabaseName("ix_user_nombrecompleto");

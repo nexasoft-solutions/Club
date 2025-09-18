@@ -6,8 +6,8 @@ public sealed record CreatePlanoCommand(
     int EscalaId,
     string? SistemaProyeccion,
     string? NombrePlano,
-    string? CodigoPlano,
-    Guid ArchivoId,
-    Guid ColaboradorId,
-    List<CreatePlanoDetalleCommand> Detalles
-) : ICommand<Guid>;
+    long ArchivoId,
+    long ColaboradorId,
+    List<CreatePlanoDetalleCommand> Detalles,
+    string UsuarioCreacion
+) : ICommand<long>;

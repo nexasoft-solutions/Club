@@ -13,6 +13,24 @@ public static class Enums
         Eliminado = 2
     }
 
+    public enum EstadosEventosEnum
+    {
+        [Description("Programado")]
+        Programado = 1,
+
+        [Description("Presentado")]
+        Presentado = 2,
+
+        [Description("Vencido")]
+        Vencido = 3,
+
+        [Description("Reprogramado")]
+        Reprogramado = 4,
+
+        [Description("Cancelado")]
+        Cancelado = 5
+    }
+
     public enum UbigeosEnum
     {
         [Description("Departamento")]

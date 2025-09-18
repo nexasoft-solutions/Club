@@ -4,5 +4,5 @@ using NexaSoft.Agro.Domain.Features.Proyectos.Planos;
 namespace NexaSoft.Agro.Application.Features.Proyectos.Planos.Queries.GetPlano;
 
 public sealed record GetPlanoQuery(
-    Guid Id
+    long Id
 ) : IQuery<PlanoResponse>;

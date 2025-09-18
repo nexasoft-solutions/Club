@@ -7,29 +7,29 @@ namespace NexaSoft.Agro.Application.Masters.Users;
 public interface IUserRoleRepository
 {
     // Operaciones básicas
-    Task AddAsync(Guid userId, Guid roleId, bool isDefault, CancellationToken cancellationToken = default);
-    Task<bool> RemoveAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default);
-    Task<bool> ExistsAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default);
+    Task AddAsync(long userId, long roleId, bool isDefault, CancellationToken cancellationToken = default);
+    Task<bool> RemoveAsync(long userId, long roleId, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(long userId, long roleId, CancellationToken cancellationToken = default);
 
     // Operaciones masivas
-    Task<int> AddRangeAsync(Guid userId, IEnumerable<RoleDefultResponse> roleDefs, CancellationToken cancellationToken = default);
-    Task<int> RemoveRangeAsync(Guid userId, IEnumerable<Guid> roleIds, CancellationToken cancellationToken = default);
-    Task ClearForUserAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task ClearForRoleAsync(Guid roleId, CancellationToken cancellationToken = default);
+    Task<int> AddRangeAsync(long userId, IEnumerable<RoleDefultResponse> roleDefs, CancellationToken cancellationToken = default);
+    Task<int> RemoveRangeAsync(long userId, IEnumerable<long> roleIds, CancellationToken cancellationToken = default);
+    Task ClearForUserAsync(long userId, CancellationToken cancellationToken = default);
+    Task ClearForRoleAsync(long roleId, CancellationToken cancellationToken = default);
 
     // Consultas
-    Task<List<Guid>> GetRolesForUserAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task<List<Guid>> GetUsersForRoleAsync(Guid roleId, CancellationToken cancellationToken = default);
-    Task<int> CountRolesForUserAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<List<long>> GetRolesForUserAsync(long userId, CancellationToken cancellationToken = default);
+    Task<List<long>> GetUsersForRoleAsync(long roleId, CancellationToken cancellationToken = default);
+    Task<int> CountRolesForUserAsync(long userId, CancellationToken cancellationToken = default);
 
     // Consultas avanzadas
-    Task<Dictionary<Guid, List<Guid>>> GetRolesForUsersAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default);
-    Task<List<UserRolesPermissionsResponse>> GetUserRolesPermissions(Guid UserId, CancellationToken cancellationToken);
+    Task<Dictionary<long, List<long>>> GetRolesForUsersAsync(IEnumerable<long> userIds, CancellationToken cancellationToken = default);
+    Task<List<UserRolesPermissionsResponse>> GetUserRolesPermissions(long UserId, CancellationToken cancellationToken);
 
-    Task<List<string>> GetUserPermissionsAsync(Guid userId, CancellationToken cancellationToken);
+    Task<List<string>> GetUserPermissionsAsync(long userId, CancellationToken cancellationToken);
 
-    Task<List<UserRoleResponse>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<List<UserRoleResponse>> GetUserRolesAsync(long userId, CancellationToken cancellationToken = default);
 
-    Task<List<string>> GetPermissionsForDefaultRoleAsync(Guid userId, Guid RoleId, CancellationToken cancellationToken = default);
+    Task<List<string>> GetPermissionsForDefaultRoleAsync(long userId, long RoleId, CancellationToken cancellationToken = default);
 
 }

@@ -8,7 +8,7 @@ public class UbigeoSpecification : BaseSpecification<Ubigeo, UbigeoResponse>
 {
     public BaseSpecParams SpecParams { get; }
 
-    public UbigeoSpecification(BaseSpecParams<Guid> specParams) : base()
+    public UbigeoSpecification(BaseSpecParams<long> specParams) : base()
     {
 
         SpecParams = specParams;
@@ -31,9 +31,9 @@ public class UbigeoSpecification : BaseSpecification<Ubigeo, UbigeoResponse>
                             AddCriteria(x => x.Nivel == searchNumber);
                         break;
                     case "padre":
-                        if (Guid.TryParse(specParams.Search, out var guid))
+                        if (long.TryParse(specParams.Search, out var longx))
                         {
-                            AddCriteria(x => x.PadreId == guid);
+                            AddCriteria(x => x.PadreId == longx);
                         }
                         else
                         {
@@ -49,7 +49,7 @@ public class UbigeoSpecification : BaseSpecification<Ubigeo, UbigeoResponse>
 
             if (specParams.Ids?.Any() == true)
             {
-                AddCriteria(c => specParams.Ids.Contains(c.PadreId ?? Guid.Empty));
+                AddCriteria(c => specParams.Ids.Contains(c.PadreId ?? 0));
             }
 
             /*if (specParams.PadreId.HasValue)
@@ -84,7 +84,10 @@ public class UbigeoSpecification : BaseSpecification<Ubigeo, UbigeoResponse>
                ((UbigeosEnum)x.Nivel).ToString(),
                x.PadreId,
                x.Padre!.Descripcion,
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

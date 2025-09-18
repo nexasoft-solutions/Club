@@ -15,7 +15,7 @@ public class GetEmpresasQueryHandler(
         try
         {
             var spec = new EmpresaSpecification(query.SpecParams);
-            var responses = await _repository.ListAsync<EmpresaResponse>(spec,cancellationToken);
+            var responses = await _repository.ListAsync<EmpresaResponse>(spec, cancellationToken);
             var totalItems = await _repository.CountAsync(spec, cancellationToken);
 
             var pagination = new Pagination<EmpresaResponse>(
@@ -23,7 +23,7 @@ public class GetEmpresasQueryHandler(
                     query.SpecParams.PageSize,
                     totalItems,
                     responses
-              );
+            );
 
             return Result.Success(pagination);
 

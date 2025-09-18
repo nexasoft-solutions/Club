@@ -5,5 +5,5 @@ namespace NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Queri
 
 public sealed record GetEstudioAmbientalCapitulosByIdQuery
 (
-    Guid Id
+    long Id
 ):IQuery<EstudioAmbientalCapituloResponse>;

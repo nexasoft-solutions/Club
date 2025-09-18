@@ -15,15 +15,15 @@ public class DeleteConsultoraCommandHandler(
 {
     public async Task<Result<bool>> Handle(DeleteConsultoraCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de eliminación de Consultora con ID {ConsultoraId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de eliminación de Consultora con ID {ConsultoraId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("Consultora con ID {ConsultoraId} no encontrado", command.Id);
-                return Result.Failure<bool>(ConsultoraErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(ConsultoraErrores.NoEncontrado);
+        }
 
-         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
 
         try
         {
@@ -37,7 +37,7 @@ public class DeleteConsultoraCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al eliminar Consultora con ID {ConsultoraId}", command.Id);
+            _logger.LogError(ex, "Error al eliminar Consultora con ID {ConsultoraId}", command.Id);
             return Result.Failure<bool>(ConsultoraErrores.ErrorDelete);
         }
     }

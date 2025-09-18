@@ -19,5 +19,6 @@ public sealed record CreateColaboradorCommand(
     decimal? Salario,
     DateOnly? FechaCese,
     string? Comentarios,
-    Guid ConsultoraId
-) : ICommand<Guid>;
+    long ConsultoraId,
+    string? UsuarioCreacion
+) : ICommand<long>;

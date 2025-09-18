@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using NexaSoft.Agro.Domain.Abstractions;
 using NexaSoft.Agro.Domain.Features.Proyectos.Archivos.Events;
 using NexaSoft.Agro.Domain.Features.Proyectos.Estructuras;
@@ -13,8 +14,10 @@ public class Archivo : Entity
     public string? RutaArchivo { get; private set; }
     public DateOnly FechaCarga { get; private set; }
     public int TipoArchivoId { get; private set; }
-    public Guid? SubCapituloId { get; private set; }
-    public Guid? EstructuraId { get; private set; }
+    public long? SubCapituloId { get; private set; }
+    public long? EstructuraId { get; private set; }
+
+    public string? NombreCorto { get; private set; }
 
     public SubCapitulo? SubCapitulo { get; private set; }
     public Estructura? Estructura { get; private set; }
@@ -26,17 +29,21 @@ public class Archivo : Entity
     private Archivo() { }
 
     private Archivo(
-        Guid id,
+        long id,
         string? nombreArchivo,
         string? descripcionArchivo,
         string? rutaArchivo,
         DateOnly fechaCarga,
         int tipoArchivoId,
-        Guid? subCapituloId,
-        Guid? estructuraId,
+        long? subCapituloId,
+        long? estructuraId,
+        string nombreCorto,
         int estadoArchivo,
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         NombreArchivo = nombreArchivo;
         DescripcionArchivo = descripcionArchivo;
@@ -45,8 +52,12 @@ public class Archivo : Entity
         TipoArchivoId = tipoArchivoId;
         SubCapituloId = subCapituloId;
         EstructuraId = estructuraId;
+        NombreCorto = nombreCorto;
         EstadoArchivo = estadoArchivo;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static Archivo Create(
@@ -55,10 +66,13 @@ public class Archivo : Entity
        string? rutaArchivo,
        DateOnly fechaCarga,
        int tipoArchivoId,
-       Guid? subCapituloId,
-       Guid? estructuraId,
+       long? subCapituloId,
+       long? estructuraId,
+       string? nombreCorto,
        int estadoArchivo,
-       DateTime fechaCreacion)
+       DateTime fechaCreacion,
+       string? usuarioCreacion
+    )
     {
         if ((subCapituloId is null && estructuraId is null) ||
         (subCapituloId is not null && estructuraId is not null))
@@ -68,7 +82,6 @@ public class Archivo : Entity
 
         var entity = new Archivo
         {
-            Id = Guid.NewGuid(),
             NombreArchivo = nombreArchivo,
             DescripcionArchivo = descripcionArchivo,
             RutaArchivo = rutaArchivo,
@@ -76,30 +89,38 @@ public class Archivo : Entity
             TipoArchivoId = tipoArchivoId,
             SubCapituloId = subCapituloId,
             EstructuraId = estructuraId,
+            NombreCorto = nombreCorto,
             EstadoArchivo = estadoArchivo,
-            FechaCreacion = fechaCreacion
+            FechaCreacion = fechaCreacion,
+            UsuarioCreacion = usuarioCreacion
         };
 
-        entity.RaiseDomainEvent(new ArchivoCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new ArchivoCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-       Guid Id,   
-       string? descripcionArchivo,      
-       DateTime utcNow)
+       long Id,
+       string? descripcionArchivo,
+       string? nombreCorto,
+       DateTime utcNow,
+       string? usuarioModificacion
+    )
     {
         DescripcionArchivo = descripcionArchivo;
+        NombreCorto = nombreCorto;
         FechaModificacion = utcNow;
-        RaiseDomainEvent(new ArchivoUpdateDomainEvent(this.Id));
+        UsuarioModificacion = usuarioModificacion;
+        //RaiseDomainEvent(new ArchivoUpdateDomainEvent(this.Id));
         return Result.Success();
     }
 
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow, string usuarioEliminacion)
     {
         EstadoArchivo = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = UsuarioEliminacion;
         return Result.Success();
     }
 }

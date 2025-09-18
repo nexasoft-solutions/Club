@@ -4,5 +4,6 @@ namespace NexaSoft.Agro.Application.Masters.MenuItems.Commands.DeleteMenu;
 
 public sealed record  DeleteMenuCommand
 (
-    Guid Id
+    long Id,
+    string UsuarioEliminacion
 ):ICommand<bool>;

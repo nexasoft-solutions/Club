@@ -24,7 +24,10 @@ public class GetConstantesQueryHandler(
                     x.Clave,
                     x.Valor,
                     x.EstadoConstante,
-                    x.FechaCreacion
+                    x.FechaCreacion,
+                    x.FechaModificacion,
+                    x.UsuarioCreacion,
+                    x.UsuarioModificacion
                 )
             );
             var responses = await _repository.ListAsync<ConstanteResponse>(spec,cancellationToken);
@@ -36,34 +39,6 @@ public class GetConstantesQueryHandler(
                     totalItems,
                     responses
               );
-
-            
-
-            /*var responses = await _repository.ListAsync(spec, cancellationToken);
-            var totalItems = await _repository.CountAsync(spec, cancellationToken);
-
-            // Agrupamos después de la paginación de items planos
-            var agrupadas = responses
-                .GroupBy(c => c.TipoConstante)
-                .Select(g => new ConstanteAgrupadaResponse(
-                    TipoConstante: g.Key!,
-                    Data: g.ToList(),
-                    Total: g.Count()
-                ))
-                .ToList();
-
-            // Aquí podrías paginar los grupos si lo deseas (ejemplo opcional)
-            var pagedAgrupadas = agrupadas
-                .Skip((query.SpecParams.PageIndex - 1) * query.SpecParams.PageSize)
-                .Take(query.SpecParams.PageSize)
-                .ToList();
-
-            var pagination = new Pagination<ConstanteResponse>(
-                query.SpecParams.PageIndex,
-                query.SpecParams.PageSize,
-                agrupadas.Count, // total de grupos
-                pagedAgrupadas
-            );*/
 
             return Result.Success(pagination);
 

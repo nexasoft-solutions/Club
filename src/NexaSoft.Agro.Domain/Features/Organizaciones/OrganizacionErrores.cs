@@ -39,4 +39,10 @@ public class OrganizacionErrores
         "Organizacion.ErrorConsulta",
         "Error al listar Organizacion"
     );
+
+    public static readonly Error NoHayConincidencias = new
+    (
+        "Organizacion.NoHayConincidencias",
+        "No hay items para exportar"
+    );
 }

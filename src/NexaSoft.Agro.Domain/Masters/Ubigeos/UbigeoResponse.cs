@@ -2,10 +2,13 @@
 namespace NexaSoft.Agro.Domain.Masters.Ubigeos;
 
 public sealed record UbigeoResponse(
-    Guid Id,
+    long Id,
     string? Descripcion,
     string Nivel,
-    Guid? PadreId,
+    long? PadreId,
     string? DescripcionPadre,
-    DateTime FechaCreacion
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

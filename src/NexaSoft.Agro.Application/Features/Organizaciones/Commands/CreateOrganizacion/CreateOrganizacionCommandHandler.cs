@@ -13,9 +13,9 @@ public class CreateOrganizacionCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateOrganizacionCommandHandler> _logger
-) : ICommandHandler<CreateOrganizacionCommand, Guid>
+) : ICommandHandler<CreateOrganizacionCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateOrganizacionCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateOrganizacionCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de Organizacion");
@@ -33,7 +33,7 @@ public class CreateOrganizacionCommandHandler(
         bool existsNombreOrganizacion = await _repository.ExistsAsync(c => c.NombreOrganizacion == command.NombreOrganizacion, cancellationToken);
         if (existsNombreOrganizacion)
         {
-            return Result.Failure<Guid>(OrganizacionErrores.Duplicado);
+            return Result.Failure<long>(OrganizacionErrores.Duplicado);
         }
 
         var entity = Organizacion.Create(
@@ -41,8 +41,11 @@ public class CreateOrganizacionCommandHandler(
             command.ContactoOrganizacion,
             command.TelefonoContacto,
             command.SectorId,
+            command.RucOrganizacion,
+            command.Observaciones,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -59,7 +62,7 @@ public class CreateOrganizacionCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Organizacion");
-            return Result.Failure<Guid>(OrganizacionErrores.ErrorSave);
+            return Result.Failure<long>(OrganizacionErrores.ErrorSave);
         }
     }
 }

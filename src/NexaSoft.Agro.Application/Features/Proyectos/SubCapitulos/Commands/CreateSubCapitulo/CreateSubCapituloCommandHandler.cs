@@ -13,9 +13,9 @@ public class CreateSubCapituloCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateSubCapituloCommandHandler> _logger
-) : ICommandHandler<CreateSubCapituloCommand, Guid>
+) : ICommandHandler<CreateSubCapituloCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateSubCapituloCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateSubCapituloCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de SubCapitulo");
@@ -35,7 +35,8 @@ public class CreateSubCapituloCommandHandler(
             command.DescripcionSubCapitulo,
             command.CapituloId,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -52,7 +53,7 @@ public class CreateSubCapituloCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear SubCapitulo");
-            return Result.Failure<Guid>(SubCapituloErrores.ErrorSave);
+            return Result.Failure<long>(SubCapituloErrores.ErrorSave);
         }
     }
 }

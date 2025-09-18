@@ -16,9 +16,9 @@ public class CreateConstanteCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateConstanteCommandHandler> _logger
-) : ICommandHandler<CreateConstanteCommand, Guid>
+) : ICommandHandler<CreateConstanteCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateConstanteCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateConstanteCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de Constante");
@@ -36,7 +36,7 @@ public class CreateConstanteCommandHandler(
         bool existsValor = await _repository.ExistsAsync(c => c.TipoConstante == command.TipoConstante && c.Valor == command.Valor, cancellationToken);
         if (existsValor)
         {
-            return Result.Failure<Guid>(ConstanteErrores.Duplicado);
+            return Result.Failure<long>(ConstanteErrores.Duplicado);
         }
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -54,7 +54,8 @@ public class CreateConstanteCommandHandler(
                 string.Empty,
                 "int",
                 0,
-                _dateTimeProvider.CurrentTime.ToUniversalTime()
+                _dateTimeProvider.CurrentTime.ToUniversalTime(),
+                command.UsuarioCreacion
             );
 
             await _contadorRepository.AddAsync(contadorNew, cancellationToken);
@@ -63,7 +64,7 @@ public class CreateConstanteCommandHandler(
         }
 
         // Incrementar valor actual
-        var nuevoCodigo = contador.Incrementar(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        var nuevoCodigo = contador.Incrementar(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioCreacion!);
 
         // Guardar el cambio del contador
 
@@ -76,7 +77,8 @@ public class CreateConstanteCommandHandler(
             int.Parse(nuevoCodigo),
             command.Valor,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -93,7 +95,7 @@ public class CreateConstanteCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Constante");
-            return Result.Failure<Guid>(ConstanteErrores.ErrorSave);
+            return Result.Failure<long>(ConstanteErrores.ErrorSave);
         }
     }
 }

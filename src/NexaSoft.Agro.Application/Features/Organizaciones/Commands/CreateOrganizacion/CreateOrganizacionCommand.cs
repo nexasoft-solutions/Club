@@ -6,5 +6,8 @@ public sealed record CreateOrganizacionCommand(
     string? NombreOrganizacion,
     string? ContactoOrganizacion,
     string? TelefonoContacto,
-    int SectorId
-) : ICommand<Guid>;
+    string? RucOrganizacion,
+    string? Observaciones,
+    int SectorId,
+    string? UsuarioCreacion
+) : ICommand<long>;

@@ -4,8 +4,9 @@ namespace NexaSoft.Agro.Application.Masters.MenuItems.Commands.UpdateMenu;
 
 public sealed record UpdateMenuCommand
 (
-    Guid Id,
+    long Id,
     string? Label,
     string? Icon,
-    string? Route   
+    string? Route,
+    string? UsuarioModificacion
 ):ICommand<bool>;

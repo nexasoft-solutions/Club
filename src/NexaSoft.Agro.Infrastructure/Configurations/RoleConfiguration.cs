@@ -24,29 +24,17 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .HasMaxLength(250)
             .IsRequired(false);
 
-        /*builder.Ignore(r => r.RolePermissions);
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
 
-        builder.HasMany<RolePermission>("_rolePermissions")
-            .WithOne()
-            .HasForeignKey(rp => rp.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
 
-        builder.Metadata
-            .FindNavigation("_rolePermissions")
-            ?.SetPropertyAccessMode(PropertyAccessMode.Field);*/
-
-
-        /*builder.Ignore(r => r.UserRoles);
-
-        // Configuración de la relación con usuarios
-        builder.HasMany<UserRole>("_userRoles")
-            .WithOne()
-            .HasForeignKey(ur => ur.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Metadata
-            .FindNavigation("_userRoles")
-            ?.SetPropertyAccessMode(PropertyAccessMode.Field);*/
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
 
         builder.HasIndex(x => x.Name)
             .IsUnique()

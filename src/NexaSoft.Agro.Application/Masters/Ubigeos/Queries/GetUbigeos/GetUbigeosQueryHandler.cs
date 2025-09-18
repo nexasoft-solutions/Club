@@ -8,9 +8,9 @@ namespace NexaSoft.Agro.Application.Masters.Ubigeos.Queries.GetUbigeos;
 
 public class GetUbigeosQueryHandler(
     IGenericRepository<Ubigeo> _repository
-) : IQueryHandler<GetUbigeosQuery, Result<Pagination<UbigeoResponse>>>
+) : IQueryHandler<GetUbigeosQuery, Pagination<UbigeoResponse>>
 {
-    public async Task<Result<Result<Pagination<UbigeoResponse>>>> Handle(GetUbigeosQuery query, CancellationToken cancellationToken)
+    public async Task<Result<Pagination<UbigeoResponse>>> Handle(GetUbigeosQuery query, CancellationToken cancellationToken)
     {
         try
         {

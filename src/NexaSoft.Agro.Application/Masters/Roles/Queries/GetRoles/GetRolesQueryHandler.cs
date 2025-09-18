@@ -16,7 +16,11 @@ public class GetRolesQueryHandler(IGenericRepository<Role> _repository) : IQuery
             (
                 r.Id,
                 r.Name,
-                r.Description
+                r.Description,
+                r.FechaCreacion,
+                r.FechaModificacion,
+                r.UsuarioCreacion,
+                r.UsuarioModificacion
             )).ToList();
 
             return Result.Success(roles);

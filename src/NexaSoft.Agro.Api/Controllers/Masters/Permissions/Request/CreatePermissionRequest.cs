@@ -4,5 +4,6 @@ public sealed record CreatePermissionRequest
 (
     string? Name,
     string? Description,
-    string? ReferenciaControl
+    string? ReferenciaControl,
+    string? UsuarioCreacion
 );

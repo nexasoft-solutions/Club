@@ -19,6 +19,18 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .IsRequired()
             .HasColumnType("boolean");
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);            
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
         builder.HasIndex(x => new { x.Token })
             .HasDatabaseName("ix_token");
 

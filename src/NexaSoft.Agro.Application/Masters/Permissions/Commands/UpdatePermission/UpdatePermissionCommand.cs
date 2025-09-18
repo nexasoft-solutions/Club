@@ -4,8 +4,9 @@ namespace NexaSoft.Agro.Application.Masters.Permissions.Commands.CreatePermissio
 
 public sealed record UpdatePermissionCommand
 (
-    Guid Id,
+    long Id,
     string? Name,
     string? Description,
-    string? ReferenciaControl
+    string? ReferenciaControl,
+    string? UsuarioModificacion
 ):ICommand<bool>;

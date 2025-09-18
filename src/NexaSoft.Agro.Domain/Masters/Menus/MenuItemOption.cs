@@ -9,7 +9,7 @@ public class MenuItemOption : Entity
     public string? Icon { get; private set; }
     public string? Route { get; private set; }
 
-    public Guid? ParentId { get; private set; }
+    public long? ParentId { get; private set; }
     public MenuItemOption? Parent { get; private set; }
 
 
@@ -23,39 +23,45 @@ public class MenuItemOption : Entity
     private MenuItemOption() { }
 
     private MenuItemOption(
-        Guid id,
         string? label,
         string? icon,
         string? route,
-        Guid? parentId,
-        DateTime fechaCreacion
-    ): base(id, fechaCreacion)
+        long? parentId,
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         Label = label;
         Icon = icon;
         Route = route;
         ParentId = parentId;
         EstadoMenu = (int)EstadosEnum.Activo;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static MenuItemOption Create(
         string? label,
         string? icon,
         string? route,
-        Guid? parentId,
-        DateTime utcNow
+        long? parentId,
+        DateTime utcNow,
+        string? usuarioCreacion
     ){
         return new MenuItemOption(
-            Guid.NewGuid(),
             label,
             icon,
             route,
             parentId,
-            utcNow
+            utcNow,
+            usuarioCreacion
         );
     }
 
-    public void AddRole(Guid roleId)
+    public void AddRole(long roleId)
     {
         if (!Roles.Any(r => r.RoleId == roleId))
         {
@@ -67,18 +73,22 @@ public class MenuItemOption : Entity
         string? label,
         string? icon,
         string? route,
-        DateTime utcNow
-    ){
+        DateTime utcNow,
+        string? usuarioModificacion
+    )
+    {
         Label = label;
         Icon = icon;
         Route = route;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
     }
 
-    public void Delete(DateTime utcNow)
+    public void Delete(DateTime utcNow, string usuarioEliminacion)
     {
         EstadoMenu = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
 }

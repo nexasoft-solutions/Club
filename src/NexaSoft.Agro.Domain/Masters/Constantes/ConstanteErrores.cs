@@ -39,4 +39,18 @@ public class ConstanteErrores
         "Constante.ErrorConsulta",
         "Error al listar Constante"
     );
+
+    public static readonly Error NoHayConincidencias = new
+    (
+        "Constante.NoHayConincidencias",
+        "No hay items para exportar"
+    );
+
+    public static readonly Error ErrorGuardarEnLote = new
+    (
+        "Constante.ErrorGuardarEnLote",
+        "Ocurrió un error al guardar las constantes en lote."
+    );
+
+    
 }

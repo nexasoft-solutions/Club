@@ -34,15 +34,16 @@ public class UpdatePlanoCommandHandler(
             command.CodigoPlano,
             command.ArchivoId,
             command.ColaboradorId,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         // 1. Eliminar los que ya no están
         var incomingIds = command.Detalles.Select(d => d.Id).ToHashSet();
         var toRemove = entity.Value.Detalles.Where(d => !incomingIds.Contains(d.Id)).ToList();
         foreach (var d in toRemove)
-             await _repositoryDetalle.DeleteAsync(d);
-            //_dbContext.Remove(d);
+            await _repositoryDetalle.DeleteAsync(d);
+        //_dbContext.Remove(d);
 
         // 2. Agregar o actualizar
         foreach (var dto in command.Detalles)
@@ -53,7 +54,7 @@ public class UpdatePlanoCommandHandler(
                 // Update                
                 existing.Descripcion = dto.Descripcion;
                 existing.Coordenadas = dto.Coordenadas;
-                
+
             }
             else
             {
@@ -61,7 +62,8 @@ public class UpdatePlanoCommandHandler(
                     dto.planoId,
                     dto.Descripcion,
                     dto.Coordenadas,
-                    _dateTimeProvider.CurrentTime.ToUniversalTime()
+                    _dateTimeProvider.CurrentTime.ToUniversalTime(),
+                    command.UsuarioModificacion!
                 );
                 entity.Value.AgregarDetalle(nuevo);
             }

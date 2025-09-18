@@ -28,9 +28,9 @@ public class SubCapituloSpecification : BaseSpecification<SubCapitulo, SubCapitu
                         AddCriteria(x => x.DescripcionSubCapitulo != null && x.DescripcionSubCapitulo.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "capitulo":
-                        if (Guid.TryParse(specParams.Search, out var guid))
+                        if (long.TryParse(specParams.Search, out var longx))
                         {
-                            AddCriteria(x => x.CapituloId == guid);
+                            AddCriteria(x => x.CapituloId == longx);
                         }
                         else
                         {
@@ -72,7 +72,10 @@ public class SubCapituloSpecification : BaseSpecification<SubCapitulo, SubCapitu
                x.DescripcionSubCapitulo,
                x.Capitulo!.NombreCapitulo!,
                x.CapituloId,
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

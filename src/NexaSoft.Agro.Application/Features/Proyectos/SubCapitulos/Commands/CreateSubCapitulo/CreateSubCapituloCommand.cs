@@ -5,5 +5,6 @@ namespace NexaSoft.Agro.Application.Features.Proyectos.SubCapitulos.Commands.Cre
 public sealed record CreateSubCapituloCommand(
     string? NombreSubCapitulo,
     string? DescripcionSubCapitulo,
-    Guid CapituloId
-) : ICommand<Guid>;
+    long CapituloId,
+    string? UsuarioCreacion
+) : ICommand<long>;

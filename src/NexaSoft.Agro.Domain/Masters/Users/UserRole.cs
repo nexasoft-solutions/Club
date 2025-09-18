@@ -3,14 +3,14 @@ namespace NexaSoft.Agro.Domain.Masters.Users;
 public class UserRole
 {
 
-    public Guid UserId { get; private set; }
-    public Guid RoleId { get; private set; }
+    public long UserId { get; private set; }
+    public long RoleId { get; private set; }
 
     public bool IsDefault { get; private set; }
 
     private UserRole() { }
 
-    public UserRole(Guid userId, Guid roleId, bool isDefault)
+    public UserRole(long userId, long roleId, bool isDefault)
     {
         UserId = userId;
         RoleId = roleId;

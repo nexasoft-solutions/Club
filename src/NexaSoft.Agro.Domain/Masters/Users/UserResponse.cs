@@ -1,7 +1,7 @@
 namespace NexaSoft.Agro.Domain.Masters.Users;
 
 public sealed record UserResponse(
-    Guid Id,
+    long Id,
     string? UserApellidos,
     string? UserNombres,
     string? NombreCompleto,
@@ -9,5 +9,8 @@ public sealed record UserResponse(
     string? Email,
     string? UserDni,
     string? UserTelefono,
-    DateTime FechaCreacion
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

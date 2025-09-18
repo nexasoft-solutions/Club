@@ -32,6 +32,11 @@ public class ArchivoConfiguration : IEntityTypeConfiguration<Archivo>
             .HasMaxLength(550)
             .IsRequired(false);
 
+        builder.Property(x => x.NombreCorto)
+            .HasMaxLength(180)
+            .IsRequired(false);
+
+
         builder.Property(x => x.RutaArchivo)
             .HasMaxLength(350)
             .IsRequired(false);
@@ -40,15 +45,27 @@ public class ArchivoConfiguration : IEntityTypeConfiguration<Archivo>
             .IsRequired();
 
         builder.Property(x => x.TipoArchivoId)
-            .IsRequired();    
+            .IsRequired();
 
         builder.Property(x => x.EstadoArchivo)
             .IsRequired();
-            
-        
+
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
         builder.HasIndex(x => x.DescripcionArchivo)
             .HasDatabaseName("ix_archivo_descripcion");
-            
 
+        builder.HasIndex(x => x.DescripcionArchivo)
+            .HasDatabaseName("ix_archivo_nombre_corto");
     }
 }

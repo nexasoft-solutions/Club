@@ -1,8 +1,9 @@
 namespace NexaSoft.Agro.Api.Controllers.Features.Proyectos.Capitulos.Request;
 
 public sealed record UpdateCapituloRequest(
-   Guid Id,
+   long Id,
     string? NombreCapitulo,
     string? DescripcionCapitulo,
-    Guid EstudioAmbientalId
+    long EstudioAmbientalId,
+    string? UsuarioModificacion
 );

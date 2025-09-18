@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Features.Organizaciones.Events;
 
 public sealed record OrganizacionUpdateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

@@ -11,9 +11,9 @@ namespace NexaSoft.Agro.Application.Masters.Permissions.Commands.CreatePermision
 public class CreatePermissionCommandHandler(IGenericRepository<Permission> _repository,
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
-    ILogger<CreatePermissionCommandHandler> _logger) : ICommandHandler<CreatePermissionCommand, Guid>
+    ILogger<CreatePermissionCommandHandler> _logger) : ICommandHandler<CreatePermissionCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreatePermissionCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreatePermissionCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Iniciando proceso de creación de Permiso");
         var validator = new CreatePermissionCommandValidator();
@@ -29,7 +29,7 @@ public class CreatePermissionCommandHandler(IGenericRepository<Permission> _repo
         bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
         if (existsName)
         {
-            return Result.Failure<Guid>(PermissionErrores.Duplicado);
+            return Result.Failure<long>(PermissionErrores.Duplicado);
         }
 
 
@@ -37,7 +37,8 @@ public class CreatePermissionCommandHandler(IGenericRepository<Permission> _repo
             command.Name,
             command.Description,
             command.ReferenciaControl,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -54,7 +55,7 @@ public class CreatePermissionCommandHandler(IGenericRepository<Permission> _repo
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Permiso");
-            return Result.Failure<Guid>(PermissionErrores.ErrorSave);
+            return Result.Failure<long>(PermissionErrores.ErrorSave);
         }
     }
 }

@@ -28,9 +28,9 @@ public class CapituloSpecification : BaseSpecification<Capitulo, CapituloRespons
                         AddCriteria(x => x.DescripcionCapitulo != null && x.DescripcionCapitulo.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "estudioambiental":
-                        if (Guid.TryParse(specParams.Search, out var guid))
+                        if (long.TryParse(specParams.Search, out var longx))
                         {
-                            AddCriteria(x => x.EstudioAmbientalId == guid);
+                            AddCriteria(x => x.EstudioAmbientalId == longx);
                         }
                         else
                         {
@@ -72,7 +72,10 @@ public class CapituloSpecification : BaseSpecification<Capitulo, CapituloRespons
                x.DescripcionCapitulo,
                x.EstudioAmbiental!.Proyecto,
                x.EstudioAmbientalId,
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

@@ -13,9 +13,9 @@ public class CreateCapituloCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateCapituloCommandHandler> _logger
-) : ICommandHandler<CreateCapituloCommand, Guid>
+) : ICommandHandler<CreateCapituloCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateCapituloCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateCapituloCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de Capitulo");
@@ -35,7 +35,8 @@ public class CreateCapituloCommandHandler(
             command.DescripcionCapitulo,
             (int)EstadosEnum.Activo,
             command.EstudioAmbientalId,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -52,7 +53,7 @@ public class CreateCapituloCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear Capitulo");
-            return Result.Failure<Guid>(CapituloErrores.ErrorSave);
+            return Result.Failure<long>(CapituloErrores.ErrorSave);
         }
     }
 }

@@ -6,5 +6,6 @@ public sealed record CreatePermissionCommand
 (
     string? Name,
     string? Description,
-    string? ReferenciaControl
-):ICommand<Guid>;
+    string? ReferenciaControl,
+    string? UsuarioCreacion
+):ICommand<long>;

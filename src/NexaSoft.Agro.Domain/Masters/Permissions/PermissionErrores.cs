@@ -40,7 +40,7 @@ public class PermissionErrores
         "No se encontraros los permisos"
     );
 
-    public static Error PermisosNoEncontrados(IEnumerable<Guid> missingIds)
+    public static Error PermisosNoEncontrados(IEnumerable<long> missingIds)
     {
         var idsString = string.Join(", ", missingIds.Select(id => id.ToString()));
         return new Error(

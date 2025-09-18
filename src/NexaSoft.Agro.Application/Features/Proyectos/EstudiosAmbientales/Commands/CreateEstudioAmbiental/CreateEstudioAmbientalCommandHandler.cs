@@ -16,9 +16,9 @@ public class CreateEstudioAmbientalCommandHandler(
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateEstudioAmbientalCommandHandler> _logger
-) : ICommandHandler<CreateEstudioAmbientalCommand, Guid>
+) : ICommandHandler<CreateEstudioAmbientalCommand, long>
 {
-    public async Task<Result<Guid>> Handle(CreateEstudioAmbientalCommand command, CancellationToken cancellationToken)
+    public async Task<Result<long>> Handle(CreateEstudioAmbientalCommand command, CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("Iniciando proceso de creación de EstudioAmbiental");
@@ -36,7 +36,7 @@ public class CreateEstudioAmbientalCommandHandler(
         bool existsProyecto = await _repository.ExistsAsync(c => c.Proyecto == command.Proyecto, cancellationToken);
         if (existsProyecto)
         {
-            return Result.Failure<Guid>(EstudioAmbientalErrores.Duplicado);
+            return Result.Failure<long>(EstudioAmbientalErrores.Duplicado);
         }
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -54,7 +54,8 @@ public class CreateEstudioAmbientalCommandHandler(
                 string.Empty,
                 "string",
                 10,
-                _dateTimeProvider.CurrentTime.ToUniversalTime()
+                _dateTimeProvider.CurrentTime.ToUniversalTime(),
+                command.UsuarioCreacion
             );
 
             await _contadorRepository.AddAsync(contadorNew, cancellationToken);
@@ -63,7 +64,7 @@ public class CreateEstudioAmbientalCommandHandler(
         }
 
         // Incrementar valor actual
-        var nuevoCodigo = contador.Incrementar(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        var nuevoCodigo = contador.Incrementar(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioCreacion!);
 
         // Guardar el cambio del contador
       
@@ -78,7 +79,8 @@ public class CreateEstudioAmbientalCommandHandler(
             command.Detalles,
             command.EmpresaId,
             (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioCreacion
         );
 
         try
@@ -95,7 +97,7 @@ public class CreateEstudioAmbientalCommandHandler(
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
             _logger.LogError(ex, "Error al crear EstudioAmbiental");
-            return Result.Failure<Guid>(EstudioAmbientalErrores.ErrorSave);
+            return Result.Failure<long>(EstudioAmbientalErrores.ErrorSave);
         }
     }
 }

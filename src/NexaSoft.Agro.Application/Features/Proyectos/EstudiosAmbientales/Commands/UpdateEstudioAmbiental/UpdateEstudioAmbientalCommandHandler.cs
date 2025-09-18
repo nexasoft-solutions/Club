@@ -31,7 +31,8 @@ public class UpdateEstudioAmbientalCommandHandler(
             command.FechaFin,
             command.Detalles,
             command.EmpresaId,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try

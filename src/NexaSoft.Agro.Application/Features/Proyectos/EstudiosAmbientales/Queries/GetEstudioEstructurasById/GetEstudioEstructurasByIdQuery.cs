@@ -5,5 +5,5 @@ namespace NexaSoft.Agro.Application.Features.Proyectos.EstudiosAmbientales.Queri
 
 public record class GetEstudioEstructurasByIdQuery
 (
-    Guid Id
+    long Id
 ):IQuery<List<EstudioAmbientalEstructuraResponse>>;

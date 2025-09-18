@@ -45,6 +45,18 @@ public class EstudioAmbientalConfiguration : IEntityTypeConfiguration<EstudioAmb
                .HasForeignKey(x => x.EmpresaId)
                .OnDelete(DeleteBehavior.Restrict);
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioEliminacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
         /*builder.HasMany(e => e.Capitulos)
                .WithOne(c => c.EstudioAmbiental)
                .HasForeignKey(c => c.EstudioAmbientalId);*/
@@ -52,7 +64,7 @@ public class EstudioAmbientalConfiguration : IEntityTypeConfiguration<EstudioAmb
 
         builder.HasIndex(x => x.Proyecto)
             .HasDatabaseName("ix_estudioambiental_proyecto");
-            
+
         builder.HasIndex(x => x.CodigoEstudio)
             .HasDatabaseName("ix_estudioambiental_codigoestudio");
 

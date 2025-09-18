@@ -24,10 +24,10 @@ public class PlanoController(ISender _sender) : ControllerBase
              request.EscalaId,
              request.SistemaProyeccion,
              request.NombrePlano,
-             request.CodigoPlano,
              request.ArchivoId,
              request.ColaboradorId,
-             request.Detalles
+             request.Detalles,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -46,15 +46,16 @@ public class PlanoController(ISender _sender) : ControllerBase
              request.CodigoPlano,
              request.ArchivoId,
              request.ColaboradorId,
-             request.Detalles
+             request.Detalles,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeletePlano(Guid id, CancellationToken cancellationToken)
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> DeletePlano(long id, CancellationToken cancellationToken)
     {
         var command = new DeletePlanoCommand(
              id
@@ -77,9 +78,9 @@ public class PlanoController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetPlano(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {
@@ -89,9 +90,9 @@ public class PlanoController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
-    [HttpGet("{id:Guid}/archivoId")]
+    [HttpGet("{id:long}/archivoId")]
     public async Task<IActionResult> GetPlanoByArchivo(
-       Guid id,
+       long id,
        CancellationToken cancellationToken
     )
     {

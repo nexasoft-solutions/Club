@@ -6,10 +6,10 @@ public sealed record CreatePlanoRequest(
     int EscalaId,
     string? SistemaProyeccion,
     string? NombrePlano,
-    string? CodigoPlano,
-    Guid ArchivoId,
-    Guid ColaboradorId,
-    List<CreatePlanoDetalleRequest> Detalles
+    long ArchivoId,
+    long ColaboradorId,
+    List<CreatePlanoDetalleRequest> Detalles,
+    string? UsuarioCreacion
 );
 
 

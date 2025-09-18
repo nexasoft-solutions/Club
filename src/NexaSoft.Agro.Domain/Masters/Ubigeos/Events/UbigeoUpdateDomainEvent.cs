@@ -4,5 +4,5 @@ namespace NexaSoft.Agro.Domain.Masters.Ubigeos.Events;
 
 public sealed record UbigeoUpdateDomainEvent
 (
-    Guid Id
+    long Id
 ): IDomainEvent;

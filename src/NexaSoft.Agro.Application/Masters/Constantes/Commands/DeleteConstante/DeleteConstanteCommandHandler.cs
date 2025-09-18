@@ -23,7 +23,7 @@ public class DeleteConstanteCommandHandler(
             return Result.Failure<bool>(ConstanteErrores.NoEncontrado);
         }
 
-        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
 
         try
         {

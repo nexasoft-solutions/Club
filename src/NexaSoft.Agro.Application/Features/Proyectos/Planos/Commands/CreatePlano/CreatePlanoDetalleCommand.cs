@@ -4,7 +4,7 @@ namespace NexaSoft.Agro.Application.Features.Proyectos.Planos.Commands.CreatePla
 
 public sealed record CreatePlanoDetalleCommand
 (
-    Guid PlanoId,
+    long PlanoId,
     string? Descripcion,
     Geometry Coordenadas
 );

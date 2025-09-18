@@ -10,7 +10,7 @@ namespace NexaSoft.Agro.Infrastructure.Repositories;
 
 public class PlanoRepository(ApplicationDbContext _dbContext) : IPlanoRepository
 {
-    public async Task<Result<Plano>> GetPlanoByIdDetalle(Guid PlanoId, CancellationToken cancellationToken)
+    public async Task<Result<Plano>> GetPlanoByIdDetalle(long PlanoId, CancellationToken cancellationToken)
     {
         var entity = await _dbContext.Set<Plano>()
            .Include(p => p.Detalles)
@@ -22,7 +22,7 @@ public class PlanoRepository(ApplicationDbContext _dbContext) : IPlanoRepository
     }
 
 
-    public async Task<Result<PlanoItemResponse>> GetPlanoArchivoById(Guid ArchivoId, CancellationToken cancellationToken)
+    public async Task<Result<PlanoItemResponse>> GetPlanoArchivoById(long ArchivoId, CancellationToken cancellationToken)
     {
         var entity = await _dbContext.Set<Plano>()
         .Include(p => p.Detalles)
@@ -96,7 +96,8 @@ public class PlanoRepository(ApplicationDbContext _dbContext) : IPlanoRepository
                 d.Id,
                 d.Descripcion,
                 d.Coordenadas
-            )).ToList()
+            )).ToList(),
+            UsuarioCreacion: p.UsuarioCreacion
         )).ToList();
 
         return (
@@ -108,45 +109,5 @@ public class PlanoRepository(ApplicationDbContext _dbContext) : IPlanoRepository
             ),
             totalItems
         );
-
-        /*var queryBase = SpecificationEvaluator<Plano>.GetQuery(
-             _dbContext.Set<Plano>().AsQueryable(), spec);
-
-          var specParams = (spec as PlanoSpecification)?.SpecParams ?? new BaseSpecParams();
-
-          var totalItems = await _dbContext.Set<Plano>()
-             .Where((spec as PlanoSpecification)?.Criteria ?? (_ => true))
-             .CountAsync(cancellationToken);
-
-          var query = from c in queryBase
-
-                      join Escala in _dbContext.Set<Constante>()
-                          on new { Tipo = "Escala", Clave = c.Escala }
-                          equals new { Tipo = Escala.TipoConstante, Clave = Escala.Clave }
-                          into EscalaJoin
-                      from EscalaConst in EscalaJoin.DefaultIfEmpty()
-
-                      select new PlanoResponse(
-                          c.Id,
-                          EscalaConst.Valor,
-                          c.SistemaProyeccion,
-                          c.NombrePlano,
-                          c.CodigoPlano,
-                          c.Archivo!.NombreArchivo!,
-                          c.Colaborador!.UserName!,
-                          c.FechaCreacion
-                      );
-
-          var items = await query.ToListAsync(cancellationToken);
-
-          var pagination = new Pagination<PlanoResponse>(
-                specParams.PageIndex,
-                specParams.PageSize,
-                totalItems,
-                items
-          );
-
-          return (pagination, totalItems);*/
-
     }
 }

@@ -8,6 +8,8 @@ using NexaSoft.Agro.Application.Features.Organizaciones.Queries.GetOrganizacion;
 using NexaSoft.Agro.Application.Features.Organizaciones.Queries.GetOrganizaciones;
 using NexaSoft.Agro.Domain.Specifications;
 using NexaSoft.Agro.Api.Extensions;
+using NexaSoft.Agro.Application.Features.Organizaciones.Queries.GetOrganizacionesReport;
+using NexaSoft.Agro.Api.Controllers.Features.Organizaciones.Requests;
 
 namespace NexaSoft.Agro.Api.Controllers.Features.Organizaciones;
 
@@ -15,7 +17,7 @@ namespace NexaSoft.Agro.Api.Controllers.Features.Organizaciones;
 [ApiController]
 public class OrganizacionController(ISender _sender) : ControllerBase
 {
-       
+
     /// <summary>
     /// Endpoint para crear una nueva organización
     /// </summary>
@@ -30,7 +32,10 @@ public class OrganizacionController(ISender _sender) : ControllerBase
              request.NombreOrganizacion,
              request.ContactoOrganizacion,
              request.TelefonoContacto,
-             request.SectorId
+             request.RucOrganizacion,
+             request.Observaciones,
+             request.SectorId,
+             request.UsuarioCreacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -45,18 +50,22 @@ public class OrganizacionController(ISender _sender) : ControllerBase
              request.NombreOrganizacion,
              request.ContactoOrganizacion,
              request.TelefonoContacto,
-             request.SectorId
+             request.RucOrganizacion,
+             request.Observaciones,
+             request.SectorId,
+             request.UsuarioModificacion
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteOrganizacion(Guid id, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteOrganizacion(DeleteOrganizacionRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteOrganizacionCommand(
-             id
+             request.Id,
+             request.UsuarioEliminacion
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -76,9 +85,9 @@ public class OrganizacionController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> GetOrganizacion(
-        Guid id,
+        long id,
         CancellationToken cancellationToken
      )
     {
@@ -86,6 +95,26 @@ public class OrganizacionController(ISender _sender) : ControllerBase
         var resultado = await _sender.Send(query, cancellationToken);
 
         return resultado.ToActionResult(this);
+    }
+    
+    [HttpGet("reporte")]
+    public async Task<IActionResult> GetOrganizacionesReport(
+        [FromQuery] BaseSpecParams<int> specParams,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetOrganizacionesReportQuery(specParams);
+        var result = await _sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+            return result.ToActionResult(this);
+
+        // Retornar el PDF como archivo descargable
+        return File(
+            fileContents: result.Value,
+            contentType: "application/pdf",
+            fileDownloadName: "Reporte_Organizaciones.pdf"
+        );
     }
 
 }

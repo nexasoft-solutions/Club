@@ -17,7 +17,7 @@ public class RolePermissionConfiguration: IEntityTypeConfiguration<RolePermissio
             .IsRequired();
 
         builder.Property(rp => rp.PermissionId)
-            .IsRequired();
+            .IsRequired();           
 
         // Índice para búsquedas por PermissionId
         builder.HasIndex(rp => rp.PermissionId)

@@ -13,25 +13,26 @@ public class EstudioAmbiental : Entity
     public DateOnly FechaInicio { get; private set; }
     public DateOnly FechaFin { get; private set; }
     public string? Detalles { get; private set; }
-    public Guid EmpresaId { get; private set; }
+    public long EmpresaId { get; private set; }
     public int EstadoEstudioAmbiental { get; private set; }
     public Empresa? Empresa { get; private set; }
 
-    //public ICollection<Capitulo> Capitulos { get; private set; } = new List<Capitulo>();
 
     private EstudioAmbiental() { }
 
     private EstudioAmbiental(
-        Guid id, 
-        string? proyecto, 
+        string? proyecto,
         string? codigoEstudio,
-        DateOnly fechaInicio, 
-        DateOnly fechaFin, 
-        string? detalles, 
-        Guid empresaId, 
-        int estadoEstudioAmbiental, 
-        DateTime fechaCreacion
-    ) : base(id, fechaCreacion)
+        DateOnly fechaInicio,
+        DateOnly fechaFin,
+        string? detalles,
+        long empresaId,
+        int estadoEstudioAmbiental,
+        DateTime fechaCreacion,
+        string? usuarioCreacion,
+        string? usuarioModificacion = null,
+        string? usuarioEliminacion = null
+    ) : base(fechaCreacion, usuarioCreacion, usuarioModificacion, usuarioEliminacion)
     {
         Proyecto = proyecto;
         CodigoEstudio = codigoEstudio;
@@ -41,6 +42,9 @@ public class EstudioAmbiental : Entity
         EmpresaId = empresaId;
         EstadoEstudioAmbiental = estadoEstudioAmbiental;
         FechaCreacion = fechaCreacion;
+        UsuarioCreacion = usuarioCreacion;
+        UsuarioModificacion = usuarioModificacion;
+        UsuarioEliminacion = usuarioEliminacion;
     }
 
     public static EstudioAmbiental Create(
@@ -49,13 +53,13 @@ public class EstudioAmbiental : Entity
         DateOnly fechaInicio, 
         DateOnly fechaFin, 
         string? detalles, 
-        Guid empresaId, 
+        long empresaId, 
         int estadoEstudioAmbiental, 
-        DateTime fechaCreacion
+        DateTime fechaCreacion,
+        string? usuarioCreacion
     )
     {
         var entity = new EstudioAmbiental(
-            Guid.NewGuid(),
             proyecto,
             codigoEstudio,
             fechaInicio,
@@ -63,21 +67,23 @@ public class EstudioAmbiental : Entity
             detalles,
             empresaId,
             estadoEstudioAmbiental,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
-        entity.RaiseDomainEvent(new EstudioAmbientalCreateDomainEvent(entity.Id));
+        //entity.RaiseDomainEvent(new EstudioAmbientalCreateDomainEvent(entity.Id));
         return entity;
     }
 
     public Result Update(
-        Guid Id,
+        long Id,
         string? proyecto, 
         string? codigoEstudio,
         DateOnly fechaInicio, 
         DateOnly fechaFin, 
         string? detalles, 
-        Guid empresaId, 
-        DateTime utcNow
+        long empresaId, 
+        DateTime utcNow,
+        string? usuarioModificacion
     )
     {
         Proyecto = proyecto;
@@ -87,16 +93,18 @@ public class EstudioAmbiental : Entity
         Detalles = detalles;
         EmpresaId = empresaId;
         FechaModificacion = utcNow;
+        UsuarioModificacion = usuarioModificacion;
 
-        RaiseDomainEvent(new EstudioAmbientalUpdateDomainEvent(this.Id));
+        //RaiseDomainEvent(new EstudioAmbientalUpdateDomainEvent(this.Id));
 
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow,string usuarioEliminacion)
     {
         EstadoEstudioAmbiental = (int)EstadosEnum.Eliminado;
         FechaEliminacion = utcNow;
+        UsuarioEliminacion = usuarioEliminacion;
         return Result.Success();
     }
 }

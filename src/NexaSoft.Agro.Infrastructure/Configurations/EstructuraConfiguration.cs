@@ -40,7 +40,7 @@ public class EstructuraConfiguration : IEntityTypeConfiguration<Estructura>
             .WithMany(e => e.Hijos)
             .HasForeignKey(e => e.PadreEstructuraId)
             .OnDelete(DeleteBehavior.Restrict);
-    
+
 
         /*builder.HasMany(e => e.Archivos)
             .WithOne(a => a.Estructura)
@@ -50,6 +50,18 @@ public class EstructuraConfiguration : IEntityTypeConfiguration<Estructura>
                .WithMany()
                .HasForeignKey(x => x.SubCapituloId)
                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioEliminacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
 
         builder.HasIndex(x => x.PadreEstructuraId)
          .HasDatabaseName("ix_estructura_padreestructuraid");

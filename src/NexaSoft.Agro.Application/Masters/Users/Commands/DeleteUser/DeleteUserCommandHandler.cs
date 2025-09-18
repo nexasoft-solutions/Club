@@ -23,7 +23,7 @@ public class DeleteUserCommandHandler(
                 return Result.Failure<bool>(UserErrores.NoEncontrado);
             }
 
-         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
 
         try
         {

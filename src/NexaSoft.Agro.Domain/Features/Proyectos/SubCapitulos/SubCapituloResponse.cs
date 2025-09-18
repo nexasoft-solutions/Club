@@ -1,10 +1,13 @@
 namespace NexaSoft.Agro.Domain.Features.Proyectos.SubCapitulos;
 
 public sealed record SubCapituloResponse(
-    Guid Id,
+    long Id,
     string? NombreSubCapitulo,
     string? DescripcionSubCapitulo,
     string NombreCapitulo,
-    Guid CapituloId,
-    DateTime FechaCreacion
+    long CapituloId,
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

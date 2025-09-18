@@ -4,6 +4,6 @@ namespace NexaSoft.Agro.Api.Controllers.Masters.Users.Requests;
 
 public sealed record AssignRolesRequest
 (
-    Guid UserId,
+    long UserId,
     List<RoleDefultResponse> RoleDefs
 );

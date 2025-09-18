@@ -4,13 +4,13 @@ namespace NexaSoft.Agro.Domain.Masters.Users;
 
 public class RolePermission
 {
-    public Guid RoleId { get; private set; }
-    public Guid PermissionId { get; private set; }
+    public long RoleId { get; private set; }
+    public long PermissionId { get; private set; }
 
     // Constructor privado para EF Core
     private RolePermission() { }
 
-    public RolePermission(Guid roleId, Guid permissionId)
+    public RolePermission(long roleId, long permissionId)
     {
         RoleId = roleId;
         PermissionId = permissionId;

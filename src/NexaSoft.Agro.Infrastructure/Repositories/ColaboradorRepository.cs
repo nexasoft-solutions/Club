@@ -74,14 +74,16 @@ public class ColaboradorRepository(ApplicationDbContext _dbContext) : IColaborad
                         c.Comentarios,
                         c.ConsultoraId,
                         c.Consultora!.NombreConsultora,
-                        //c.Consultora!.RucConsultora,
                         c.UserName,
                         c.TipoDocumentoId,
                         c.GeneroColaboradorId,
                         c.EstadoCivilColaboradorId,
                         c.CargoId,
                         c.DepartamentoId,
-                        c.FechaCreacion
+                        c.FechaCreacion,
+                        c.FechaModificacion,
+                        c.UsuarioCreacion,
+                        c.UsuarioModificacion
                     );
 
         var items = await query.ToListAsync(cancellationToken);

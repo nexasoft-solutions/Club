@@ -4,5 +4,5 @@ public sealed record ConstanteClaveValorResponse
 (
     string? TipoConstante,
     int Clave,
-    string? Valor    
+    string? Valor
 );

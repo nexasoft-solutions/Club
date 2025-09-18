@@ -1,7 +1,7 @@
 namespace NexaSoft.Agro.Domain.Features.Organizaciones.Empresas;
 
 public sealed record EmpresaResponse(
-    Guid Id,
+    long Id,
     string? RazonSocial,
     string? RucEmpresa,
     string? ContactoEmpresa,
@@ -13,9 +13,12 @@ public sealed record EmpresaResponse(
     double LatitudEmpresa,
     double LongitudEmpresa,
     string? Organizacion,
-    Guid DepartamentoEmpresaId,
-    Guid ProvinciaEmpresaId,
-    Guid DistritoEmpresaId,
-    Guid OrganizacionId,
-    DateTime FechaCreacion
+    long DepartamentoEmpresaId,
+    long ProvinciaEmpresaId,
+    long DistritoEmpresaId,
+    long OrganizacionId,
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

@@ -7,13 +7,13 @@ namespace NexaSoft.Agro.Application.Masters.Ubigeos.Queries.GetUbigeo;
 
 public class GetUbigeoQueryHandler(
     IGenericRepository<Ubigeo> _repository
-) : IQueryHandler<GetUbigeoQuery, Result<UbigeoResponse>>
+) : IQueryHandler<GetUbigeoQuery, UbigeoResponse>
 {
-    public async Task<Result<Result<UbigeoResponse>>> Handle(GetUbigeoQuery query, CancellationToken cancellationToken)
+    public async Task<Result<UbigeoResponse>> Handle(GetUbigeoQuery query, CancellationToken cancellationToken)
     {
         try
         {
-            var specParams = new BaseSpecParams<Guid> { Id = query.Id };
+            var specParams = new BaseSpecParams<long> { Id = query.Id };
             var spec = new UbigeoSpecification(specParams);
             var entity = await _repository.GetEntityWithSpec(spec, cancellationToken);
                 if (entity is null)

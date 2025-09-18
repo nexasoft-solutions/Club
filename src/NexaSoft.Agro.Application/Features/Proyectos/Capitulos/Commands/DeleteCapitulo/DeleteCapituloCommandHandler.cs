@@ -23,7 +23,7 @@ public class DeleteCapituloCommandHandler(
             return Result.Failure<bool>(CapituloErrores.NoEncontrado);
         }
 
-        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
 
         try
         {

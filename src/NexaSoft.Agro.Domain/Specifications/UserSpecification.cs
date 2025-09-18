@@ -70,7 +70,10 @@ public class UserSpecification : BaseSpecification<User, UserResponse>
                x.Email,
                x.UserDni,
                x.UserTelefono,
-               x.FechaCreacion
+               x.FechaCreacion,
+               x.FechaModificacion,
+               x.UsuarioCreacion,
+               x.UsuarioModificacion
          ));
     }
 }

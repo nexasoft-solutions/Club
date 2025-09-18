@@ -15,7 +15,7 @@ public class DeleteMenuCommandHandler(
 {
     public async Task<Result<bool>> Handle(DeleteMenuCommand command, CancellationToken cancellationToken)
     {
-         _logger.LogInformation("Iniciando proceso de eliminación de Menu con ID {MenuId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de eliminación de Menu con ID {MenuId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
         if (entity is null)
         {
@@ -23,7 +23,7 @@ public class DeleteMenuCommandHandler(
             return Result.Failure<bool>(MenuItemErrores.NoEncontrado);
         }
 
-        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(), command.UsuarioEliminacion);
 
         try
         {

@@ -23,7 +23,7 @@ public class DeleteColaboradorCommandHandler(
             return Result.Failure<bool>(ColaboradorErrores.NoEncontrado);
         }
 
-        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime());
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioModificacion);
 
         try
         {

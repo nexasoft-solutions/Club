@@ -39,6 +39,18 @@ public class UbigeoConfiguration : IEntityTypeConfiguration<Ubigeo>
         builder.HasIndex(x => x.Nivel)
             .HasDatabaseName("ix_ubigeo_nivel");
 
+        builder.Property(x => x.UsuarioCreacion)
+            .HasMaxLength(40)
+            .IsRequired(false);
+
+        builder.Property(x => x.UsuarioModificacion)
+            .HasMaxLength(40)
+            .IsRequired(false);            
+
+        builder.Property(x => x.UsuarioEliminacion)
+         .HasMaxLength(40)
+         .IsRequired(false);
+
         builder.HasIndex(x => new { x.Nivel, x.Descripcion })
          .HasDatabaseName("ix_ubigeo_nivel_descripcion");
 

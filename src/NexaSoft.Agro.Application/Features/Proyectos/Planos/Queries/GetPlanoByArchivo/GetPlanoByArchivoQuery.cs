@@ -3,5 +3,5 @@ using NexaSoft.Agro.Domain.Features.Proyectos.Planos;
 
 namespace NexaSoft.Agro.Application.Features.Proyectos.Planos.Queries.GetPlanoByArchivo;
 
-public sealed record GetPlanoByArchivoQuery(Guid ArchivoId):IQuery<PlanoItemResponse>;
+public sealed record GetPlanoByArchivoQuery(long ArchivoId):IQuery<PlanoItemResponse>;
 

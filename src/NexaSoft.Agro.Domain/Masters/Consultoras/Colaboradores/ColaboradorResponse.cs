@@ -1,7 +1,7 @@
 namespace NexaSoft.Agro.Domain.Masters.Consultoras.Colaboradores;
 
 public sealed record ColaboradorResponse(
-    Guid Id,
+    long Id,
     string? NombresColaborador,
     string? ApellidosColaborador,
     string? NombreCompletoColaborador,
@@ -19,7 +19,7 @@ public sealed record ColaboradorResponse(
     decimal? Salario,
     DateOnly? FechaCese,
     string? Comentarios,
-    Guid ConsultoraId,
+    long ConsultoraId,
     string? NombreConsultora,
     string? UserName,
     int TipoDocumentoId,
@@ -27,5 +27,8 @@ public sealed record ColaboradorResponse(
     int EstadoCivilColaboradorId,
     int CargoId,
     int DepartamentoId,
-    DateTime FechaCreacion
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion,
+    string? UsuarioCreacion,
+    string? UsuarioModificacion
 );

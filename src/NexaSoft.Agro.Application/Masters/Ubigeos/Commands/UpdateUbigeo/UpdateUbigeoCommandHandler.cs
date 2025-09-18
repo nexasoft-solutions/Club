@@ -28,7 +28,8 @@ public class UpdateUbigeoCommandHandler(
             command.Descripcion,
             command.Nivel,
             command.PadreId,
-            _dateTimeProvider.CurrentTime.ToUniversalTime()
+            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+            command.UsuarioModificacion
         );
 
         try
