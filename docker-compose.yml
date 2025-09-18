@@ -8,7 +8,7 @@ services:
       - ./vault/config:/vault/config
       - ./vault/secrets:/vault/secrets
       - ./vault/secrets:/run/secrets
-    command: agent -config=/vault/config/vault-agent.hcl -pid-file=""
+    command: agent -config=/vault/config/vault-agent.hcl
     restart: unless-stopped
     networks:
       - nexanet
