@@ -54,7 +54,8 @@ public class CreateColaboradorCommandHandlerTests
             2500m,                     // Salario
             null,                      // FechaCese (puedes usar null o DateOnly)
             "Sin comentarios",         // Comentarios
-            long.NewGuid()             // ConsultoraId
+            1,                          // ConsultoraId
+            "aroblesa"                 // Usuario
         );
 
         _dateTimeProviderMock.Setup(p => p.CurrentTime).Returns(now);
@@ -94,7 +95,8 @@ public class CreateColaboradorCommandHandlerTests
              2500m,                     // Salario
              null,                      // FechaCese
              "Sin comentarios",         // Comentarios
-             long.NewGuid()             // ConsultoraId
+             1,                         // ConsultoraId
+             "aroblesa"                 // Usuario
          );
 
         _dateTimeProviderMock.Setup(p => p.CurrentTime).Returns(DateTime.UtcNow);

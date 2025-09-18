@@ -15,8 +15,12 @@ public class OrganizacionTests
         var contactoOrganizacion = "Juan Pérez";
         var telefono = "987654321";
         var sectorId = 3;
+        var ruc = "12345678965";
         var estado = (int)EstadosEnum.Activo;
+        var observaciones = "Todo ok";
         var fechaCreacion = DateTime.UtcNow;
+        var usuarioCreacion = "aroblesa";
+
 
         // Act
         var organizacion = Organizacion.Create(
@@ -24,10 +28,14 @@ public class OrganizacionTests
             contactoOrganizacion,
             telefono,
             sectorId,
+            ruc,
+            observaciones,
             estado,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
 
+        // Assert
         // Assert
         Assert.NotNull(organizacion);
         Assert.Equal(nombreOrganizacion, organizacion.NombreOrganizacion);
@@ -35,7 +43,9 @@ public class OrganizacionTests
         Assert.Equal(telefono, organizacion.TelefonoContacto);
         Assert.Equal(sectorId, organizacion.SectorId);
         Assert.Equal(estado, organizacion.EstadoOrganizacion);
-        Assert.Single(organizacion.GetDomainEvents());
+        Assert.Equal(observaciones, organizacion.Observaciones);
+        Assert.Equal(fechaCreacion, organizacion.FechaCreacion);
+        Assert.Equal(usuarioCreacion, organizacion.UsuarioCreacion);
     }
 
     [Fact]
@@ -47,8 +57,11 @@ public class OrganizacionTests
             "Carlos García",
             "999999999",
             1,
+            "12345678965",
+            "Todo ok",
             (int)EstadosEnum.Activo,
-            DateTime.UtcNow
+            DateTime.UtcNow,
+            "aroblesa"
         );
 
         var nuevoNombre = "AgroNexa Update";
@@ -56,6 +69,9 @@ public class OrganizacionTests
         var nuevoTelefono = "123456789";
         var nuevoSectorId = 2;
         var fechaUpdate = DateTime.UtcNow;
+        var nuevoRuc = "12345678965";
+        var nuevaObservaciones = "Todo ok";
+        var usuarioModificacion = "aroblesa";
 
         // Act
         var result = organizacion.Update(
@@ -64,7 +80,10 @@ public class OrganizacionTests
             nuevoContacto,
             nuevoTelefono,
             nuevoSectorId,
-            fechaUpdate
+            nuevoRuc,
+            nuevaObservaciones,
+            fechaUpdate,
+            usuarioModificacion
         );
 
         // Assert
@@ -73,9 +92,10 @@ public class OrganizacionTests
         Assert.Equal(nuevoContacto, organizacion.ContactoOrganizacion);
         Assert.Equal(nuevoTelefono, organizacion.TelefonoContacto);
         Assert.Equal(nuevoSectorId, organizacion.SectorId);
+        Assert.Equal(nuevoRuc, organizacion.RucOrganizacion);
+        Assert.Equal(nuevaObservaciones, organizacion.Observaciones);
         Assert.Equal(fechaUpdate, organizacion.FechaModificacion);
-        var updateEvents = organizacion.GetDomainEvents().OfType<OrganizacionUpdateDomainEvent>().ToList();
-        Assert.Single(updateEvents);
+        Assert.Equal(usuarioModificacion, organizacion.UsuarioModificacion);
     }
 
     [Fact]
@@ -87,18 +107,23 @@ public class OrganizacionTests
             "María Ruiz",
             "000000000",
             4,
+            "12345678962",
+            "Todo ok",
             (int)EstadosEnum.Activo,
-            DateTime.UtcNow
+            DateTime.UtcNow,
+            "aroblesa"
         );
 
         var fechaEliminacion = DateTime.UtcNow;
+        var usuarioEliminacion = "aroblesa";
 
         // Act
-        var result = organizacion.Delete(fechaEliminacion);
+        var result = organizacion.Delete(fechaEliminacion, usuarioEliminacion);
 
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal((int)EstadosEnum.Eliminado, organizacion.EstadoOrganizacion);
         Assert.Equal(fechaEliminacion, organizacion.FechaEliminacion);
+        Assert.Equal(usuarioEliminacion, organizacion.UsuarioEliminacion);
     }
 }

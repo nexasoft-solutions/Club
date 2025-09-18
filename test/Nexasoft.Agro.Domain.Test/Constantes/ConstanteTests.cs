@@ -16,6 +16,7 @@ public class ConstanteTests
         var valor = "Organizacion";
         var estadoConstante = (int)EstadosEnum.Activo;
         var fechaCreacion = DateTime.UtcNow;
+        var usuarioCreacion = "aroblesa";
 
         // Act
         var constante = Constante.Create(
@@ -23,14 +24,18 @@ public class ConstanteTests
             clave,
             valor,
             estadoConstante,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
 
         // Assert
         Assert.NotNull(constante);
         Assert.Equal(tipoConstante, constante.TipoConstante);
-        Assert.Equal(1, constante?.GetDomainEvents().Count); // Asegura que el evento fue levantado
-        Assert.IsType<ConstanteCreateDomainEvent>(constante?.GetDomainEvents().First());
+        Assert.Equal(clave, constante.Clave);
+        Assert.Equal(valor, constante.Valor);
+        Assert.Equal(estadoConstante, constante.EstadoConstante);
+        Assert.Equal(fechaCreacion, constante.FechaCreacion);
+        Assert.Equal(usuarioCreacion, constante.UsuarioCreacion);
     }
 
     [Fact]
@@ -42,25 +47,29 @@ public class ConstanteTests
         var valorInicial = "Organización";
         var estadoConstante = (int)EstadosEnum.Activo;
         var fechaCreacion = DateTime.UtcNow;
+        var usuarioCreacion = "aroblesa";
 
         var constante = Constante.Create(
             tipoConstanteInicial,
             clave,
             valorInicial,
             estadoConstante,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
 
         var nuevoTipoConstante = "TipoEmpresa";
         var nuevoValor = "Empresa";
         var fechaModificacion = DateTime.UtcNow;
+        var usuarioModificacion = "aroblesa";
 
         // Act
         var result = constante.Update(
             constante.Id,
             nuevoTipoConstante,
             nuevoValor,
-            fechaModificacion
+            fechaModificacion,
+            usuarioModificacion
         );
 
         // Assert
@@ -79,19 +88,24 @@ public class ConstanteTests
         var valor = "Organización";
         var estadoConstante = (int)EstadosEnum.Activo;
         var fechaCreacion = DateTime.UtcNow;
+        var usuarioCreacion = "aroblesa";
+
 
         var constante = Constante.Create(
             tipoConstante,
             clave,
             valor,
             estadoConstante,
-            fechaCreacion
+            fechaCreacion,
+            usuarioCreacion
         );
 
         var fechaEliminacion = DateTime.UtcNow;
+        var usuarioEliminacion = "aroblesa";
+
 
         // Act
-        var result = constante.Delete(fechaEliminacion);
+        var result = constante.Delete(fechaEliminacion, usuarioEliminacion);
 
         // Assert
         Assert.True(result.IsSuccess);

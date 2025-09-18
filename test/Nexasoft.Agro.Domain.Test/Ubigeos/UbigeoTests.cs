@@ -15,16 +15,19 @@ public class UbigeoTests
         var nivel = 1; // Nivel.Departamento → reemplazado por su valor numérico
         var estado = (int)EstadosEnum.Activo;
         var fechaCreacion = DateTime.UtcNow;
+        var usuarioCreacion = "aroblesa";
 
         // Act
-        var ubigeo = Ubigeo.Create(descripcion, nivel, padreId, estado, fechaCreacion);
+        var ubigeo = Ubigeo.Create(descripcion, nivel, padreId, estado, fechaCreacion,usuarioCreacion);
 
         // Assert
         Assert.NotNull(ubigeo);
         Assert.Equal(descripcion, ubigeo.Descripcion);
         Assert.Equal(nivel, ubigeo.Nivel);
+        Assert.Equal(padreId, ubigeo.PadreId);
         Assert.Equal(estado, ubigeo.EstadoUbigeo);
-        Assert.Contains(ubigeo.GetDomainEvents(), e => e is UbigeoCreateDomainEvent);
+        Assert.Equal(fechaCreacion, ubigeo.FechaCreacion);
+        Assert.Equal(usuarioCreacion, ubigeo.UsuarioCreacion);
     }
 
     [Fact]
@@ -36,16 +39,18 @@ public class UbigeoTests
             nivel: 1,
             padreId: null,
             estadoUbigeo: (int)EstadosEnum.Activo,
-            fechaCreacion: DateTime.UtcNow
+            fechaCreacion: DateTime.UtcNow,
+            usuarioCreacion: "aroblesa"
         );
 
         var nuevaDescripcion = "Lima Metropolitana";
         var nuevoNivel = 2;
-        var nuevoPadreId = long.NewGuid();
+        var nuevoPadreId = 1;
         var fechaModificacion = DateTime.UtcNow;
+        var usuarioModificacion = "aroblesa";
 
         // Act
-        var result = ubigeo.Update(ubigeo.Id, nuevaDescripcion, nuevoNivel, nuevoPadreId, fechaModificacion);
+        var result = ubigeo.Update(ubigeo.Id, nuevaDescripcion, nuevoNivel, nuevoPadreId, fechaModificacion,usuarioModificacion);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -53,7 +58,7 @@ public class UbigeoTests
         Assert.Equal(nuevoNivel, ubigeo.Nivel);
         Assert.Equal(nuevoPadreId, ubigeo.PadreId);
         Assert.Equal(fechaModificacion, ubigeo.FechaModificacion);
-        Assert.Contains(ubigeo.GetDomainEvents(), e => e is UbigeoUpdateDomainEvent);
+        Assert.Equal(usuarioModificacion, ubigeo.UsuarioModificacion);
     }
 
     [Fact]
@@ -65,17 +70,20 @@ public class UbigeoTests
             nivel: 1,
             padreId: null,
             estadoUbigeo: (int)EstadosEnum.Activo,
-            fechaCreacion: DateTime.UtcNow
+            fechaCreacion: DateTime.UtcNow,
+            usuarioCreacion: "aroblesa"
         );
 
         var fechaEliminacion = DateTime.UtcNow;
+        var usuarioEliminacion = "aroblesa";
 
         // Act
-        var result = ubigeo.Delete(fechaEliminacion);
+        var result = ubigeo.Delete(fechaEliminacion,usuarioEliminacion);
 
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal((int)EstadosEnum.Eliminado, ubigeo.EstadoUbigeo);
         Assert.Equal(fechaEliminacion, ubigeo.FechaEliminacion);
+        Assert.Equal(usuarioEliminacion, ubigeo.UsuarioEliminacion);
     }
 }
