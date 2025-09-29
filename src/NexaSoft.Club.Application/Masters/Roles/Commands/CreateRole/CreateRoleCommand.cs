@@ -1,0 +1,10 @@
+using NexaSoft.Club.Application.Abstractions.Messaging;
+
+namespace NexaSoft.Club.Application.Masters.Roles.Commands.CreateRole;
+
+public sealed record CreateRoleCommand
+(
+    string? Name,
+    string? Description,
+    string? UsuarioCreacion
+):ICommand<long>;
