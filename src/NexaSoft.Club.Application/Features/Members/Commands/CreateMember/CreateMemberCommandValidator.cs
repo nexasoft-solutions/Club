@@ -22,8 +22,8 @@ public class CreateMemberCommandValidator : AbstractValidator<CreateMemberComman
         // Validación personalizada para MemberType de tipo MemberType
         // Validación personalizada para MemberStatus de tipo MemberStatus
         // Validación personalizada para ExpirationDate de tipo DateOnly
-        RuleFor(x => x.QrCode)
-            .NotEmpty().WithMessage("El campo QrCode no puede estar vacío.");
+        /*RuleFor(x => x.QrCode)
+            .NotEmpty().WithMessage("El campo QrCode no puede estar vacío.");*/
         // Validación personalizada para QrExpiration de tipo DateTime
         RuleFor(x => x.ProfilePictureUrl)
             .NotEmpty().WithMessage("El campo ProfilePictureUrl no puede estar vacío.");

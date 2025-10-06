@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Abstractions.Time;
+using NexaSoft.Club.Application.Features.Members.Background;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Features.Members.Events;
@@ -14,7 +15,8 @@ public class CreateMemberCommandHandler(
     IGenericRepository<MemberType> _memberTypeRepository,
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
-    ILogger<CreateMemberCommandHandler> _logger
+    ILogger<CreateMemberCommandHandler> _logger,
+    IMemberBackgroundTaskService _backgroundTaskService
 ) : ICommandHandler<CreateMemberCommand, long>
 {
   public async Task<Result<long>> Handle(CreateMemberCommand command, CancellationToken cancellationToken)
@@ -34,16 +36,23 @@ public class CreateMemberCommandHandler(
       return Result.Failure<long>(MemberErrores.Duplicado);
     }
 
-    bool existsQrCode = await _repository.ExistsAsync(c => c.QrCode == command.QrCode, cancellationToken);
+    /*bool existsQrCode = await _repository.ExistsAsync(c => c.QrCode == command.QrCode, cancellationToken);
     if (existsQrCode)
     {
       return Result.Failure<long>(MemberErrores.Duplicado);
-    }
+    }*/
 
     var memberType = await _memberTypeRepository.GetByIdAsync(command.MemberTypeId, cancellationToken);
     if (memberType is null) return Result.Failure<long>(MemberErrores.TipoNoExiste);
 
-    var entity = Member.Create(
+    await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+    Member? entity = null;
+
+    try
+    {
+
+      entity = Member.Create(
         command.Dni,
         command.FirstName,
         command.LastName,
@@ -56,8 +65,8 @@ public class CreateMemberCommandHandler(
         command.JoinDate,
         command.ExpirationDate,
         command.Balance,
-        command.QrCode,
-        command.QrExpiration,
+        //command.QrCode,
+        //command.QrExpiration,
         command.ProfilePictureUrl,
         (int)EstadosEnum.Activo,
         false,
@@ -66,23 +75,30 @@ public class CreateMemberCommandHandler(
         command.CreatedBy
     );
 
-    try
-    {
-      await _unitOfWork.BeginTransactionAsync(cancellationToken);
+      // Marcar como processing
+      entity.MarkAsProcessing();
+
+
+      //await _unitOfWork.BeginTransactionAsync(cancellationToken);
       await _repository.AddAsync(entity, cancellationToken);
       await _unitOfWork.SaveChangesAsync(cancellationToken);
 
       _logger.LogInformation("Member con ID {MemberId} guardado, generando cuotas...", entity.Id);
 
-      // 2. DISPARAR EVENTO MANUALMENTE después de tener el ID
-      entity.RaiseDomainEvent(new MemberCreatedDomainEvent(
-          entity.Id,
-          entity.MemberTypeId,
-          entity.JoinDate,
-          entity.ExpirationDate,          
-          command.CreatedBy
-      ));
+      // 3. ENCOLAR GENERACIÓN DE CUOTAS EN BACKGROUND
+      await _backgroundTaskService.QueueMemberFeesGenerationAsync(entity.Id, command, cancellationToken);
 
+      // 4. DISPARAR EVENTO MANUALMENTE después de tener el ID     
+      /*entity.RaiseDomainEvent(new MemberQrGenerationRequiredDomainEvent(
+        entity.Id,
+        $"{entity.FirstName} {entity.LastName}",
+        entity.Dni!,
+        entity.JoinDate,
+        entity.ExpirationDate ?? entity.JoinDate.AddYears(1),
+        command.CreatedBy,
+        _dateTimeProvider.CurrentTime.ToUniversalTime()
+      ));*/
+      
       await _unitOfWork.CommitAsync(cancellationToken);
       _logger.LogInformation("Member con ID {MemberId} creado satisfactoriamente", entity.Id);
 

@@ -1,5 +1,4 @@
 using NexaSoft.Club.Application.Masters.Auths.Queries.AuthToken;
-using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Auth;
 using NexaSoft.Club.Domain.Masters.Users;
 

@@ -19,6 +19,8 @@ public class Payment : Entity
     public AccountingEntry? AccountingEntry { get; private set; }
     public int StatePayment { get; private set; }
 
+    public string? Status { get; private set; }
+
     public decimal CreditBalance { get; private set; }
 
     // Navegación a los items de pago
@@ -38,6 +40,7 @@ public class Payment : Entity
         int statePayment,
         DateTime createdAt,
         string? createdBy,
+        string? status,
         string? updatedBy = null,
         string? deletedBy = null
     ) : base(createdAt, createdBy, updatedBy, deletedBy)
@@ -53,6 +56,7 @@ public class Payment : Entity
         StatePayment = statePayment;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
+        Status = status;
         UpdatedBy = updatedBy;
         DeletedBy = deletedBy;
     }
@@ -68,7 +72,8 @@ public class Payment : Entity
         long? accountingEntryId,
         int statePayment,
         DateTime createdAd,
-        string? createdBy
+        string? createdBy,
+        string? status
     )
     {
         var entity = new Payment(
@@ -82,7 +87,8 @@ public class Payment : Entity
             accountingEntryId,
             statePayment,
             createdAd,
-            createdBy
+            createdBy,
+            status
         );
         return entity;
     }
@@ -153,6 +159,28 @@ public class Payment : Entity
         if (amount <= 0) return;
 
         CreditBalance += amount;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+
+    public void MarkAsCompleted(long accountingEntryId)
+    {
+        SetAccountingEntryId(accountingEntryId);
+        Status = "Completed";
+        UpdatedAt = DateTime.UtcNow;
+        // Puedes agregar más lógica de estado si es necesario
+    }
+
+    public void MarkAsFailed()
+    {
+        Status = "Failed";
+        //ErrorMessage = error;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void MarkAsProcessing()
+    {
+        Status = "Processing";
         UpdatedAt = DateTime.UtcNow;
     }
 }

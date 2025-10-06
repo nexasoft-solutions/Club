@@ -59,12 +59,12 @@ public class GenericRepository<T>(ApplicationDbContext _dbContext) : IGenericRep
 
     public async Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec, CancellationToken cancellationToken)
     {
-        return await ApplySpecification(spec).ToListAsync(cancellationToken); 
+        return await ApplySpecification(spec).ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<TResult>> ListAsync<TResult>(ISpecification<T, TResult> spec, CancellationToken cancellationToken)
     {
-        return await ApplySpecification(spec).ToListAsync(cancellationToken); 
+        return await ApplySpecification(spec).ToListAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(T entity)
@@ -103,4 +103,16 @@ public class GenericRepository<T>(ApplicationDbContext _dbContext) : IGenericRep
     {
         await _dbContext.Set<T>().AddRangeAsync(entities, cancellationToken);
     }
+
+    public async Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
+    {
+        foreach (var entity in entities)
+        {
+            _dbContext.Set<T>().Attach(entity);
+            _dbContext.Entry(entity).State = EntityState.Modified;
+        }
+
+        await Task.CompletedTask;
+    }
+
 }

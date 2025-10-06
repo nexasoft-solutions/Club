@@ -1,4 +1,4 @@
-using System.Text.Json;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +9,10 @@ using NexaSoft.Club.Application.Abstractions.Email;
 using NexaSoft.Club.Application.Abstractions.Excel;
 using NexaSoft.Club.Application.Abstractions.Reporting;
 using NexaSoft.Club.Application.Abstractions.Time;
+using NexaSoft.Club.Application.Features.Members.Background;
+using NexaSoft.Club.Application.Features.Members.Services;
+using NexaSoft.Club.Application.Features.Payments.Background;
+using NexaSoft.Club.Application.Features.Payments.Services;
 using NexaSoft.Club.Application.Masters.Constantes;
 using NexaSoft.Club.Application.Masters.MenuItems;
 using NexaSoft.Club.Application.Masters.Roles;
@@ -20,6 +24,8 @@ using NexaSoft.Club.Infrastructure.Abstractions.Data;
 using NexaSoft.Club.Infrastructure.Abstractions.Email;
 using NexaSoft.Club.Infrastructure.Abstractions.Excel;
 using NexaSoft.Club.Infrastructure.Abstractions.Time;
+using NexaSoft.Club.Infrastructure.Auth;
+using NexaSoft.Club.Infrastructure.Background;
 using NexaSoft.Club.Infrastructure.ConfigSettings;
 using NexaSoft.Club.Infrastructure.Repositories;
 using NexaSoft.Club.Infrastructure.Repositories.Reports;
@@ -202,6 +208,25 @@ public static class DependencyInjection
         services.AddSingleton<IFileStorageService, MinioStorageService>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped(typeof(IGenericExcelImporter<>), typeof(GenericExcelImporter<>));
+
+        // Generadores background
+        services.AddScoped<IMemberQrBackgroundGenerator, MemberQrBackgroundGenerator>();
+
+        services.AddSingleton<IPaymentBackgroundTaskService, PaymentBackgroundTaskService>();
+        services.AddScoped<IPaymentBackgroundProcessor, PaymentBackgroundProcessor>();
+        services.AddSingleton<IMemberBackgroundTaskService, MemberBackgroundTaskService>();
+        services.AddScoped<IMemberFeesBackgroundGenerator, MemberFeesBackgroundGenerator>();
+
+        services.AddScoped<IMemberTokenService, MemberTokenService>();
+        services.AddScoped<IMemberQrService, MemberQrService>();
+
+        // Para QR (Domain Events - No crítico)
+        //services.AddScoped<INotificationHandler<MemberQrGenerationRequiredDomainEvent>, MemberQrGenerationEventHandler>();
+        services.AddScoped<IQrGeneratorService, QrGeneratorService>();
+
+        // Background service para renovación QR
+        services.AddHostedService<QrRenewalBackgroundService>();
+
 
 
         // -----------------------------------

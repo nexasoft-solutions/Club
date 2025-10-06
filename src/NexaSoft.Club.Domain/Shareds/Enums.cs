@@ -54,7 +54,7 @@ public static class Enums
 
     public enum PeriodicidadEnum
     {
-        UicaVez =  1,
+        UicaVez = 1,
         Diario = 2,
         Semanal = 3,
         Quincenal = 4,
@@ -66,6 +66,16 @@ public static class Enums
         Anual = 10,
         Bienal = 11,
         Plurianual = 12
+
+    }
+
+    public enum VisitTypeEnum
+    {
+        [Description("Entrada Normal")]
+        Normal = 1,
+
+        [Description("Entrada con Visita")]
+        ConVisita = 2,
 
     }
 

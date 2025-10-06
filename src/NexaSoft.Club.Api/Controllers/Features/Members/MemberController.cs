@@ -8,6 +8,9 @@ using NexaSoft.Club.Application.Features.Members.Queries.GetMember;
 using NexaSoft.Club.Application.Features.Members.Queries.GetMembers;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using NexaSoft.Club.Application.Features.Members.Queries.GetMemberMetrics;
+using NexaSoft.Club.Api.Controllers.Features.Members.Requests;
+using NexaSoft.Club.Application.Features.Members.Queries.GetMemberPasswordStatus;
 
 namespace NexaSoft.Club.Api.Controllers.Features.Members;
 
@@ -17,7 +20,7 @@ public class MemberController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateMember(CreateMemberRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateMember(CreateMemberRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateMemberCommand(
              request.Dni,
@@ -32,9 +35,9 @@ public class MemberController(ISender _sender) : ControllerBase
              request.JoinDate,
              request.ExpirationDate,
              request.Balance,
-             request.QrCode,
-             request.QrExpiration,
-             request.ProfilePictureUrl,           
+             //request.QrCode,
+             //request.QrExpiration,
+             request.ProfilePictureUrl,
              request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
@@ -43,7 +46,7 @@ public class MemberController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateMember(UpdateMemberRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateMember(UpdateMemberRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateMemberCommand(
            request.Id,
@@ -72,7 +75,7 @@ public class MemberController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteMember(DeleteMemberRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteMember(DeleteMemberRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteMemberCommand(
              request.Id,
@@ -96,15 +99,38 @@ public class MemberController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetMember(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetMember(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetMemberQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);
 
+        return resultado.ToActionResult(this);
+    }
+
+    [HttpGet("metrics/{memberId:long}")]
+    public async Task<IActionResult> GetMemberMetrics(
+        long memberId,
+        CancellationToken cancellationToken
+     )
+    {
+        var query = new GetMemberMetricQuery(memberId);
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.ToActionResult(this);
+    }
+
+    [HttpPost("has-password")]
+    public async Task<IActionResult> HasPassword(HasPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var query = new GetMemberPasswordStatusQuery(
+            request.Dni,
+            request.BirthDate
+        );
+        var resultado = await _sender.Send(query, cancellationToken);
         return resultado.ToActionResult(this);
     }
 

@@ -14,9 +14,16 @@ public sealed record CreateMemberCommand(
     long StatusId,
     DateOnly JoinDate,
     DateOnly? ExpirationDate,
-    decimal Balance,
-    string? QrCode,
-    DateTime? QrExpiration,
+    decimal Balance,    
     string? ProfilePictureUrl,   
     string CreatedBy
 ) : ICommand<long>;
+
+
+public record MemberFeesBackgroundData(
+    long MemberId,
+    long MemberTypeId,
+    DateOnly JoinDate,
+    DateOnly? ExpirationDate,
+    string CreatedBy
+);

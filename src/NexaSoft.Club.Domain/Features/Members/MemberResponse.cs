@@ -17,7 +17,7 @@ public sealed record MemberResponse(
     DateOnly? ExpirationDate,
     decimal Balance,
     string? QrCode,
-    DateTime? QrExpiration,
+    DateOnly? QrExpiration,
     string? ProfilePictureUrl,
     bool EntryFeePaid,
     DateTime? LastPaymentDate,

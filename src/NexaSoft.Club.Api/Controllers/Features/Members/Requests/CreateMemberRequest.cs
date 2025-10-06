@@ -13,8 +13,8 @@ public sealed record CreateMemberRequest(
     DateOnly JoinDate,
     DateOnly? ExpirationDate,
     decimal Balance,
-    string? QrCode,
-    DateTime? QrExpiration,
+    //string? QrCode,
+    //DateTime? QrExpiration,
     string? ProfilePictureUrl,
     string CreatedBy
 );

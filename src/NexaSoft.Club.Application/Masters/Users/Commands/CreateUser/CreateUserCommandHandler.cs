@@ -45,7 +45,7 @@ public class CreateUserCommandHandler(
       return Result.Failure<long>(UserErrores.Duplicado);
     }
 
-  
+
     bool existsEmail = await _repository.ExistsAsync(c => c.Email == command.Email, cancellationToken);
     if (existsEmail)
     {

@@ -18,4 +18,11 @@ public class RefreshTokenErrores
         "RefreshToken.NoEncontrado",
         "No se encontró el refresh token."
     );
+
+    public static readonly Error ErrorGeneraToken = new(
+        "RefreshToken.ErrorGeneraToken",
+        "Error al generar el token"
+    );
+
+    
 }

@@ -22,11 +22,24 @@ public class Member : Entity
     public DateOnly? ExpirationDate { get; private set; }
     public decimal Balance { get; private set; }
     public string? QrCode { get; private set; }
-    public DateTime? QrExpiration { get; private set; }
+    public DateOnly? QrExpiration { get; private set; }
+    public string? QrUrl { get; private set; }
     public string? ProfilePictureUrl { get; private set; }
     public int StateMember { get; private set; }
-    public bool EntryFeePaid  { get; private set; }
-    public DateTime? LastPaymentDate  { get; private set; }
+    public bool EntryFeePaid { get; private set; }
+    public DateTime? LastPaymentDate { get; private set; }
+    public string? Status { get; private set; }
+
+    //Para Login
+    public string? PasswordHash { get; private set; }
+    public string? BiometricToken { get; private set; }
+    public DateTime? PasswordSetDate { get; private set; }
+    public DateTime? LastLoginDate { get; private set; }
+    public string? DeviceId { get; private set; }
+    public bool HasSetPassword { get; private set; } // ← NUEVO: saber si ya configuró password
+
+    private readonly List<MemberQrHistory> _qrHistory = new();
+    public IReadOnlyCollection<MemberQrHistory> QrHistory => _qrHistory.AsReadOnly();
 
     private Member() { }
 
@@ -43,8 +56,8 @@ public class Member : Entity
         DateOnly joinDate,
         DateOnly? expirationDate,
         decimal balance,
-        string? qrCode,
-        DateTime? qrExpiration,
+        //string? qrCode,
+        //DateTime? qrExpiration,
         string? profilePictureUrl,
         int stateMember,
         bool entryFeePaid,
@@ -67,8 +80,8 @@ public class Member : Entity
         JoinDate = joinDate;
         ExpirationDate = expirationDate;
         Balance = balance;
-        QrCode = qrCode;
-        QrExpiration = qrExpiration;
+        //QrCode = qrCode;
+        //QrExpiration = qrExpiration;
         ProfilePictureUrl = profilePictureUrl;
         StateMember = stateMember;
         EntryFeePaid = entryFeePaid;
@@ -92,8 +105,8 @@ public class Member : Entity
         DateOnly joinDate,
         DateOnly? expirationDate,
         decimal balance,
-        string? qrCode,
-        DateTime? qrExpiration,
+        //string? qrCode,
+        //DateTime? qrExpiration,
         string? profilePictureUrl,
         int stateMember,
         bool entryFeePaid,
@@ -115,8 +128,8 @@ public class Member : Entity
             joinDate,
             expirationDate,
             balance,
-            qrCode,
-            qrExpiration,
+            //qrCode,
+            //qrExpiration,
             profilePictureUrl,
             stateMember,
             entryFeePaid,
@@ -141,8 +154,8 @@ public class Member : Entity
         DateOnly joinDate,
         DateOnly? expirationDate,
         decimal balance,
-        string? qrCode,
-        DateTime? qrExpiration,
+        //string? qrCode,
+        //DateTime? qrExpiration,
         string? profilePictureUrl,
         bool entryFeePaid,
         DateTime? lastPaymentDate,
@@ -162,8 +175,8 @@ public class Member : Entity
         JoinDate = joinDate;
         ExpirationDate = expirationDate;
         Balance = balance;
-        QrCode = qrCode;
-        QrExpiration = qrExpiration;
+        //QrCode = qrCode;
+        //QrExpiration = qrExpiration;
         ProfilePictureUrl = profilePictureUrl;
         EntryFeePaid = entryFeePaid;
         LastPaymentDate = lastPaymentDate;
@@ -187,5 +200,121 @@ public class Member : Entity
         Balance += paymentAmount; // Aumentar balance (si era negativo, se reduce la deuda)
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = updatedBy;
-    }    
+    }
+
+    public void RevertBalance(decimal amount)
+    {
+        // Revertir la operación - asumiendo que UpdateBalance resta del balance
+        Balance += amount; // Si UpdateBalance suma, entonces sería Balance -= amount
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = "System";
+
+        // Log para auditoría
+        /*_logger?.LogInformation("Balance revertido para miembro {MemberId}. Monto: {Amount}, Razón: {Reason}", 
+            Id, amount, reason);*/
+    }
+
+    public void MarkAsCompleted()
+    {
+        //SetAccountingEntryId(accountingEntryId);
+        Status = "Completed";
+        UpdatedAt = DateTime.UtcNow;
+        // Puedes agregar más lógica de estado si es necesario
+    }
+
+    /*public void MarkAsFailed()
+    {
+        Status = "Failed";
+        //ErrorMessage = error;
+        UpdatedAt = DateTime.UtcNow;
+    }*/
+
+    public void MarkAsProcessing()
+    {
+        Status = "Processing";
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void MarkAsFeesGenerationCompleted()
+    {
+        // Status = "Active";
+        Status = "Completed";
+        UpdatedAt = DateTime.UtcNow;
+        // Log para auditoría
+        //_logger?.LogInformation("Generación de cuotas completada para member {MemberId}", Id);
+    }
+
+    public void MarkAsFeesGenerationFailed()
+    {
+        Status = "Failed";
+        UpdatedAt = DateTime.UtcNow;
+
+        // Podrías agregar un campo ErrorMessage
+        //_logger?.LogWarning("Generación de cuotas falló para member {MemberId}: {Error}", Id, error);
+    }
+
+    // Método para verificar si necesita nuevo QR
+    public bool NeedsNewQr()
+    {
+        if (string.IsNullOrEmpty(QrCode) || QrExpiration == null)
+            return true;
+
+        return QrExpiration.Value <= DateOnly.FromDateTime(DateTime.Now.AddDays(15));
+    }
+
+    public void UpdateQr(string newQrCode, string qrUrl, DateOnly expirationDate, string createdAt)
+    {
+        // Guardar en historial si ya existe un QR
+        if (!string.IsNullOrEmpty(QrCode))
+        {
+            var qrHistory = MemberQrHistory.Create(
+                Id,
+                QrCode,
+                QrUrl ?? string.Empty,
+                QrExpiration,
+                DateTime.UtcNow,
+                "System"
+            );
+            _qrHistory.Add(qrHistory);
+        }
+
+        // Actualizar QR actual
+        QrCode = newQrCode;
+        QrUrl = qrUrl;
+        QrExpiration = expirationDate;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public bool IsUpToDateForQrRenewal()
+    {
+        // Lógica personalizada - ejemplo simple
+        return Balance >= 0;
+    }
+    
+
+    // Métodos
+    public void SetPassword(string password)
+    {
+        PasswordHash = password;
+        HasSetPassword = true;
+        PasswordSetDate = DateTime.UtcNow;
+    }
+
+    /*public bool VerifyPassword(string password)
+    {
+        return PasswordHash != null && BCrypt.Net.BCrypt.Verify(password, PasswordHash);
+    }*/
+
+    public void SetBiometricToken(string token)
+    {
+        BiometricToken = token;
+    }
+
+    public void RecordLogin(string deviceId)
+    {
+        LastLoginDate = DateTime.UtcNow;
+        DeviceId = deviceId;
+    }
+
+    public bool CanUsePasswordAuth() => HasSetPassword && PasswordHash != null;
 }

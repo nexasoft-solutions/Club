@@ -46,6 +46,10 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(x => x.IsPartial)
             .IsRequired();
 
+         builder.Property(x => x.Status)
+            .HasMaxLength(20)
+            .IsRequired(false);
+
         builder.Property(x => x.AccountingEntryId)
             .IsRequired(false);
 
