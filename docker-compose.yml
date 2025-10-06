@@ -1,0 +1,28 @@
+services:
+  nexasoft-club-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: nexasoft-club-api
+    ports:
+      - "5051:5051"
+    environment:
+      - Vault__Address=http://192.168.10.17:8200
+      - VAULT_TOKEN_FILE=/vault/token/vault_token
+      - ASPNETCORE_URLS=http://+:5051
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - /persistent/vault/token:/vault/token  # ✅ Solo si tu app lee el token desde aquí
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5051/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - nexanet
+
+networks:
+  nexanet:
+    driver: bridge

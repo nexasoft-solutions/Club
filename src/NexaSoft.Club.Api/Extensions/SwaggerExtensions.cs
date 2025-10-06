@@ -9,9 +9,9 @@ public static class SwaggerExtensions
     {
         var openApi = new OpenApiInfo
         {
-            Title = "NexaSoft Agro API",//"MVP-Colvida",//
+            Title = "NexaSoft Solutions API-Club",//"MVP-Colvida",//
             Version = "V1",
-            Description = "Sistema de Gestion de Agro API 2025", //"Sistema de Gestion de Seguros API 2025",//
+            Description = "Sistema de Gestion del Centro Social Ica API 2025", //"Sistema de Gestion de Seguros API 2025",//
             TermsOfService = new Uri("https://opensource.org/licenses/NIT"),
             Contact = new OpenApiContact
             {
