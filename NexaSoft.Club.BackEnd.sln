@@ -13,12 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaSoft.Club.Application",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaSoft.Club.Api", "src\NexaSoft.Club.Api\NexaSoft.Club.Api.csproj", "{2168736C-31B1-4A45-B142-270F7C0AD6D3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F956-CE84-757C-A364CCF449FC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexasoft.Agro.Application.Tests", "test\Nexasoft.Agro.Application.Tests\Nexasoft.Agro.Application.Tests.csproj", "{F52895EE-9A0E-46AC-ACC2-8935E614E5AA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexasoft.Agro.Domain.Test", "test\Nexasoft.Agro.Domain.Test\Nexasoft.Agro.Domain.Test.csproj", "{704271C7-B231-4B0B-B3EE-91EF64292AE7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
