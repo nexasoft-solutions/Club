@@ -17,7 +17,6 @@ using NexaSoft.Club.Application.Features.Reservations.Services;
 using NexaSoft.Club.Application.Masters.MenuItems;
 using NexaSoft.Club.Application.Masters.Roles;
 using NexaSoft.Club.Application.Masters.Users;
-using NexaSoft.Club.Application.Services;
 using NexaSoft.Club.Application.Storages;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Infrastructure.Abstractions.Auth;
@@ -205,8 +204,8 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         //services.AddScoped(typeof(IPdfReportGenerator<>), typeof(PdfReportGenerator<>));
         //services.AddScoped<IStudyTreePdfReportGenerator, StudyTreePdfReportGenerator>();
-        services.AddScoped(typeof(IReceiptGenerator), typeof(ReceiptGenerator));
-        services.AddScoped(typeof(IReceiptService), typeof(ReceiptService));
+        services.AddScoped<IReceiptThermalService, ReceiptThermalService>();
+        services.AddScoped<IReceiptGenericService, ReceiptGenericService>();
 
         services.AddSingleton<IFileStorageService, MinioStorageService>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -220,7 +219,7 @@ public static class DependencyInjection
         services.AddSingleton<IMemberBackgroundTaskService, MemberBackgroundTaskService>();
         services.AddScoped<IMemberFeesBackgroundGenerator, MemberFeesBackgroundGenerator>();
         services.AddScoped<IMemberUserBackgroundGenerator, MemberUserBackgroundGenerator>();
-        
+
         services.AddScoped<IReservationBackgroundTaskService, ReservationBackgroundTaskService>();
         services.AddScoped<IReservationBackgroundProcessor, ReservationBackgroundProcessor>();
 
