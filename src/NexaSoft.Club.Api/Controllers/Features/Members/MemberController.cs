@@ -11,6 +11,7 @@ using NexaSoft.Club.Api.Extensions;
 using NexaSoft.Club.Application.Features.Members.Queries.GetMemberMetrics;
 using NexaSoft.Club.Api.Controllers.Features.Members.Requests;
 using NexaSoft.Club.Application.Features.Members.Queries.GetMemberPasswordStatus;
+using NexaSoft.Club.Application.Features.Members.Queries.GetMemberQr;
 
 namespace NexaSoft.Club.Api.Controllers.Features.Members;
 
@@ -28,6 +29,9 @@ public class MemberController(ISender _sender) : ControllerBase
              request.LastName,
              request.Email,
              request.Phone,
+             request.DepartamentId,
+             request.ProvinceId,
+             request.DistrictId,
              request.Address,
              request.BirthDate,
              request.MemberTypeId,
@@ -35,9 +39,7 @@ public class MemberController(ISender _sender) : ControllerBase
              request.JoinDate,
              request.ExpirationDate,
              request.Balance,
-             //request.QrCode,
-             //request.QrExpiration,
-             request.ProfilePictureUrl,
+             request.UserTypeId,
              request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
@@ -49,24 +51,18 @@ public class MemberController(ISender _sender) : ControllerBase
     public async Task<IActionResult> UpdateMember(UpdateMemberRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateMemberCommand(
-           request.Id,
+             request.Id,
              request.Dni,
              request.FirstName,
              request.LastName,
              request.Email,
              request.Phone,
+             request.DepartamentId,
+             request.ProvinceId,
+             request.DistrictId,
              request.Address,
-             request.BirthDate,
-             request.MemberTypeId,
-             request.StatusId,
-             request.JoinDate,
-             request.ExpirationDate,
-             request.Balance,
-             request.QrCode,
-             request.QrExpiration,
-             request.ProfilePictureUrl,
-             request.EntryFeePaid,
-             request.LastPaymentDate,
+             request.BirthDate,            
+             request.Balance,           
              request.UpdatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
@@ -106,6 +102,18 @@ public class MemberController(ISender _sender) : ControllerBase
      )
     {
         var query = new GetMemberQuery(id);
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.ToActionResult(this);
+    }
+
+    [HttpGet("qr/{memberId:long}")]
+    public async Task<IActionResult> GetMemberQr(
+        long memberId,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetMemberQrQuery(memberId);
         var resultado = await _sender.Send(query, cancellationToken);
 
         return resultado.ToActionResult(this);

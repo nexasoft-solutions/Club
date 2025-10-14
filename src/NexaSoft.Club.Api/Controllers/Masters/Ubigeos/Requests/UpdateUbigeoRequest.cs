@@ -4,8 +4,8 @@ namespace NexaSoft.Club.Api.Controllers.Masters.Ubigeos.Request;
 
 public sealed record UpdateUbigeoRequest(
    long Id,
-    string? Descripcion,
-    int Nivel,
-    long? PadreId,
-    string? UsuarioModificacion
+    string? Description,
+    int Level,
+    long? ParentId,
+    string? UserModification
 );

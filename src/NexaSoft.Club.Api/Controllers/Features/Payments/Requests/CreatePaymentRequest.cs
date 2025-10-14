@@ -7,8 +7,9 @@ public sealed record CreatePaymentRequest(
     List<PaymentItemRequest>? PaymentItems,
     decimal Amount,
     DateOnly PaymentDate,
-    string? PaymentMethod,
+    long PaymentMethodId,
     string? ReferenceNumber,
+    long DocumentTypeId,
     string? ReceiptNumber,   
     string CreatedBy
 );

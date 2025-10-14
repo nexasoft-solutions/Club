@@ -1,10 +1,13 @@
 namespace NexaSoft.Club.Api.Controllers.Masters.Users.Request;
 
 public sealed record CreateUserRequest(
-    string? UserApellidos,
-    string? UserNombres,  
+    string? LastName,
+    string? FirstName,
     string? Password,
     string? Email,
-    string? UserDni,
-    string? UserTelefono
+    string? Dni,
+    string? Phone,
+    long UserTypeId,
+    long? MemberId,
+    DateOnly BirthDate
 );

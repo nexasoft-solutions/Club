@@ -1,11 +1,18 @@
+using Org.BouncyCastle.Asn1.Cms;
+
 namespace NexaSoft.Club.Api.Controllers.Features.Reservations.Request;
 
 public sealed record CreateReservationRequest(
     long MemberId,
-    long SpaceId,
-    DateTime StartTime,
-    DateTime EndTime,
-    string? Status,
+    long SpaceRateId,
+    long SpaceAvailabilityId,
+    DateOnly Date,
+    TimeOnly StartTime,
+    TimeOnly EndTime,
+    long PaymentMethodId,
+    string? ReferenceNumber,
+    long DocumentTypeId,
+    string? ReceiptNumber,
     decimal TotalAmount,
     long? AccountingEntryId,
     string CreatedBy

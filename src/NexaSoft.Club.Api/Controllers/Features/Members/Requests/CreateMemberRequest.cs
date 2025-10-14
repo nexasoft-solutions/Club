@@ -6,6 +6,9 @@ public sealed record CreateMemberRequest(
     string? LastName,
     string? Email,
     string? Phone,
+    long DepartamentId,
+    long ProvinceId,
+    long DistrictId,
     string? Address,
     DateOnly? BirthDate,
     long MemberTypeId,
@@ -13,8 +16,6 @@ public sealed record CreateMemberRequest(
     DateOnly JoinDate,
     DateOnly? ExpirationDate,
     decimal Balance,
-    //string? QrCode,
-    //DateTime? QrExpiration,
-    string? ProfilePictureUrl,
+    long UserTypeId,
     string CreatedBy
 );

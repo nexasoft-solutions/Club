@@ -8,6 +8,8 @@ using NexaSoft.Club.Application.Features.MemberFees.Queries.GetMemberFee;
 using NexaSoft.Club.Application.Features.MemberFees.Queries.GetMemberFees;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using NexaSoft.Club.Api.Controllers.Features.MemberFees.Requests;
+using NexaSoft.Club.Application.Features.MemberFees.Queries.GetMemberFeesStatus;
 
 namespace NexaSoft.Club.Api.Controllers.Features.MemberFees;
 
@@ -17,7 +19,7 @@ public class MemberFeeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateMemberFee(CreateMemberFeeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateMemberFee(CreateMemberFeeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateMemberFeeCommand(
              request.MemberId,
@@ -25,8 +27,8 @@ public class MemberFeeController(ISender _sender) : ControllerBase
              request.Period,
              request.Amount,
              request.DueDate,
-             request.Status,
-    request.CreatedBy
+             request.StatusId,
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -34,7 +36,7 @@ public class MemberFeeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateMemberFee(UpdateMemberFeeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateMemberFee(UpdateMemberFeeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateMemberFeeCommand(
            request.Id,
@@ -43,7 +45,7 @@ public class MemberFeeController(ISender _sender) : ControllerBase
              request.Period,
              request.Amount,
              request.DueDate,
-             request.Status,
+             request.StatusId,
              request.UpdatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
@@ -52,7 +54,7 @@ public class MemberFeeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteMemberFee(DeleteMemberFeeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteMemberFee(DeleteMemberFeeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteMemberFeeCommand(
              request.Id,
@@ -76,13 +78,29 @@ public class MemberFeeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetMemberFee(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetMemberFee(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetMemberFeeQuery(id);
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.ToActionResult(this);
+    }
+
+    [HttpGet("status")]
+    public async Task<IActionResult> GetMemberFeesStatus(
+        [FromQuery] GetMemberFeesStatusRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetMemberFeesStatusQuery(
+            request.MemberId,
+            request.StatusId,
+            request.OrderBy
+        );
         var resultado = await _sender.Send(query, cancellationToken);
 
         return resultado.ToActionResult(this);

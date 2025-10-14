@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NexaSoft.Club.Api.Controllers.Features.Payments.Request;
 using NexaSoft.Club.Application.Features.Payments.Commands.CreatePayment;
-using NexaSoft.Club.Application.Features.Payments.Commands.UpdatePayment;
 using NexaSoft.Club.Application.Features.Payments.Commands.DeletePayment;
 using NexaSoft.Club.Application.Features.Payments.Queries.GetPayment;
 using NexaSoft.Club.Application.Features.Payments.Queries.GetPayments;
@@ -29,8 +28,9 @@ public class PaymentController(ISender _sender) : ControllerBase
                 .ToList() ?? new List<PaymentItemDto>(), // si es null, se usa una lista vacía
              request.Amount,
              request.PaymentDate,
-             request.PaymentMethod,
+             request.PaymentMethodId,
              request.ReferenceNumber,
+             request.DocumentTypeId,
              request.ReceiptNumber,
              request.CreatedBy
         );
@@ -39,26 +39,7 @@ public class PaymentController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdatePayment(UpdatePaymentRequest request, CancellationToken cancellationToken)
-    {
-        var command = new UpdatePaymentCommand(
-             request.Id,
-             request.MemberId,
-             request.FeeId,
-             request.Amount,
-             request.PaymentDate,
-             request.PaymentMethod,
-             request.ReferenceNumber,
-             request.ReceiptNumber,
-             request.IsPartial,
-             request.AccountingEntryId,
-             request.UpdatedBy
-        );
-        var resultado = await _sender.Send(command, cancellationToken);
-
-        return resultado.ToActionResult(this);
-    }
+  
 
     [HttpDelete]
     public async Task<IActionResult> DeletePayment(DeletePaymentRequest request, CancellationToken cancellationToken)

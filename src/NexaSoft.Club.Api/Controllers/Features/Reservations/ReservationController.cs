@@ -2,12 +2,12 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NexaSoft.Club.Api.Controllers.Features.Reservations.Request;
 using NexaSoft.Club.Application.Features.Reservations.Commands.CreateReservation;
-using NexaSoft.Club.Application.Features.Reservations.Commands.UpdateReservation;
 using NexaSoft.Club.Application.Features.Reservations.Commands.DeleteReservation;
 using NexaSoft.Club.Application.Features.Reservations.Queries.GetReservation;
 using NexaSoft.Club.Application.Features.Reservations.Queries.GetReservations;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Api.Controllers.Features.Reservations;
 
@@ -17,44 +17,33 @@ public class ReservationController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateReservation(CreateReservationRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateReservation(CreateReservationRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateReservationCommand(
              request.MemberId,
-             request.SpaceId,
+             request.SpaceRateId,
+             request.SpaceAvailabilityId,
+             request.Date,
              request.StartTime,
              request.EndTime,
-             request.Status,
+             (int)StatusEnum.Pendiente, // Default status when creating a reservation
+             request.PaymentMethodId,
+             request.ReferenceNumber,
+             request.DocumentTypeId,
+             request.ReceiptNumber,
              request.TotalAmount,
              request.AccountingEntryId,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
         return resultado.ToActionResult(this);
     }
 
-    [HttpPut]
-   public async Task<IActionResult> UpdateReservation(UpdateReservationRequest request, CancellationToken cancellationToken)
-    {
-        var command = new UpdateReservationCommand(
-           request.Id,
-             request.MemberId,
-             request.SpaceId,
-             request.StartTime,
-             request.EndTime,
-             request.Status,
-             request.TotalAmount,
-             request.AccountingEntryId,
-             request.UpdatedBy
-        );
-        var resultado = await _sender.Send(command, cancellationToken);
-
-        return resultado.ToActionResult(this);
-    }
+  
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteReservation(DeleteReservationRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteReservation(DeleteReservationRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteReservationCommand(
              request.Id,
@@ -78,11 +67,11 @@ public class ReservationController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetReservation(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetReservation(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetReservationQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

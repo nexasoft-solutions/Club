@@ -7,6 +7,6 @@ public sealed record UpdateMemberFeeRequest(
     string? Period,
     decimal Amount,
     DateOnly DueDate,
-    string? Status,
+    long StatusId,
     string UpdatedBy
 );

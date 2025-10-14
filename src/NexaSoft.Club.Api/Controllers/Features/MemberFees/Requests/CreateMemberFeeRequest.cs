@@ -6,6 +6,6 @@ public sealed record CreateMemberFeeRequest(
     string? Period,
     decimal Amount,
     DateOnly DueDate,
-    string? Status,
+    long StatusId,
     string CreatedBy
 );

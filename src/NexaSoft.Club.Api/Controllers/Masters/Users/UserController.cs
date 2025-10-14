@@ -24,13 +24,14 @@ public class UserController(ISender _sender) : ControllerBase
     public async Task<IActionResult> CreateUser(CreateUserRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateUserCommand(
-             request.UserApellidos,
-             request.UserNombres,
-             request.Password,
+             request.LastName,
+             request.FirstName,
              request.Email,
-             request.UserDni,
-             request.UserTelefono
-
+             request.Dni,
+             request.Phone,
+             request.UserTypeId,
+             request.BirthDate,
+             request.MemberId
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -41,14 +42,16 @@ public class UserController(ISender _sender) : ControllerBase
     public async Task<IActionResult> UpdateUser(UpdateUserRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateUserCommand(
-           request.Id,
-             request.UserApellidos,
-             request.UserNombres,
-             request.Password,
-             request.Email,
-             request.UserDni,
-             request.UserTelefono,
-             request.UsuarioModificacion
+            request.Id,
+            request.LastName,
+            request.FirstName,
+            request.Email,
+            request.Dni,
+            request.Phone,
+            request.UserTypeId,
+            request.BirthDate,
+            request.MemberId,
+            request.UserModification
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -60,7 +63,7 @@ public class UserController(ISender _sender) : ControllerBase
     {
         var command = new DeleteUserCommand(
              request.Id,
-             request.UsuarioEliminacion
+             request.UserDelete
          );
         var resultado = await _sender.Send(command, cancellationToken);
 

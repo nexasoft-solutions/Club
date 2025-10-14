@@ -22,12 +22,12 @@ public class AccountingChartController(ISender _sender) : ControllerBase
         var command = new CreateAccountingChartCommand(
              request.AccountCode,
              request.AccountName,
-             request.AccountType,
+             request.AccountTypeId,
              request.ParentAccountId,
              request.Level,
              request.AllowsTransactions,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -38,10 +38,10 @@ public class AccountingChartController(ISender _sender) : ControllerBase
     public async Task<IActionResult> UpdateAccountingChart(UpdateAccountingChartRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateAccountingChartCommand(
-           request.Id,
+             request.Id,
              request.AccountCode,
              request.AccountName,
-             request.AccountType,
+             request.AccountTypeId,
              request.ParentAccountId,
              request.Level,
              request.AllowsTransactions,

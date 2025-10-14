@@ -21,10 +21,10 @@ public class UbigeoController(ISender _sender) : ControllerBase
     public async Task<IActionResult> CreateUbigeo(CreateUbigeoRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateUbigeoCommand(
-             request.Descripcion,
-             request.Nivel,
-             request.PadreId,
-             request.UsuarioCreacion
+             request.Description,
+             request.Level,
+             request.ParentId,
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -36,10 +36,10 @@ public class UbigeoController(ISender _sender) : ControllerBase
     {
         var command = new UpdateUbigeoCommand(
            request.Id,
-             request.Descripcion,
-             request.Nivel,
-             request.PadreId,
-             request.UsuarioModificacion!
+             request.Description,
+             request.Level,
+             request.ParentId,
+             request.UserModification!
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -51,7 +51,7 @@ public class UbigeoController(ISender _sender) : ControllerBase
     {
         var command = new DeleteUbigeoCommand(
              request.Id,
-             request.UsuarioEliminacion       
+             request.UserDelete!
          );
         var resultado = await _sender.Send(command, cancellationToken);
 

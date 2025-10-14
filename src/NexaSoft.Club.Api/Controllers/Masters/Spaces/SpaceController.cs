@@ -17,19 +17,18 @@ public class SpaceController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateSpace(CreateSpaceRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateSpace(CreateSpaceRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateSpaceCommand(
              request.SpaceName,
-             request.SpaceType,
+             request.SpaceTypeId,
              request.Capacity,
              request.Description,
              request.StandardRate,
-             request.IsActive,
              request.RequiresApproval,
              request.MaxReservationHours,
              request.IncomeAccountId,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -37,16 +36,15 @@ public class SpaceController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateSpace(UpdateSpaceRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateSpace(UpdateSpaceRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateSpaceCommand(
-           request.Id,
+             request.Id,
              request.SpaceName,
-             request.SpaceType,
+             request.SpaceTypeId,
              request.Capacity,
-             request.Description,
+             request.Description!,
              request.StandardRate,
-             request.IsActive,
              request.RequiresApproval,
              request.MaxReservationHours,
              request.IncomeAccountId,
@@ -58,7 +56,7 @@ public class SpaceController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteSpace(DeleteSpaceRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteSpace(DeleteSpaceRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteSpaceCommand(
              request.Id,
@@ -82,11 +80,11 @@ public class SpaceController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetSpace(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetSpace(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetSpaceQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

@@ -4,7 +4,7 @@ public sealed record UpdateAccountingChartRequest(
    long Id,
     string? AccountCode,
     string? AccountName,
-    string? AccountType,
+    long AccountTypeId,
     long? ParentAccountId,
     int Level,
     bool AllowsTransactions,
