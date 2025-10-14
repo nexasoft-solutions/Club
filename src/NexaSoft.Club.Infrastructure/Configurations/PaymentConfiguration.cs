@@ -31,9 +31,8 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(x => x.PaymentDate)
             .IsRequired();
 
-        builder.Property(x => x.PaymentMethod)
-            .HasMaxLength(50)
-            .IsRequired(false);
+        builder.Property(x => x.PaymentMethodId)
+            .IsRequired();
 
         builder.Property(x => x.ReferenceNumber)
             .HasMaxLength(100)
@@ -46,9 +45,8 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(x => x.IsPartial)
             .IsRequired();
 
-         builder.Property(x => x.Status)
-            .HasMaxLength(20)
-            .IsRequired(false);
+         builder.Property(x => x.StatusId)
+            .IsRequired();
 
         builder.Property(x => x.AccountingEntryId)
             .IsRequired(false);
@@ -59,7 +57,16 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
                .HasForeignKey(x => x.AccountingEntryId)
                .OnDelete(DeleteBehavior.Restrict);
 
-        
+        builder.HasOne(x => x.PaymentType)
+               .WithMany()
+               .HasForeignKey(x => x.PaymentMethodId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
+
         // Relación con PaymentItems (uno a muchos)
         builder.HasMany(x => x.PaymentItems)
                .WithOne(x => x.Payment)
@@ -87,7 +94,7 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.HasIndex(x => x.PaymentDate)
             .HasDatabaseName("ix_payment_paymentdate");
 
-        builder.HasIndex(x => x.PaymentMethod)
+        builder.HasIndex(x => x.PaymentMethodId)
             .HasDatabaseName("ix_payment_paymentmethod");
 
         builder.HasIndex(x => x.ReceiptNumber)
@@ -100,9 +107,6 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.HasIndex(x => new { x.MemberId, x.PaymentDate })
             .HasDatabaseName("idx_payments_member_date");
 
-        // Índice para búsquedas por estado
-        builder.HasIndex(x => x.StatePayment)
-            .HasDatabaseName("ix_payment_state");
-
+   
     }
 }

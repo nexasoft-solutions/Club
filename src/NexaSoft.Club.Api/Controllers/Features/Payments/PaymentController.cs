@@ -7,6 +7,7 @@ using NexaSoft.Club.Application.Features.Payments.Queries.GetPayment;
 using NexaSoft.Club.Application.Features.Payments.Queries.GetPayments;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using NexaSoft.Club.Application.Features.Payments.Queries.GetReceiptByPayment;
 
 namespace NexaSoft.Club.Api.Controllers.Features.Payments;
 
@@ -74,6 +75,32 @@ public class PaymentController(ISender _sender) : ControllerBase
     {
         var query = new GetPaymentQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.ToActionResult(this);
+    }
+
+     // NUEVO MÉTODO PARA GENERAR COMPROBANTE
+    [HttpGet("{id:long}/receipt")]
+    public async Task<IActionResult> GetPaymentReceipt(
+        long id,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetReceiptByPaymentQuery(id);
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        if (resultado.IsSuccess)
+        {
+            // Obtener información del pago para el nombre del archivo
+            var paymentQuery = new GetPaymentQuery(id);
+            var paymentResult = await _sender.Send(paymentQuery, cancellationToken);
+            
+            var fileName = paymentResult.IsSuccess 
+                ? $"Comprobante-{paymentResult.Value.ReceiptNumber}.pdf"
+                : $"Comprobante-Pago-{id}.pdf";
+
+            return File(resultado.Value, "application/pdf", fileName);
+        }
 
         return resultado.ToActionResult(this);
     }

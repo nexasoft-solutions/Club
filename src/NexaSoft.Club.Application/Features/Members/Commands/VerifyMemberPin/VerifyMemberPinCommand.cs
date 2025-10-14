@@ -21,5 +21,6 @@ public sealed record MemberLoginResponse(
     DateOnly? QrExpiration,
     decimal Balance,
     string MemberType,
-    string MembershipStatus
+    string UserName,
+    long? MembershipStatus
 );

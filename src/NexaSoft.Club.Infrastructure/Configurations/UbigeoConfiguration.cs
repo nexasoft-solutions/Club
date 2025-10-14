@@ -15,29 +15,24 @@ public class UbigeoConfiguration : IEntityTypeConfiguration<Ubigeo>
             .HasColumnName("id")
             .ValueGeneratedOnAdd();
 
-        builder.Property(x => x.Descripcion)
+        builder.Property(x => x.Description)
             .HasMaxLength(180)
             .IsRequired(false);
 
-        builder.Property(x => x.Nivel)
+        builder.Property(x => x.Level)
             .IsRequired();
 
-        builder.Property(x => x.PadreId)
+        builder.Property(x => x.ParentId)
             .IsRequired(false);
 
-        builder.Property(x => x.EstadoUbigeo)
+        builder.Property(x => x.StateUbigeo)
             .IsRequired();
 
-        builder.HasOne(x => x.Padre)
+        builder.HasOne(x => x.Parent)
                 .WithMany()
-                .HasForeignKey(x => x.PadreId)
+                .HasForeignKey(x => x.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(x => x.Descripcion)
-            .HasDatabaseName("ix_ubigeo_descripcion");
-
-        builder.HasIndex(x => x.Nivel)
-            .HasDatabaseName("ix_ubigeo_nivel");
 
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(40)
@@ -45,14 +40,22 @@ public class UbigeoConfiguration : IEntityTypeConfiguration<Ubigeo>
 
         builder.Property(x => x.UpdatedBy)
             .HasMaxLength(40)
-            .IsRequired(false);            
+            .IsRequired(false);
 
         builder.Property(x => x.DeletedBy)
          .HasMaxLength(40)
          .IsRequired(false);
 
-        builder.HasIndex(x => new { x.Nivel, x.Descripcion })
-         .HasDatabaseName("ix_ubigeo_nivel_descripcion");
+        builder.HasIndex(x => new { x.Level, x.Description })
+         .HasDatabaseName("ix_ubigeo_level_description");
+
+
+        builder.HasIndex(x => x.Description)
+          .HasDatabaseName("ix_ubigeo_description");
+
+        builder.HasIndex(x => x.Level)
+            .HasDatabaseName("ix_ubigeo_level");
+
 
 
     }

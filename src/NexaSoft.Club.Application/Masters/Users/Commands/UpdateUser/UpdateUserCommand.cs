@@ -4,11 +4,13 @@ namespace NexaSoft.Club.Application.Masters.Users.Commands.UpdateUser;
 
 public sealed record UpdateUserCommand(
     long Id,
-    string? UserApellidos,
-    string? UserNombres, 
-    string? Password,
+    string? LastName,
+    string? FirstName,
     string? Email,
-    string? UserDni,
-    string? UserTelefono,
-    string? UsuarioModificacion
+    string? Dni,
+    string? Phone,
+    long UserTypeId,
+    DateOnly BirthDate,
+    long? MemberId,
+    string? UserModification
 ) : ICommand<bool>;

@@ -25,7 +25,7 @@ public class MinioStorageService : IFileStorageService
             config.SecretKey,
             new AmazonS3Config
             {
-                ServiceURL = config.ServiceUrl, // e.g., http://localhost:9000
+                ServiceURL = config.ServiceUrl, 
                 ForcePathStyle = true
             }
         );
@@ -60,5 +60,55 @@ public class MinioStorageService : IFileStorageService
             throw new Exception("Error al subir el archivo");
 
         return $"{_bucketName}/{fileName}";
+    }
+
+    public async Task DeleteAsync(string fileName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var deleteRequest = new DeleteObjectRequest
+            {
+                BucketName = _bucketName,
+                Key = fileName
+            };
+
+            var response = await _s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
+
+            //_logger.LogInformation("Archivo eliminado exitosamente: {FileName}", fileName);
+        }
+        catch (AmazonS3Exception ex) when (ex.ErrorCode == "NoSuchKey")
+        {
+            //_logger.LogWarning("El archivo no existe en MinIO: {FileName}", fileName);
+            // No lanzamos excepción si el archivo no existe
+        }
+        catch (AmazonS3Exception ex)
+        {
+            //_logger.LogError(ex, "Error de Amazon S3 al eliminar archivo: {FileName}. ErrorCode: {ErrorCode}",  fileName, ex.ErrorCode);
+            throw new Exception($"Error eliminando archivo de MinIO: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            //_logger.LogError(ex, "Error inesperado al eliminar archivo: {FileName}", fileName);
+            throw new Exception($"Error inesperado eliminando archivo: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<bool> ExistsAsync(string fileName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var request = new GetObjectMetadataRequest
+            {
+                BucketName = _bucketName,
+                Key = fileName
+            };
+
+            await _s3Client.GetObjectMetadataAsync(request, cancellationToken);
+            return true;
+        }
+        catch (AmazonS3Exception ex) when (ex.ErrorCode == "NoSuchKey" || ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return false;
+        }
     }
 }

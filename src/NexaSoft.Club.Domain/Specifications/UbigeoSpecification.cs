@@ -23,17 +23,17 @@ public class UbigeoSpecification : BaseSpecification<Ubigeo, UbigeoResponse>
             {
                 switch (specParams.SearchFields.ToLower())
                 {
-                    case "descripcion":
-                        AddCriteria(x => x.Descripcion != null && x.Descripcion.ToLower().Contains(specParams.Search.ToLower()));
+                    case "description":
+                        AddCriteria(x => x.Description != null && x.Description.ToLower().Contains(specParams.Search.ToLower()));
                         break;
-                    case "nivel":
+                    case "level":
                         if (long.TryParse(specParams.Search, out var searchNumber))
-                            AddCriteria(x => x.Nivel == searchNumber);
+                            AddCriteria(x => x.Level == searchNumber);
                         break;
-                    case "padre":
+                    case "parent":
                         if (long.TryParse(specParams.Search, out var longx))
                         {
-                            AddCriteria(x => x.PadreId == longx);
+                            AddCriteria(x => x.ParentId == longx);
                         }
                         else
                         {
@@ -49,7 +49,7 @@ public class UbigeoSpecification : BaseSpecification<Ubigeo, UbigeoResponse>
 
             if (specParams.Ids?.Any() == true)
             {
-                AddCriteria(c => specParams.Ids.Contains(c.PadreId ?? 0));
+                AddCriteria(c => specParams.Ids.Contains(c.ParentId ?? 0));
             }
 
             /*if (specParams.PadreId.HasValue)
@@ -66,24 +66,24 @@ public class UbigeoSpecification : BaseSpecification<Ubigeo, UbigeoResponse>
             // Aplicar ordenamiento
             switch (specParams.Sort)
             {
-                case "descripcionasc":
-                    AddOrderBy(x => x.Descripcion!);
+                case "descriptionasc":
+                    AddOrderBy(x => x.Description!);
                     break;
-                case "descripciondesc":
-                    AddOrderByDescending(x => x.Descripcion!);
+                case "descriptiondesc":
+                    AddOrderByDescending(x => x.Description!);
                     break;
                 default:
-                    AddOrderBy(x => x.Descripcion!);
+                    AddOrderBy(x => x.Description!);
                     break;
             }
         }
 
         AddSelect(x => new UbigeoResponse(
                x.Id,
-               x.Descripcion,
-               ((UbigeosEnum)x.Nivel).ToString(),
-               x.PadreId,
-               x.Padre!.Descripcion,
+               x.Description,
+               ((UbigeosEnum)x.Level).ToString(),
+               x.ParentId,
+               x.Parent!.Description,
                x.CreatedAt,
                x.UpdatedAt,
                x.CreatedBy,

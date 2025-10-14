@@ -10,7 +10,7 @@ public class CreateMemberFeeCommandValidator : AbstractValidator<CreateMemberFee
         // Validación personalizada para FeeConfiguration de tipo FeeConfiguration
         RuleFor(x => x.Period)
             .NotEmpty().WithMessage("El campo Period no puede estar vacío.");
-        RuleFor(x => x.Status)
+        RuleFor(x => x.StatusId)
             .NotEmpty().WithMessage("El campo Status no puede estar vacío.");
     }
 }

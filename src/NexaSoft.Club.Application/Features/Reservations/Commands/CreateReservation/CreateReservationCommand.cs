@@ -4,11 +4,29 @@ namespace NexaSoft.Club.Application.Features.Reservations.Commands.CreateReserva
 
 public sealed record CreateReservationCommand(
     long MemberId,
-    long SpaceId,
-    DateTime StartTime,
-    DateTime EndTime,
-    string? Status,
+    long SpaceRateId,
+    long SpaceAvailabilityId,
+    DateOnly Date,
+    TimeOnly StartTime,
+    TimeOnly EndTime,
+    long? StatusId,
+    long PaymentMethodId,
+    string? ReferenceNumber,
+    long DocumentTypeId,
+    string? ReceiptNumber,
     decimal TotalAmount,
-    long? AccountingEntryId,
     string CreatedBy
-) : ICommand<long>;
+) : ICommand<ReservationResponse>;
+
+
+public sealed record ReservationResponse(
+    long ReservationId,
+    string ReservationNumber,
+    decimal TotalAmount,
+    DateOnly Date,
+    TimeOnly StartTime,
+    TimeOnly EndTime,
+    string Status,
+    string PaymentStatus,
+    string AccountingStatus
+);

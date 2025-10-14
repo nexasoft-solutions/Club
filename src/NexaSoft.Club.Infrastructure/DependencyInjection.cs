@@ -1,4 +1,3 @@
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +12,12 @@ using NexaSoft.Club.Application.Features.Members.Background;
 using NexaSoft.Club.Application.Features.Members.Services;
 using NexaSoft.Club.Application.Features.Payments.Background;
 using NexaSoft.Club.Application.Features.Payments.Services;
-using NexaSoft.Club.Application.Masters.Constantes;
+using NexaSoft.Club.Application.Features.Reservations.Background;
+using NexaSoft.Club.Application.Features.Reservations.Services;
 using NexaSoft.Club.Application.Masters.MenuItems;
 using NexaSoft.Club.Application.Masters.Roles;
 using NexaSoft.Club.Application.Masters.Users;
+using NexaSoft.Club.Application.Services;
 using NexaSoft.Club.Application.Storages;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Infrastructure.Abstractions.Auth;
@@ -29,6 +30,7 @@ using NexaSoft.Club.Infrastructure.Background;
 using NexaSoft.Club.Infrastructure.ConfigSettings;
 using NexaSoft.Club.Infrastructure.Repositories;
 using NexaSoft.Club.Infrastructure.Repositories.Reports;
+using NexaSoft.Club.Infrastructure.services;
 using NexaSoft.Club.Infrastructure.Services;
 using Npgsql;
 using QuestPDF.Infrastructure;
@@ -201,9 +203,10 @@ public static class DependencyInjection
         services.AddScoped<IUserRoleRepository, UserRoleRepository>();
         services.AddScoped<IMenuItemRepository, MenuItemRepository>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped(typeof(IPdfReportGenerator<>), typeof(PdfReportGenerator<>));
-        services.AddScoped<IConstantsPdfReportGenerator, ConstantsPdfReportGenerator>();
+        //services.AddScoped(typeof(IPdfReportGenerator<>), typeof(PdfReportGenerator<>));
         //services.AddScoped<IStudyTreePdfReportGenerator, StudyTreePdfReportGenerator>();
+        services.AddScoped(typeof(IReceiptGenerator), typeof(ReceiptGenerator));
+        services.AddScoped(typeof(IReceiptService), typeof(ReceiptService));
 
         services.AddSingleton<IFileStorageService, MinioStorageService>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -216,16 +219,23 @@ public static class DependencyInjection
         services.AddScoped<IPaymentBackgroundProcessor, PaymentBackgroundProcessor>();
         services.AddSingleton<IMemberBackgroundTaskService, MemberBackgroundTaskService>();
         services.AddScoped<IMemberFeesBackgroundGenerator, MemberFeesBackgroundGenerator>();
+        services.AddScoped<IMemberUserBackgroundGenerator, MemberUserBackgroundGenerator>();
+        
+        services.AddScoped<IReservationBackgroundTaskService, ReservationBackgroundTaskService>();
+        services.AddScoped<IReservationBackgroundProcessor, ReservationBackgroundProcessor>();
 
         services.AddScoped<IMemberTokenService, MemberTokenService>();
-        services.AddScoped<IMemberQrService, MemberQrService>();
+        services.AddScoped<IMemberQrService, UserQrService>();
 
         // Para QR (Domain Events - No crítico)
         //services.AddScoped<INotificationHandler<MemberQrGenerationRequiredDomainEvent>, MemberQrGenerationEventHandler>();
         services.AddScoped<IQrGeneratorService, QrGeneratorService>();
+        services.AddScoped<ISpacePhotoStorageService, SpacePhotoStorageService>();
 
         // Background service para renovación QR
         services.AddHostedService<QrRenewalBackgroundService>();
+        services.AddHostedService<MemberUserBackgroundService>();
+
 
 
 

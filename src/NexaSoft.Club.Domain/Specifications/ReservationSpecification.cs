@@ -27,14 +27,11 @@ public class ReservationSpecification : BaseSpecification<Reservation, Reservati
                     break;
                 case "spaceid":
                     if (long.TryParse(specParams.Search, out var searchNumberSpace))
-                        AddCriteria(x => x.SpaceId == searchNumberSpace);
-                    break;
-                case "starttime":
-                    if (DateTime.TryParse(specParams.Search, out var searchDate))
-                        AddCriteria(x => x.StartTime == searchDate.Date);
-                    break;
+                        AddCriteria(x => x.SpaceRateId == searchNumberSpace);
+                    break;               
                 case "status":
-                    AddCriteria(x => x.Status != null && x.Status.ToLower().Contains(specParams.Search.ToLower()));
+                    if (long.TryParse(specParams.Search, out var searchNumberStatus))
+                        AddCriteria(x => x.StatusId == searchNumberStatus);
                     break;
                 default:
                     Criteria = x => true;
@@ -67,13 +64,22 @@ public class ReservationSpecification : BaseSpecification<Reservation, Reservati
       AddSelect(x => new ReservationResponse(
              x.Id,
              x.MemberId,
-             x.Member!.FirstName!,
-             x.Member!.LastName!,
-             x.SpaceId,
-             x.Space!.SpaceName!,
+             x.Member!.FirstName! + ", " + x.Member!.LastName!,
+             x.Member!.MemberType!.TypeName!,
+             x.SpaceRateId,
+             x.SpaceRate!.Space!.SpaceName,
+             x.SpaceAvailabilityId,
+             x.Date,
              x.StartTime,
              x.EndTime,
-             x.Status,
+             x.StatusId,
+             x.Status!.Description!,
+             x.PaymentMethodId,
+             x.PaymentType!.Name!,
+             x.ReferenceNumber,
+             x.DocumentTypeId,
+             x.DocumentType!.Name!,
+             x.ReceiptNumber,
              x.TotalAmount,
              x.AccountingEntryId,
              x.AccountingEntry!.EntryNumber!,

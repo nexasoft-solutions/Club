@@ -15,15 +15,15 @@ public class DeleteReservationCommandHandler(
 {
     public async Task<Result<bool>> Handle(DeleteReservationCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de eliminación de Reservation con ID {ReservationId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de eliminación de Reservation con ID {ReservationId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("Reservation con ID {ReservationId} no encontrado", command.Id);
-                return Result.Failure<bool>(ReservationErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(ReservationErrores.NoEncontrado);
+        }
 
-         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.DeletedBy);
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(), command.DeletedBy);
 
         try
         {
@@ -37,7 +37,7 @@ public class DeleteReservationCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al eliminar Reservation con ID {ReservationId}", command.Id);
+            _logger.LogError(ex, "Error al eliminar Reservation con ID {ReservationId}", command.Id);
             return Result.Failure<bool>(ReservationErrores.ErrorDelete);
         }
     }

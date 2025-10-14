@@ -2,13 +2,13 @@
 using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Domain.Abstractions;
-using NexaSoft.Club.Domain.Features.Members;
+using NexaSoft.Club.Domain.Masters.Users;
 using BC = BCrypt.Net.BCrypt;
 
 namespace NexaSoft.Club.Application.Features.Members.Commands.SetMemberPassword;
 
 public class SetMemberPasswordCommandHandler(
-    IGenericRepository<Member> _memberRepository,
+    IGenericRepository<User> _userRepository,
     IUnitOfWork _unitOfWork,
     ILogger<SetMemberPasswordCommandHandler> _logger
 ) : ICommandHandler<SetMemberPasswordCommand, bool>
@@ -17,14 +17,14 @@ public class SetMemberPasswordCommandHandler(
         SetMemberPasswordCommand command,
         CancellationToken cancellationToken)
     {
-        var member = await _memberRepository.GetByIdAsync(command.MemberId, cancellationToken);
+        var user = await _userRepository.GetByIdAsync(command.UserId, cancellationToken);
 
-        if (member == null)
-            return Result.Failure<bool>(MemberErrores.NoEncontrado);
+        if (user == null)
+            return Result.Failure<bool>(UserErrores.NoEncontrado);
 
         // Validar password (mínimo 6 caracteres)
         if (command.Password.Length < 6)
-            return Result.Failure<bool>(MemberErrores.PasswordErrado);
+            return Result.Failure<bool>(UserErrores.PasswordErrado);
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
@@ -32,26 +32,26 @@ public class SetMemberPasswordCommandHandler(
         {
 
 
-            member.SetPassword(BC.HashPassword(command.Password));
+            user.SetPassword(BC.HashPassword(command.Password));
 
             if (!string.IsNullOrEmpty(command.BiometricToken))
-                member.SetBiometricToken(command.BiometricToken);
+                user.SetBiometricToken(command.BiometricToken);
 
-            member.RecordLogin(command.DeviceId);
+            user.RecordLogin(command.DeviceId);
 
-            await _memberRepository.UpdateAsync(member);
+            await _userRepository.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            _logger.LogInformation("Password configurado para member {MemberId}", command.MemberId);
+            _logger.LogInformation("Password configurado para user {UserId}", command.UserId);
 
             return Result.Success(true);
         }
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex, "Error al crear Member");
-            return Result.Failure<bool>(MemberErrores.ErrorSave);
+            _logger.LogError(ex, "Error al crear User");
+            return Result.Failure<bool>(UserErrores.ErrorSave);
         }
     }
 }

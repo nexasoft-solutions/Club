@@ -9,6 +9,6 @@ public sealed record UpdateMemberFeeCommand(
     string? Period,
     decimal Amount,
     DateOnly DueDate,
-    string? Status,
+    long StatusId,
     string UpdatedBy
 ) : ICommand<bool>;

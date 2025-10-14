@@ -5,6 +5,7 @@ public sealed record AccountingEntryResponse(
     string? EntryNumber,
     DateOnly EntryDate,
     string? Description,
+    long SourceModuleId,
     string? SourceModule,
     long? SourceId,
     decimal TotalDebit,

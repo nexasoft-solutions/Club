@@ -1,48 +1,73 @@
 using NexaSoft.Club.Domain.Abstractions;
+using NexaSoft.Club.Domain.Features.Members;
+using NexaSoft.Club.Domain.Masters.UserTypes;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Domain.Masters.Users;
 
 public class User : Entity
 {
-    public string? UserApellidos { get; private set; }
-    public string? UserNombres { get; private set; }
-    public string? NombreCompleto { get; private set; }
+    public string? FirstName { get; private set; }
+    public string? LastName { get; private set; }
+    public string? FullName { get; private set; }
     public string? UserName { get; private set; }
+    public bool HasSetPassword { get; set; }
     public string? Password { get; private set; }
     public string? Email { get; private set; }
-    public string? UserDni { get; private set; }
-    public string? UserTelefono { get; private set; }
-    public int EstadoUser { get; private set; }
+    public string? Dni { get; private set; }
+    public string? Phone { get; private set; }
+    public DateOnly? BirthDate { get; private set; }
+    public int UserStatus { get; private set; }
+    public DateTime? PasswordSetDate { get; private set; }
+    public DateTime? LastLoginDate { get; private set; }
+    public string? BiometricToken { get; private set; }
+ 
+    public string? DeviceId { get; private set; }
+    public string? QrCode { get; private set; }
+    public DateOnly? QrExpiration { get; private set; }
+    public string? QrUrl { get; private set; }
+    public string? ProfilePictureUrl { get; private set; }
 
+    public long? MemberId { get; private set; }
+
+    public Member? Member { get; private set; }
+
+    public long UserTypeId { get; private set; }
+    public UserType? UserType { get; set; }
+    private readonly List<UserQrHistory> _qrHistory = new();
+    public IReadOnlyCollection<UserQrHistory> QrHistory => _qrHistory.AsReadOnly();
 
     private User() { }
 
     private User(
-        string? userApellidos,
-        string? userNombres,
-        string? nombreCompleto,
+        string? firstName,
+        string? lastName,
+        string? fullName,
         string? userName,
-        string? password,
         string? email,
-        string? userDni,
-        string? userTelefono,
-        int estadoUser,
+        string? dni,
+        string? phone,
+        long userTypeId,
+        DateOnly? birthDate,
+        long? memberId,
+        int userStatus,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
         string? deletedBy = null
     ) : base(createdAt, createdBy, updatedBy, deletedBy)
     {
-        UserApellidos = userApellidos;
-        UserNombres = userNombres;
-        NombreCompleto = nombreCompleto;
+        FirstName = firstName;
+        LastName = lastName;
+        FullName = fullName;
         UserName = userName;
-        Password = password;
         Email = email;
-        UserDni = userDni;
-        UserTelefono = userTelefono;
-        EstadoUser = estadoUser;
+        Dni = dni;
+        Phone = phone;
+        UserTypeId = userTypeId;
+        BirthDate = birthDate;
+        UserStatus = userStatus;
+        MemberId = memberId;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
         UpdatedBy = updatedBy;
@@ -50,29 +75,33 @@ public class User : Entity
     }
 
     public static User Create(
-        string? userApellidos,
-        string? userNombres,
-        string? password,
+        string? firstName,
+        string? lastName,
         string? email,
-        string? userDni,
-        string? userTelefono,
-        int estadoUser,
+        string? dni,
+        string? phone,
+        long userTypeId,
+        DateOnly? birthDate,
+        long? memberId,
+        int userStatus,
         DateTime createdAt,
         string? createdBy
     )
     {
-        var nombreCompleto = UserService.CreateNombreCompleto(userApellidos ?? "", userNombres ?? "");
-        var userName = UserService.CreateUserName(userApellidos ?? "", userNombres ?? "");
+        var fullName = UserService.CreateFullName(firstName ?? "", lastName ?? "");
+        var userName = UserService.CreateUserName(lastName ?? "", firstName ?? "");
         var entity = new User(
-            userApellidos,
-            userNombres,
-            nombreCompleto,
+            firstName,
+            lastName,
+            fullName,
             userName,
-            password,
             email,
-            userDni,
-            userTelefono,
-            estadoUser,
+            dni,
+            phone,
+            userTypeId,
+            birthDate,
+            memberId,
+            userStatus,
             createdAt,
             createdBy
         );
@@ -81,27 +110,31 @@ public class User : Entity
 
     public Result Update(
         long Id,
-        string? userApellidos,
-        string? userNombres,
-        string? password,
+        string? firstName,
+        string? lastName,
         string? email,
-        string? userDni,
-        string? userTelefono,
+        string? dni,
+        string? phone,
+        long userTypeId,
+        DateOnly? birthDate,
+        long? memberId,
         DateTime utcNow,
         string? updatedBy
     )
     {
-        UserApellidos = userApellidos;
-        UserNombres = userNombres;
+        FirstName = firstName;
+        LastName = lastName;
 
         // Actualiza NombreCompleto y UserName automáticamente
-        NombreCompleto = UserService.CreateNombreCompleto(userApellidos ?? "", userNombres ?? "");
-        UserName = UserService.CreateUserName(userApellidos ?? "", userNombres ?? "");
+        FullName = UserService.CreateFullName(FirstName ?? "", LastName ?? "");
+        UserName = UserService.CreateUserName(LastName ?? "", FirstName ?? "");
 
-        Password = password;
         Email = email;
-        UserDni = userDni;
-        UserTelefono = userTelefono;
+        Dni = dni;
+        Phone = phone;        
+        UserTypeId = userTypeId;
+        BirthDate = birthDate;
+        MemberId = memberId;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;
 
@@ -110,11 +143,74 @@ public class User : Entity
 
     public Result Delete(DateTime utcNow, string deletedBy)
     {
-        EstadoUser = (int)EstadosEnum.Eliminado;
+        UserStatus = (int)EstadosEnum.Eliminado;
         DeletedAt = utcNow;
         DeletedBy = deletedBy;
         return Result.Success();
     }
 
+    public void SetPassword(string password)
+    {
+        Password = password;
+        HasSetPassword = true;
+        PasswordSetDate = DateTime.UtcNow;
+    }
+
+     public bool NeedsNewQr()
+    {
+        if (string.IsNullOrEmpty(QrCode) || QrExpiration == null)
+            return true;
+
+        return QrExpiration.Value <= DateOnly.FromDateTime(DateTime.Now.AddDays(15));
+    }
+
+    public void UpdateQr(string newQrCode, string qrUrl, DateOnly expirationDate, string createdAt)
+    {
+        // Guardar en historial si ya existe un QR
+        if (!string.IsNullOrEmpty(QrCode))
+        {
+            var qrHistory = UserQrHistory.Create(
+                Id,
+                QrCode,
+                QrUrl ?? string.Empty,
+                QrExpiration,
+                DateTime.UtcNow,
+                createdAt
+            );
+            _qrHistory.Add(qrHistory);
+        }
+
+        // Actualizar QR actual
+        QrCode = newQrCode;
+        QrUrl = qrUrl;
+        QrExpiration = expirationDate;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+
+    public void UpdateLastLoginDate()
+    {
+        LastLoginDate = DateTime.UtcNow;
+    }
+
+    public bool CanUsePasswordAuth() => HasSetPassword && Password != null;
+
+
+   
+    /*public bool VerifyPassword(string password)
+    {
+        return PasswordHash != null && BCrypt.Net.BCrypt.Verify(password, PasswordHash);
+    }*/
+
+    public void SetBiometricToken(string token)
+    {
+        BiometricToken = token;
+    }
+
+    public void RecordLogin(string deviceId)
+    {
+        LastLoginDate = DateTime.UtcNow;
+        DeviceId = deviceId;
+    }
 
 }

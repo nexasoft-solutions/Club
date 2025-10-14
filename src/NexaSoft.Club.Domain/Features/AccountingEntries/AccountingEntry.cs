@@ -1,4 +1,5 @@
 using NexaSoft.Club.Domain.Abstractions;
+using NexaSoft.Club.Domain.Masters.SourceModules;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Domain.Features.AccountingEntries;
@@ -8,7 +9,8 @@ public class AccountingEntry : Entity
     public string? EntryNumber { get; private set; }
     public DateOnly EntryDate { get; private set; }
     public string? Description { get; private set; }
-    public string? SourceModule { get; private set; }
+    public long SourceModuleId{ get; private set; }
+    public SourceModule? SourceModule { get; private set; }
     public long? SourceId { get; private set; }
     public decimal TotalDebit { get; private set; }
     public decimal TotalCredit { get; private set; }
@@ -22,7 +24,7 @@ public class AccountingEntry : Entity
         string? entryNumber,
         DateOnly entryDate,
         string? description,
-        string? sourceModule,
+        long sourceModuleId,
         long? sourceId,
         decimal totalDebit,
         decimal totalCredit,
@@ -38,7 +40,7 @@ public class AccountingEntry : Entity
         EntryNumber = entryNumber;
         EntryDate = entryDate;
         Description = description;
-        SourceModule = sourceModule;
+        SourceModuleId = sourceModuleId;
         SourceId = sourceId;
         TotalDebit = totalDebit;
         TotalCredit = totalCredit;
@@ -55,7 +57,7 @@ public class AccountingEntry : Entity
         string? entryNumber,
         DateOnly entryDate,
         string? description,
-        string? sourceModule,
+        long sourceModuleId,
         long? sourceId,
         decimal totalDebit,
         decimal totalCredit,
@@ -69,7 +71,7 @@ public class AccountingEntry : Entity
             entryNumber,
             entryDate,
             description,
-            sourceModule,
+            sourceModuleId,
             sourceId,
             totalDebit,
             totalCredit,

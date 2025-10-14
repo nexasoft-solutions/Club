@@ -134,4 +134,10 @@ public class MemberErrores
         "Member.ErrorHasPassword",
         "Miembro no tiene password configurado"
     );
+
+    public static readonly Error ErrorQrNoGenerado = new
+    (
+        "Member.ErrorQrNoGenerado",
+        "El QR no ha sido generado"
+    );
 }

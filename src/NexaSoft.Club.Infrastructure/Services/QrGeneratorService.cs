@@ -57,4 +57,5 @@ public class QrGeneratorService(
     {
         return await _fileStorageService.GetPresignedUrlAsync(fileName, expirationInMinutes);
     }
+    
 }

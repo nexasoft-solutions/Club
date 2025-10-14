@@ -8,10 +8,9 @@ public class CreateReservationCommandValidator : AbstractValidator<CreateReserva
     {
         // Validación personalizada para Member de tipo Member
         // Validación personalizada para Space de tipo Space
-        RuleFor(x => x.Status)
+        RuleFor(x => x.StatusId)
             .NotEmpty().WithMessage("El campo Status no puede estar vacío.");
-        RuleFor(x => x.AccountingEntryId)
-            .GreaterThan(0).WithMessage("Este AccountingEntryId debe ser mayor a cero.");
+     
         // Validación personalizada para AccountingEntry de tipo AccountingEntry
     }
 }

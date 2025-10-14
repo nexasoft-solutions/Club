@@ -2,11 +2,12 @@ using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.Members;
+using NexaSoft.Club.Domain.Masters.Users;
 
 namespace NexaSoft.Club.Application.Features.Members.Queries.GetMemberPasswordStatus;
 
 public class GetMemberPasswordStatusQueryHandler(
-    IGenericRepository<Member> _memberRepository,
+    IGenericRepository<User> _userRepository,
     ILogger<GetMemberPasswordStatusQueryHandler> _logger
 ) : IQueryHandler<GetMemberPasswordStatusQuery, bool>
 {
@@ -17,20 +18,20 @@ public class GetMemberPasswordStatusQueryHandler(
         try
         {
 
-            bool existsValor = await _memberRepository.ExistsAsync(c => c.Dni == query.Dni && c.BirthDate == query.BirthDate && c.HasSetPassword, cancellationToken);
+            bool existsValor = await _userRepository.ExistsAsync(c => c.Dni == query.Dni && c.BirthDate == query.BirthDate && c.HasSetPassword, cancellationToken);
             if (!existsValor)
             {
-                return Result.Failure<bool>(MemberErrores.ErrorHasPassword);
+                return Result.Failure<bool>(UserErrores.ErrorHasPassword);
             }
 
 
-            _logger.LogInformation("Miembro tiene password creado para DNI: {Dni}", query.Dni);
+            _logger.LogInformation("Usuario tiene password creado para DNI: {Dni}", query.Dni);
             return Result.Success(existsValor);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al obtener metricas del member con ID: {MemberId}", query.Dni);
-            return Result.Failure<bool>(MemberErrores.ErrorDataMetrics);
+            _logger.LogError(ex, "Error al validar si usuario tiene password con ID: {UserId}", query.Dni);
+            return Result.Failure<bool>(UserErrores.ErrorHasPassword);
         }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Abstractions.Time;
+using NexaSoft.Club.Application.Masters.Users;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Features.MemberVisits;
@@ -11,7 +12,7 @@ namespace NexaSoft.Club.Application.Features.MemberVisits.Commands.CreateMemberV
 
 public class CreateMemberVisitCommandHandler(
     IGenericRepository<MemberVisit> _repository,
-    IGenericRepository<Member> _memberRepository,
+    IUserRoleRepository _userRoleRepository,
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreateMemberVisitCommandHandler> _logger
@@ -22,7 +23,7 @@ public class CreateMemberVisitCommandHandler(
 
         _logger.LogInformation("Iniciando proceso de creación de MemberVisit");
         // Verificar que el member existe y está activo
-        var member = await _memberRepository.GetByIdAsync(command.MemberId, cancellationToken);
+        var member = await _userRoleRepository.GetUserWithMemberAsync(command.MemberId, cancellationToken);
         if (member == null)
         {
             _logger.LogWarning("Member con ID {MemberId} no encontrado", command.MemberId);

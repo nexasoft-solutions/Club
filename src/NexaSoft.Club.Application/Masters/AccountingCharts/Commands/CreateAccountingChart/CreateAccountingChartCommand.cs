@@ -5,7 +5,7 @@ namespace NexaSoft.Club.Application.Masters.AccountingCharts.Commands.CreateAcco
 public sealed record CreateAccountingChartCommand(
     string? AccountCode,
     string? AccountName,
-    string? AccountType,
+    long AccountTypeId,
     long? ParentAccountId,
     int Level,
     bool AllowsTransactions,

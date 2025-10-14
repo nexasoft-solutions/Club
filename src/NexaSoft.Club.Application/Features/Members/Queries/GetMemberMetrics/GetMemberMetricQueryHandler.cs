@@ -90,7 +90,7 @@ public class GetMemberMetricQueryHandler(
 
     private async Task<int> GetActiveBookingsCount(long memberId, CancellationToken cancellationToken)
     {
-        var now = _dateTimeProvider.CurrentTime;
+        var now = DateOnly.FromDateTime(_dateTimeProvider.CurrentTime);
 
         // Crear una especificación para contar reservas activas
         var activeBookingsSpec = new ActiveReservationsSpecification(memberId, now);

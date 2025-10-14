@@ -9,13 +9,12 @@ namespace NexaSoft.Club.Application.Features.Members.Commands.RefreshMemberToken
 
 public class RefreshMemberTokenCommandHandler(
     IMemberTokenService _memberTokenService,
-    //IGenericRepository<Member> _memberRepository,
     IMemberQrService _qrService,
     ILogger<RefreshMemberTokenCommandHandler> _logger
 ) : ICommandHandler<RefreshMemberTokenCommand, MemberLoginResponse>
 {
     public async Task<Result<MemberLoginResponse>> Handle(
-        RefreshMemberTokenCommand command, 
+        RefreshMemberTokenCommand command,
         CancellationToken cancellationToken)
     {
         _logger.LogInformation("Refrescando token para device: {DeviceId}", command.DeviceId);
@@ -34,7 +33,7 @@ public class RefreshMemberTokenCommandHandler(
                 return Result.Failure<MemberLoginResponse>(MemberErrores.ErrorDatosAdicionales);
 
             var member = refreshTokenResult.Value.Member;
-            var qrData = await _qrService.GenerateOrGetMonthlyQr(member.Id,cancellationToken);
+            var qrData = await _qrService.GenerateOrGetMonthlyQr(member.Id, cancellationToken);
 
             _logger.LogInformation("Token refrescado exitosamente para member {MemberId}", member.Id);
 
@@ -47,12 +46,12 @@ public class RefreshMemberTokenCommandHandler(
                 Email: member.Email!,
                 Phone: member.Phone!,
                 QrCode: qrData.QrCode,
-                //QrImageUrl: qrData.QrImageUrl,
                 QrExpiration: DateOnly.FromDateTime(qrData.ExpirationDate),
                 Balance: member.Balance,
                 MemberType: member.MemberType?.TypeName ?? "Regular",
-                MembershipStatus: member.Status!
-                //HasSetPassword: member.HasSetPassword
+                MembershipStatus: member.StatusId,
+                UserName: "N/A"//refreshTokenResult.Value.User?.UserName ?? "N/A"
+            //HasSetPassword: member.HasSetPassword
             ));
         }
         catch (Exception ex)

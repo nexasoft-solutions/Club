@@ -5,33 +5,33 @@ namespace NexaSoft.Club.Domain.Masters.Users;
 
 public static class UserService
 {
-    public static string CreateNombreCompleto(string apellidos, string nombres)
+    public static string CreateFullName(string firstName, string lastName)
     {
-        var nombreCompleto = apellidos.Trim() + ", " + nombres.Trim();
+        var nombreCompleto = lastName.Trim() + ", " + firstName.Trim();
         return nombreCompleto;
     }
 
-    public static string CreateUserName(string apellidos, string nombres)
+    public static string CreateUserName(string lastName, string firstName)
     {
-        if (string.IsNullOrWhiteSpace(apellidos) || string.IsNullOrWhiteSpace(nombres))
+        if (string.IsNullOrWhiteSpace(lastName) || string.IsNullOrWhiteSpace(firstName))
             return string.Empty;
 
-        var nombresParts = nombres.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var apellidosParts = apellidos.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var firstNameParts = firstName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var lastNameParts = lastName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (nombresParts.Length < 1 || apellidosParts.Length < 2)
+        if (firstNameParts.Length < 1 || lastNameParts.Length < 2)
             throw new ArgumentException("Debe incluir al menos un nombre y dos apellidos");
 
-        var inicialNombre = nombresParts[0].Substring(0, 1).ToLower();
-        var apellidoPaterno = apellidosParts[0].ToLower();
-        var inicialApellidoMaterno = apellidosParts[1].Substring(0, 1).ToLower();
+        var firstNameInitial = firstNameParts[0].ToLower();
+        var lastNamePartsInitial = lastNameParts[0].ToLower();
+        var lastNamePartsTwoInitial = lastNameParts[1].Substring(0, 1).ToLower();
 
         // Limpiar caracteres especiales y tildes
-        inicialNombre = CleanText(inicialNombre);
-        apellidoPaterno = CleanText(apellidoPaterno);
-        inicialApellidoMaterno = CleanText(inicialApellidoMaterno);
+        firstNameInitial = CleanText(firstNameInitial);
+        lastNamePartsInitial = CleanText(lastNamePartsInitial);
+        lastNamePartsTwoInitial = CleanText(lastNamePartsTwoInitial);
 
-        return inicialNombre + apellidoPaterno + inicialApellidoMaterno;
+        return firstNameInitial + "." + lastNamePartsInitial + lastNamePartsTwoInitial;
     }
 
     private static string CleanText(string input)

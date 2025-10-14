@@ -18,19 +18,27 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.Property(x => x.MemberId)
             .IsRequired();
 
+        builder.HasOne(x => x.SpaceAvailability)
+                .WithMany()
+                .HasForeignKey(x => x.SpaceAvailabilityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
          builder.HasOne(x => x.Member)
                 .WithMany()
                 .HasForeignKey(x => x.MemberId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(x => x.SpaceId)
+        builder.Property(x => x.SpaceRateId)
+            .IsRequired();
+
+          builder.Property(x => x.SpaceAvailabilityId)
             .IsRequired();
 
 
-         builder.HasOne(x => x.Space)
+         builder.HasOne(x => x.SpaceRate)
                 .WithMany()
-                .HasForeignKey(x => x.SpaceId)
+                .HasForeignKey(x => x.SpaceRateId)
                 .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.StartTime)
@@ -39,8 +47,7 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.Property(x => x.EndTime)
             .IsRequired();
 
-        builder.Property(x => x.Status)
-            .HasMaxLength(20)
+        builder.Property(x => x.StatusId)
             .IsRequired(false);
 
         builder.Property(x => x.TotalAmount)
@@ -49,14 +56,39 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.Property(x => x.AccountingEntryId)
             .IsRequired(false);
 
+        builder.HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
 
-         builder.HasOne(x => x.AccountingEntry)
+        builder.HasOne(x => x.AccountingEntry)
                 .WithMany()
                 .HasForeignKey(x => x.AccountingEntryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(x => x.StateReservation)
+        builder.Property(x => x.PaymentMethodId)
             .IsRequired();
+
+        builder.HasOne(x => x.PaymentType)
+                .WithMany()
+                .HasForeignKey(x => x.PaymentMethodId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.DocumentTypeId)
+            .IsRequired();
+
+        builder.HasOne(x => x.DocumentType)
+                .WithMany()
+                .HasForeignKey(x => x.DocumentTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.ReferenceNumber)
+            .HasMaxLength(100)
+            .IsRequired(false);
+
+        builder.Property(x => x.ReceiptNumber)
+            .HasMaxLength(100)
+            .IsRequired(false);
 
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(40)
@@ -73,13 +105,13 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.HasIndex(x => x.MemberId)
             .HasDatabaseName("ix_reservation_memberid");
 
-        builder.HasIndex(x => x.SpaceId)
-            .HasDatabaseName("ix_reservation_spaceid");
+        builder.HasIndex(x => x.SpaceRateId)
+            .HasDatabaseName("ix_reservation_spacerateid");
 
         builder.HasIndex(x => x.StartTime)
             .HasDatabaseName("ix_reservation_starttime");
 
-        builder.HasIndex(x => x.Status)
+        builder.HasIndex(x => x.StatusId)
             .HasDatabaseName("ix_reservation_status");
 
         builder.HasIndex(x => x.AccountingEntryId)

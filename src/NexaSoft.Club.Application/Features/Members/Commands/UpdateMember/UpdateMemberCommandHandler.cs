@@ -15,13 +15,13 @@ public class UpdateMemberCommandHandler(
 {
     public async Task<Result<bool>> Handle(UpdateMemberCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de actualización de Member con ID {MemberId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de actualización de Member con ID {MemberId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("Member con ID {MemberId} no encontrado", command.Id);
-                return Result.Failure<bool>(MemberErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(MemberErrores.NoEncontrado);
+        }
 
         entity.Update(
             command.Id,
@@ -30,18 +30,12 @@ public class UpdateMemberCommandHandler(
             command.LastName,
             command.Email,
             command.Phone,
+            command.DepartamentId,
+            command.ProvinceId,
+            command.DistrictId,
             command.Address,
-            command.BirthDate,
-            command.MemberTypeId,
-            command.StatusId,
-            command.JoinDate,
-            command.ExpirationDate,
+            command.BirthDate,         
             command.Balance,
-            //command.QrCode,
-            //command.QrExpiration,
-            command.ProfilePictureUrl,
-            command.EntryFeePaid,
-            command.LastPaymentDate,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.UpdatedBy
         );
@@ -59,7 +53,7 @@ public class UpdateMemberCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al actualizar Member con ID {MemberId}", command.Id);
+            _logger.LogError(ex, "Error al actualizar Member con ID {MemberId}", command.Id);
             return Result.Failure<bool>(MemberErrores.ErrorEdit);
         }
     }

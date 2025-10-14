@@ -2,12 +2,12 @@ namespace NexaSoft.Club.Domain.Masters.Spaces;
 
 public sealed record SpaceResponse(
     long Id,
+    long SpaceTypeId,
+    string? SpaceTypeName,
     string? SpaceName,
-    string? SpaceType,
     int? Capacity,
     string? Description,
     decimal StandardRate,
-    bool IsActive,
     bool RequiresApproval,
     int MaxReservationHours,
     long? IncomeAccountId,

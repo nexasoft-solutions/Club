@@ -4,9 +4,11 @@ using Microsoft.IdentityModel.Tokens;
 using NexaSoft.Club.Application.Abstractions.Data;
 using NexaSoft.Club.Application.Masters.Users;
 using NexaSoft.Club.Application.Masters.Users.Queries.GetUserRolesAndPermissions;
+using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Masters.Permissions;
 using NexaSoft.Club.Domain.Masters.Roles;
 using NexaSoft.Club.Domain.Masters.Users;
+using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Infrastructure.Repositories;
 
@@ -215,5 +217,63 @@ public class UserRoleRepository(ApplicationDbContext _dbContext, ISqlConnectionF
 
 
         return permissions!;
+    }
+
+    public async Task<User> GetUserWithMemberAsync(long menberId, CancellationToken cancellationToken = default)
+    {
+         var result = await (
+            from u in _dbContext.Set<User>()
+            join m in _dbContext.Set<Member>() 
+                on u.MemberId equals m.Id
+            where m.Id == menberId
+            select u
+        ).FirstOrDefaultAsync(cancellationToken);
+
+        return result!;
+    }
+
+    public async Task<List<UserMemberResponse>> MembersPendingUserSpec(CancellationToken cancellationToken = default)
+    {
+
+         var users = await (
+            from u in _dbContext.Set<User>()
+            join m in _dbContext.Set<Member>() 
+                on u.MemberId equals m.Id
+            where m.StatusId == (int)StatusEnum.Activo
+                && u.QrCode == null
+            select new UserMemberResponse(
+                m.Id,
+                u.Id,
+                u.QrCode,
+                u.QrExpiration,
+                u.QrUrl,
+                u.CreatedBy
+            )
+        ).ToListAsync(cancellationToken);
+
+        return users;
+    }
+
+    public async Task<List<UserMemberResponse>> MembersNeedingQrRenewalSpec(CancellationToken cancellationToken = default)
+    {
+        var threshold = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(15));
+        var users = await (
+            from u in _dbContext.Set<User>()
+            join m in _dbContext.Set<Member>() 
+                on u.MemberId equals m.Id
+            where (u.QrExpiration == null ||
+                u.QrExpiration <= threshold) &&
+                m.StatusId == (int)StatusEnum.Activo           
+            select new UserMemberResponse(
+                m.Id,
+                u.Id,
+                u.QrCode,
+                u.QrExpiration,
+                u.QrUrl,
+                u.CreatedBy
+            )
+        ).ToListAsync(cancellationToken);
+
+        return users;
     }
 }

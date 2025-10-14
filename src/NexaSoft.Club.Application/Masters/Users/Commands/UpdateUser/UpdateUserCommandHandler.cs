@@ -25,14 +25,16 @@ public class UpdateUserCommandHandler(
 
         entity.Update(
             command.Id,
-            command.UserApellidos,
-            command.UserNombres,   
-            command.Password,
+            command.LastName,
+            command.FirstName,
             command.Email,
-            command.UserDni,
-            command.UserTelefono,
+            command.Dni,
+            command.Phone,
+            command.UserTypeId,
+            command.BirthDate,
+            command.MemberId,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
-            command.UsuarioModificacion
+            command.UserModification
         );
 
         try

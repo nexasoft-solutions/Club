@@ -15,15 +15,15 @@ public class DeletePaymentCommandHandler(
 {
     public async Task<Result<bool>> Handle(DeletePaymentCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de eliminación de Payment con ID {PaymentId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de eliminación de Payment con ID {PaymentId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("Payment con ID {PaymentId} no encontrado", command.Id);
-                return Result.Failure<bool>(PaymentErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(PaymentErrores.NoEncontrado);
+        }
 
-         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.DeletedBy);
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(), command.DeletedBy);
 
         try
         {
@@ -37,7 +37,7 @@ public class DeletePaymentCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al eliminar Payment con ID {PaymentId}", command.Id);
+            _logger.LogError(ex, "Error al eliminar Payment con ID {PaymentId}", command.Id);
             return Result.Failure<bool>(PaymentErrores.ErrorDelete);
         }
     }

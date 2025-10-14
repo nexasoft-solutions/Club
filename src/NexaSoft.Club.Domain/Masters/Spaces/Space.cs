@@ -1,17 +1,19 @@
 using NexaSoft.Club.Domain.Abstractions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Domain.Masters.AccountingCharts;
+using NexaSoft.Club.Domain.Masters.SpaceTypes;
 
 namespace NexaSoft.Club.Domain.Masters.Spaces;
 
 public class Space : Entity
 {
     public string? SpaceName { get; private set; }
-    public string? SpaceType { get; private set; }
+
+    public long SpaceTypeId { get; private set; }
+    public SpaceType? SpaceType { get; private set; }
     public int? Capacity { get; private set; }
     public string? Description { get; private set; }
     public decimal StandardRate { get; private set; }
-    public bool IsActive { get; private set; }
     public bool RequiresApproval { get; private set; }
     public int MaxReservationHours { get; private set; }
     public long? IncomeAccountId { get; private set; }
@@ -22,11 +24,10 @@ public class Space : Entity
 
     private Space(
         string? spaceName, 
-        string? spaceType, 
+        long spaceTypeId, 
         int? capacity, 
         string? description, 
         decimal standardRate, 
-        bool isActive, 
         bool requiresApproval, 
         int maxReservationHours, 
         long? incomeAccountId, 
@@ -38,11 +39,10 @@ public class Space : Entity
     ) : base(createdAt, createdBy, updatedBy, deletedBy)
     {
         SpaceName = spaceName;
-        SpaceType = spaceType;
+        SpaceTypeId = spaceTypeId;
         Capacity = capacity;
         Description = description;
         StandardRate = standardRate;
-        IsActive = isActive;
         RequiresApproval = requiresApproval;
         MaxReservationHours = maxReservationHours;
         IncomeAccountId = incomeAccountId;
@@ -55,11 +55,10 @@ public class Space : Entity
 
     public static Space Create(
         string? spaceName, 
-        string? spaceType, 
+        long spaceTypeId, 
         int? capacity, 
         string? description, 
         decimal standardRate, 
-        bool isActive, 
         bool requiresApproval, 
         int maxReservationHours, 
         long? incomeAccountId, 
@@ -70,11 +69,10 @@ public class Space : Entity
     {
         var entity = new Space(
             spaceName,
-            spaceType,
+            spaceTypeId,
             capacity,
             description,
             standardRate,
-            isActive,
             requiresApproval,
             maxReservationHours,
             incomeAccountId,
@@ -88,11 +86,10 @@ public class Space : Entity
     public Result Update(
         long Id,
         string? spaceName, 
-        string? spaceType, 
+        long spaceTypeId, 
         int? capacity, 
         string? description, 
         decimal standardRate, 
-        bool isActive, 
         bool requiresApproval, 
         int maxReservationHours, 
         long? incomeAccountId, 
@@ -101,11 +98,10 @@ public class Space : Entity
     )
     {
         SpaceName = spaceName;
-        SpaceType = spaceType;
+        SpaceTypeId = spaceTypeId;
         Capacity = capacity;
         Description = description;
         StandardRate = standardRate;
-        IsActive = isActive;
         RequiresApproval = requiresApproval;
         MaxReservationHours = maxReservationHours;
         IncomeAccountId = incomeAccountId;

@@ -8,7 +8,7 @@ public class CreateSpaceCommandValidator : AbstractValidator<CreateSpaceCommand>
     {
         RuleFor(x => x.SpaceName)
             .NotEmpty().WithMessage("El campo SpaceName no puede estar vacío.");
-        RuleFor(x => x.SpaceType)
+        RuleFor(x => x.SpaceTypeId)
             .NotEmpty().WithMessage("El campo SpaceType no puede estar vacío.");
         RuleFor(x => x.Capacity)
             .GreaterThan(0).WithMessage("Este Capacity debe ser mayor a cero.");

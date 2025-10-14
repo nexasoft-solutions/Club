@@ -14,6 +14,5 @@ public sealed record CreateReservationRequest(
     long DocumentTypeId,
     string? ReceiptNumber,
     decimal TotalAmount,
-    long? AccountingEntryId,
     string CreatedBy
 );

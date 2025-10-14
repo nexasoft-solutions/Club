@@ -8,6 +8,6 @@ public sealed record CreateMemberFeeCommand(
     string? Period,
     decimal Amount,
     DateOnly DueDate,
-    string? Status,
+    long StatusId,
     string CreatedBy
 ) : ICommand<long>;

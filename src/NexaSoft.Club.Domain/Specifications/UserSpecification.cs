@@ -22,7 +22,7 @@ public class UserSpecification : BaseSpecification<User, UserResponse>
                 switch (specParams.SearchFields.ToLower())
                 {
                     case "nombrecompleto":
-                        AddCriteria(x => x.NombreCompleto != null && x.NombreCompleto.ToLower().Contains(specParams.Search.ToLower()));
+                        AddCriteria(x => x.FullName != null && x.FullName.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "username":
                         AddCriteria(x => x.UserName != null && x.UserName.ToLower().Contains(specParams.Search.ToLower()));
@@ -31,7 +31,7 @@ public class UserSpecification : BaseSpecification<User, UserResponse>
                         AddCriteria(x => x.Email != null && x.Email.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "userdni":
-                        AddCriteria(x => x.UserDni != null && x.UserDni.ToLower().Contains(specParams.Search.ToLower()));
+                        AddCriteria(x => x.Dni != null && x.Dni.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     default:
                         Criteria = x => true;
@@ -50,26 +50,35 @@ public class UserSpecification : BaseSpecification<User, UserResponse>
             switch (specParams.Sort)
             {
                 case "nombrecompletoasc":
-                    AddOrderBy(x => x.NombreCompleto!);
+                    AddOrderBy(x => x.FullName!);
                     break;
                 case "nombrecompletodesc":
-                    AddOrderByDescending(x => x.NombreCompleto!);
+                    AddOrderByDescending(x => x.FullName!);
                     break;
                 default:
-                    AddOrderBy(x => x.NombreCompleto!);
+                    AddOrderBy(x => x.FullName!);
                     break;
             }
         }
 
         AddSelect(x => new UserResponse(
                x.Id,
-               x.UserApellidos,
-               x.UserNombres,
-               x.NombreCompleto,
+               x.LastName,
+               x.FirstName,
+               x.FullName,
                x.UserName,
                x.Email,
-               x.UserDni,
-               x.UserTelefono,
+               x.Dni,
+               x.Phone,
+               x.UserTypeId,
+               x.UserType != null ? x.UserType.Name : null,
+               x.BirthDate!,
+               x.ProfilePictureUrl,
+               x.QrCode,
+               x.QrExpiration,
+               x.QrUrl,
+               x.LastLoginDate,
+               x.PasswordSetDate,
                x.CreatedAt,
                x.UpdatedAt,
                x.CreatedBy,

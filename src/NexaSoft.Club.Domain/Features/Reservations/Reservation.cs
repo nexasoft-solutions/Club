@@ -1,8 +1,12 @@
 using NexaSoft.Club.Domain.Abstractions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Domain.Features.Members;
-using NexaSoft.Club.Domain.Masters.Spaces;
 using NexaSoft.Club.Domain.Features.AccountingEntries;
+using NexaSoft.Club.Domain.Masters.Statuses;
+using NexaSoft.Club.Domain.Masters.PaymentTypes;
+using NexaSoft.Club.Domain.Masters.DocumentTypes;
+using NexaSoft.Club.Domain.Masters.SpaceRates;
+using NexaSoft.Club.Domain.Masters.SpaceAvailabilities;
 
 namespace NexaSoft.Club.Domain.Features.Reservations;
 
@@ -10,27 +14,43 @@ public class Reservation : Entity
 {
     public long MemberId { get; private set; }
     public Member? Member { get; private set; }
-    public long SpaceId { get; private set; }
-    public Space? Space { get; private set; }
-    public DateTime StartTime { get; private set; }
-    public DateTime EndTime { get; private set; }
-    public string? Status { get; private set; }
+    public long SpaceRateId { get; private set; }
+    public SpaceRate? SpaceRate { get; private set; }
+
+    public long SpaceAvailabilityId { get; private set; }
+    public SpaceAvailability? SpaceAvailability { get; private set; }
+    public DateOnly Date { get; private set; }
+    public TimeOnly StartTime { get; private set; }
+    public TimeOnly EndTime { get; private set; }
+    public long? StatusId { get; private set; }
+    public Status? Status { get; private set; }
+    public long PaymentMethodId { get; private set; }
+    public PaymentType? PaymentType { get; private set; }
+    public string? ReferenceNumber { get; private set; }
+    public long DocumentTypeId { get; private set; }
+    public DocumentType? DocumentType { get; private set; }
+    public string? ReceiptNumber { get; private set; }
     public decimal TotalAmount { get; private set; }
     public long? AccountingEntryId { get; private set; }
     public AccountingEntry? AccountingEntry { get; private set; }
     public int StateReservation { get; private set; }
-
     private Reservation() { }
 
     private Reservation(
-        long memberId, 
-        long spaceId, 
-        DateTime startTime, 
-        DateTime endTime, 
-        string? status, 
-        decimal totalAmount, 
-        long? accountingEntryId, 
-        int stateReservation, 
+        long memberId,
+        long spaceRateId,
+        long spaceAvailabilityId,
+        DateOnly date,
+        TimeOnly startTime,
+        TimeOnly endTime,
+        long? statusId,
+        long paymentMethodId,
+        string? referenceNumber,
+        long documentTypeId,
+        string? receiptNumber,
+        decimal totalAmount,
+        long? accountingEntryId,
+        int stateReservation,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -38,10 +58,16 @@ public class Reservation : Entity
     ) : base(createdAt, createdBy, updatedBy, deletedBy)
     {
         MemberId = memberId;
-        SpaceId = spaceId;
+        SpaceRateId = spaceRateId;
+        SpaceAvailabilityId = spaceAvailabilityId;
         StartTime = startTime;
+        Date = date;
         EndTime = endTime;
-        Status = status;
+        StatusId = statusId;
+        PaymentMethodId = paymentMethodId;
+        ReferenceNumber = referenceNumber;
+        DocumentTypeId = documentTypeId;
+        ReceiptNumber = receiptNumber;
         TotalAmount = totalAmount;
         AccountingEntryId = accountingEntryId;
         StateReservation = stateReservation;
@@ -52,24 +78,36 @@ public class Reservation : Entity
     }
 
     public static Reservation Create(
-        long memberId, 
-        long spaceId, 
-        DateTime startTime, 
-        DateTime endTime, 
-        string? status, 
-        decimal totalAmount, 
-        long? accountingEntryId, 
-        int stateReservation, 
+        long memberId,
+        long spaceRateId,
+        long spaceAvailabilityId,
+        DateOnly date,
+        TimeOnly startTime,
+        TimeOnly endTime,
+        long? statusId,
+        long paymentMethodId,
+        string? referenceNumber,
+        long documentTypeId,
+        string? receiptNumber,
+        decimal totalAmount,
+        long? accountingEntryId,
+        int stateReservation,
         DateTime createdAd,
         string? createdBy
     )
     {
         var entity = new Reservation(
             memberId,
-            spaceId,
+            spaceRateId,
+            spaceAvailabilityId,
+            date,
             startTime,
             endTime,
-            status,
+            statusId,
+            paymentMethodId,
+            referenceNumber,
+            documentTypeId,
+            receiptNumber,
             totalAmount,
             accountingEntryId,
             stateReservation,
@@ -79,38 +117,46 @@ public class Reservation : Entity
         return entity;
     }
 
-    public Result Update(
-        long Id,
-        long memberId, 
-        long spaceId, 
-        DateTime startTime, 
-        DateTime endTime, 
-        string? status, 
-        decimal totalAmount, 
-        long? accountingEntryId, 
-        DateTime utcNow,
-        string? updatedBy
-    )
-    {
-        MemberId = memberId;
-        SpaceId = spaceId;
-        StartTime = startTime;
-        EndTime = endTime;
-        Status = status;
-        TotalAmount = totalAmount;
-        AccountingEntryId = accountingEntryId;
-        UpdatedAt = utcNow;
-        UpdatedBy = updatedBy;
 
-
-        return Result.Success();
-    }
-
-    public Result Delete(DateTime utcNow,string deletedBy)
+    public Result Delete(DateTime utcNow, string deletedBy)
     {
         StateReservation = (int)EstadosEnum.Eliminado;
         DeletedAt = utcNow;
         DeletedBy = deletedBy;
         return Result.Success();
+    }
+
+    public void SetAccountingEntryId(long accountingEntryId)
+    {
+        AccountingEntryId = accountingEntryId;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+
+    public void MarkAsCompleted(long accountingEntryId)
+    {
+        SetAccountingEntryId(accountingEntryId);
+        StatusId = (long)StatusEnum.Completado;
+        UpdatedAt = DateTime.UtcNow;
+        // Puedes agregar más lógica de estado si es necesario
+    }
+
+    public void MarkAsFailed()
+    {
+        StatusId = (long)StatusEnum.Fallido;
+        //ErrorMessage = error;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void MarkAsProcessing()
+    {
+        StatusId = (long)StatusEnum.Iniciado;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void MarkAsActive()
+    {
+        StatusId = (long)StatusEnum.Activo;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

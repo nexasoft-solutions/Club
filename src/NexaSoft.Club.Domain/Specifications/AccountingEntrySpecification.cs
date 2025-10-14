@@ -33,10 +33,7 @@ public class AccountingEntrySpecification : BaseSpecification<AccountingEntry, A
                         break;
                     case "description":
                         AddCriteria(x => x.Description != null && x.Description.ToLower().Contains(specParams.Search.ToLower()));
-                        break;
-                    case "sourcemodule":
-                        AddCriteria(x => x.SourceModule != null && x.SourceModule.ToLower().Contains(specParams.Search.ToLower()));
-                        break;
+                        break;             
                     default:
                         Criteria = x => true;
                         break;
@@ -70,7 +67,8 @@ public class AccountingEntrySpecification : BaseSpecification<AccountingEntry, A
                x.EntryNumber,
                x.EntryDate,
                x.Description,
-               x.SourceModule,
+               x.SourceModuleId,
+               x.SourceModule!.Name,
                x.SourceId,
                x.TotalDebit,
                x.TotalCredit,

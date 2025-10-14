@@ -2,6 +2,8 @@ using NexaSoft.Club.Domain.Abstractions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Domain.Masters.MemberTypes;
 using NexaSoft.Club.Domain.Masters.MemberStatuses;
+using NexaSoft.Club.Domain.Masters.Statuses;
+using NexaSoft.Club.Domain.Masters.Ubigeos;
 
 namespace NexaSoft.Club.Domain.Features.Members;
 
@@ -12,6 +14,13 @@ public class Member : Entity
     public string? LastName { get; private set; }
     public string? Email { get; private set; }
     public string? Phone { get; private set; }
+
+    public long DepartamentId { get; private set; }
+    public Ubigeo? Departament { get; private set; }
+    public long ProvinceId { get; private set; }
+    public Ubigeo? Province { get; private set; }
+    public long DistrictId { get; private set; }
+    public Ubigeo? District { get; private set; }
     public string? Address { get; private set; }
     public DateOnly? BirthDate { get; private set; }
     public long MemberTypeId { get; private set; }
@@ -21,25 +30,16 @@ public class Member : Entity
     public DateOnly JoinDate { get; private set; }
     public DateOnly? ExpirationDate { get; private set; }
     public decimal Balance { get; private set; }
-    public string? QrCode { get; private set; }
-    public DateOnly? QrExpiration { get; private set; }
-    public string? QrUrl { get; private set; }
-    public string? ProfilePictureUrl { get; private set; }
-    public int StateMember { get; private set; }
+     public int StateMember { get; private set; }
     public bool EntryFeePaid { get; private set; }
     public DateTime? LastPaymentDate { get; private set; }
-    public string? Status { get; private set; }
-
-    //Para Login
+    public long? StatusId { get; private set; }
+    public Status? Status { get; private set; }
+   //Para Login
     public string? PasswordHash { get; private set; }
-    public string? BiometricToken { get; private set; }
-    public DateTime? PasswordSetDate { get; private set; }
-    public DateTime? LastLoginDate { get; private set; }
-    public string? DeviceId { get; private set; }
-    public bool HasSetPassword { get; private set; } // ← NUEVO: saber si ya configuró password
 
-    private readonly List<MemberQrHistory> _qrHistory = new();
-    public IReadOnlyCollection<MemberQrHistory> QrHistory => _qrHistory.AsReadOnly();
+    //private readonly List<MemberQrHistory> _qrHistory = new();
+    //public IReadOnlyCollection<MemberQrHistory> QrHistory => _qrHistory.AsReadOnly();
 
     private Member() { }
 
@@ -49,6 +49,9 @@ public class Member : Entity
         string? lastName,
         string? email,
         string? phone,
+        long departamentId,
+        long provinceId,    
+        long districtId,
         string? address,
         DateOnly? birthDate,
         long memberTypeId,
@@ -56,12 +59,8 @@ public class Member : Entity
         DateOnly joinDate,
         DateOnly? expirationDate,
         decimal balance,
-        //string? qrCode,
-        //DateTime? qrExpiration,
-        string? profilePictureUrl,
         int stateMember,
         bool entryFeePaid,
-        DateTime? lastPaymentDate,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -73,6 +72,9 @@ public class Member : Entity
         LastName = lastName;
         Email = email;
         Phone = phone;
+        DepartamentId = departamentId;
+        ProvinceId = provinceId;
+        DistrictId = districtId;
         Address = address;
         BirthDate = birthDate;
         MemberTypeId = memberTypeId;
@@ -80,12 +82,8 @@ public class Member : Entity
         JoinDate = joinDate;
         ExpirationDate = expirationDate;
         Balance = balance;
-        //QrCode = qrCode;
-        //QrExpiration = qrExpiration;
-        ProfilePictureUrl = profilePictureUrl;
         StateMember = stateMember;
         EntryFeePaid = entryFeePaid;
-        LastPaymentDate = lastPaymentDate;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
         UpdatedBy = updatedBy;
@@ -98,6 +96,9 @@ public class Member : Entity
         string? lastName,
         string? email,
         string? phone,
+        long departamentId,
+        long provinceId,
+        long districtId,
         string? address,
         DateOnly? birthDate,
         long memberTypeId,
@@ -105,12 +106,8 @@ public class Member : Entity
         DateOnly joinDate,
         DateOnly? expirationDate,
         decimal balance,
-        //string? qrCode,
-        //DateTime? qrExpiration,
-        string? profilePictureUrl,
         int stateMember,
         bool entryFeePaid,
-        DateTime? lastPaymentDate,
         DateTime createdAd,
         string? createdBy
     )
@@ -121,6 +118,9 @@ public class Member : Entity
             lastName,
             email,
             phone,
+            departamentId,
+            provinceId, 
+            districtId,
             address,
             birthDate,
             memberTypeId,
@@ -128,12 +128,8 @@ public class Member : Entity
             joinDate,
             expirationDate,
             balance,
-            //qrCode,
-            //qrExpiration,
-            profilePictureUrl,
             stateMember,
             entryFeePaid,
-            lastPaymentDate,
             createdAd,
             createdBy
         );
@@ -147,18 +143,12 @@ public class Member : Entity
         string? lastName,
         string? email,
         string? phone,
+        long departamentId,
+        long provinceId,
+        long districtId,
         string? address,
-        DateOnly? birthDate,
-        long memberTypeId,
-        long statusId,
-        DateOnly joinDate,
-        DateOnly? expirationDate,
+        DateOnly? birthDate,    
         decimal balance,
-        //string? qrCode,
-        //DateTime? qrExpiration,
-        string? profilePictureUrl,
-        bool entryFeePaid,
-        DateTime? lastPaymentDate,
         DateTime utcNow,
         string? updatedBy
     )
@@ -168,21 +158,14 @@ public class Member : Entity
         LastName = lastName;
         Email = email;
         Phone = phone;
+        DepartamentId = departamentId;
+        ProvinceId = provinceId;
+        DistrictId = districtId;
         Address = address;
         BirthDate = birthDate;
-        MemberTypeId = memberTypeId;
-        MemberStatusId = statusId;
-        JoinDate = joinDate;
-        ExpirationDate = expirationDate;
         Balance = balance;
-        //QrCode = qrCode;
-        //QrExpiration = qrExpiration;
-        ProfilePictureUrl = profilePictureUrl;
-        EntryFeePaid = entryFeePaid;
-        LastPaymentDate = lastPaymentDate;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;
-
 
         return Result.Success();
     }
@@ -202,12 +185,12 @@ public class Member : Entity
         UpdatedBy = updatedBy;
     }
 
-    public void RevertBalance(decimal amount)
+    public void RevertBalance(decimal amount, string updatedBy)
     {
         // Revertir la operación - asumiendo que UpdateBalance resta del balance
         Balance += amount; // Si UpdateBalance suma, entonces sería Balance -= amount
         UpdatedAt = DateTime.UtcNow;
-        UpdatedBy = "System";
+        UpdatedBy = updatedBy;
 
         // Log para auditoría
         /*_logger?.LogInformation("Balance revertido para miembro {MemberId}. Monto: {Amount}, Razón: {Reason}", 
@@ -217,7 +200,7 @@ public class Member : Entity
     public void MarkAsCompleted()
     {
         //SetAccountingEntryId(accountingEntryId);
-        Status = "Completed";
+        StatusId = (long)StatusEnum.Completado;
         UpdatedAt = DateTime.UtcNow;
         // Puedes agregar más lógica de estado si es necesario
     }
@@ -231,14 +214,14 @@ public class Member : Entity
 
     public void MarkAsProcessing()
     {
-        Status = "Processing";
+        StatusId = (long)StatusEnum.Iniciado;
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void MarkAsFeesGenerationCompleted()
     {
         // Status = "Active";
-        Status = "Completed";
+        StatusId = (long)StatusEnum.Completado;
         UpdatedAt = DateTime.UtcNow;
         // Log para auditoría
         //_logger?.LogInformation("Generación de cuotas completada para member {MemberId}", Id);
@@ -246,7 +229,16 @@ public class Member : Entity
 
     public void MarkAsFeesGenerationFailed()
     {
-        Status = "Failed";
+        StatusId = (long)StatusEnum.Fallido;
+        UpdatedAt = DateTime.UtcNow;
+
+        // Podrías agregar un campo ErrorMessage
+        //_logger?.LogWarning("Generación de cuotas falló para member {MemberId}: {Error}", Id, error);
+    }
+
+    public void MarkAsActive()
+    {
+        StatusId = (long)StatusEnum.Activo;
         UpdatedAt = DateTime.UtcNow;
 
         // Podrías agregar un campo ErrorMessage
@@ -254,7 +246,7 @@ public class Member : Entity
     }
 
     // Método para verificar si necesita nuevo QR
-    public bool NeedsNewQr()
+    /*public bool NeedsNewQr()
     {
         if (string.IsNullOrEmpty(QrCode) || QrExpiration == null)
             return true;
@@ -273,7 +265,7 @@ public class Member : Entity
                 QrUrl ?? string.Empty,
                 QrExpiration,
                 DateTime.UtcNow,
-                "System"
+                createdAt
             );
             _qrHistory.Add(qrHistory);
         }
@@ -283,38 +275,12 @@ public class Member : Entity
         QrUrl = qrUrl;
         QrExpiration = expirationDate;
         UpdatedAt = DateTime.UtcNow;
-    }
+    }*/
 
     public bool IsUpToDateForQrRenewal()
     {
         // Lógica personalizada - ejemplo simple
         return Balance >= 0;
     }
-    
-
-    // Métodos
-    public void SetPassword(string password)
-    {
-        PasswordHash = password;
-        HasSetPassword = true;
-        PasswordSetDate = DateTime.UtcNow;
-    }
-
-    /*public bool VerifyPassword(string password)
-    {
-        return PasswordHash != null && BCrypt.Net.BCrypt.Verify(password, PasswordHash);
-    }*/
-
-    public void SetBiometricToken(string token)
-    {
-        BiometricToken = token;
-    }
-
-    public void RecordLogin(string deviceId)
-    {
-        LastLoginDate = DateTime.UtcNow;
-        DeviceId = deviceId;
-    }
-
-    public bool CanUsePasswordAuth() => HasSetPassword && PasswordHash != null;
+  
 }

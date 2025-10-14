@@ -6,6 +6,7 @@ using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Domain.Templates;
+using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Application.Features.Members.Commands.InitMemberRegistration;
 
@@ -33,7 +34,7 @@ public class InitMemberRegistrationCommandHandler(
             if (member == null)
                 return Result.Failure<MemberRegistrationResponse>(MemberErrores.NoEncontrado);
 
-            if (member.Status != "Active")
+            if (member.StatusId != (int)StatusEnum.Activo)
                 return Result.Failure<MemberRegistrationResponse>(MemberErrores.NotActive);
 
             // 2. Generar PIN aleatorio
@@ -54,16 +55,10 @@ public class InitMemberRegistrationCommandHandler(
 
             await _pinRepository.AddAsync(memberPin, cancellationToken);
 
-            // 4. Enviar PIN por email/SMS
-            /*await _notificationService.SendPinAsync(
-                member.Email,
-                member.Phone,
-                pin,
-                expiresAt,
-                cancellationToken);*/
+            
 
-
-            var emailMessage = new EmailMessage
+            //activar para envio de correos
+            /*var emailMessage = new EmailMessage
             {
                 To = member.Email!,
                 ToName = member.FirstName + " " + member.LastName,
@@ -89,7 +84,7 @@ public class InitMemberRegistrationCommandHandler(
                 //CC = ccList//new List<string> { "aldoroblesarana@gmail.com" }
             };
 
-            await _emailService.SendAsync(emailMessage);
+            await _emailService.SendAsync(emailMessage);*/
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -99,6 +94,9 @@ public class InitMemberRegistrationCommandHandler(
                 Success: true,
                 Message: "PIN enviado exitosamente",
                 MemberName: $"{member.FirstName} {member.LastName}",
+                Dni: member.Dni,
+                DeviceId: command.DeviceId,
+                BirthDate: member.BirthDate,
                 Email: member.Email, // Para mostrar máscara de email
                 PinExpirationMinutes: 10
             ));

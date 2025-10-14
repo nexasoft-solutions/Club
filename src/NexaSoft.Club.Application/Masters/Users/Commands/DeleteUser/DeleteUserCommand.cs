@@ -5,5 +5,5 @@ namespace NexaSoft.Club.Application.Masters.Users.Commands.DeleteUser;
 
 public sealed record DeleteUserCommand(
     long Id,
-    string UsuarioEliminacion
+    string UserDelete
 ) : ICommand<bool>;

@@ -6,12 +6,12 @@ public sealed record CreateAccountingEntryCommand(
     string? EntryNumber,
     DateOnly EntryDate,
     string? Description,
-    string? sourceModule,
-    long? sourceId,
+    long SourceModuleId,
+    long? SourceId,
     decimal TotalDebit,
     decimal TotalCredit,
-    bool isAdjusted,
-    string? adjustmentReason,
+    bool IsAdjusted,
+    string? AdjustmentReason,
     string CreatedBy
 ) : ICommand<long>;
 

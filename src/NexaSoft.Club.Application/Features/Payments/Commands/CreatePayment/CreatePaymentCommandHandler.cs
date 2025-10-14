@@ -6,6 +6,8 @@ using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.MemberFees;
 using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Features.Payments;
+using NexaSoft.Club.Domain.Masters.Contadores;
+using NexaSoft.Club.Domain.Masters.DocumentTypes;
 using NexaSoft.Club.Domain.Specifications;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 
@@ -16,6 +18,8 @@ public class CreatePaymentCommandHandler(
     IPaymentBackgroundTaskService _backgroundTaskService,
     IGenericRepository<Member> _memberRepository,
     IGenericRepository<MemberFee> _memberFeeRepository,
+    IGenericRepository<Contador> _contadorRepository,
+    IGenericRepository<DocumentType> _documentTypeRepository,
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
     ILogger<CreatePaymentCommandHandler> _logger
@@ -36,7 +40,7 @@ public class CreatePaymentCommandHandler(
 
             // 2. VERIFICAR NÚMERO DE RECIBO DUPLICADO
             bool existsReceiptNumber = await _paymentRepository.ExistsAsync(
-                c => c.ReceiptNumber == command.ReceiptNumber, cancellationToken);
+                c => c.MemberId == command.MemberId && c.ReceiptNumber == command.ReceiptNumber, cancellationToken);
 
             if (existsReceiptNumber)
                 return Result.Failure<PaymentResponse>(PaymentErrores.Duplicado);
@@ -90,7 +94,7 @@ public class CreatePaymentCommandHandler(
             payment.ReceiptNumber ?? string.Empty,
             payment.TotalAmount,
             payment.PaymentDate,
-            "Processing", // Estado inicial
+            StatusEnum.Iniciado.ToString(), // Estado inicial
             new List<PaymentItemResponse>() // Items vacíos, se procesan en background
         );
     }
@@ -115,7 +119,7 @@ public class CreatePaymentCommandHandler(
                 if (memberFee == null || memberFee.MemberId != command.MemberId)
                     return Result.Failure<(Member, List<MemberFee>)>(PaymentErrores.CuotaInvalida);
 
-                if (memberFee.Status == "Pagado" && memberFee.RemainingAmount <= 0)
+                if (memberFee.StatusId == (int)StatusEnum.Pagado && memberFee.RemainingAmount <= 0)
                     return Result.Failure<(Member, List<MemberFee>)>(PaymentErrores.CuotaYaPagada);
 
                 if (item.AmountToPay > memberFee.RemainingAmount)
@@ -132,19 +136,29 @@ public class CreatePaymentCommandHandler(
     {
         bool isPartial = await DetermineIfPartialPayment(command, cancellationToken);
 
+        if (string.IsNullOrWhiteSpace(command.ReceiptNumber))
+        {
+            command = command with
+            {
+                ReceiptNumber = await GenerateUniqueReceiptNumber(command.DocumentTypeId, command.CreatedBy, cancellationToken)
+            };
+            _logger.LogInformation("Número de recibo generado: {ReceiptNumber}", command.ReceiptNumber);
+        }
+
         var payment = Payment.Create(
             command.MemberId,
             command.Amount,
             command.PaymentDate,
-            command.PaymentMethod,
+            command.PaymentMethodId,
             command.ReferenceNumber,
+            command.DocumentTypeId,
             command.ReceiptNumber,
             isPartial: isPartial,
             accountingEntryId: null,
             (int)EstadosEnum.Activo,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.CreatedBy,
-            status: "Pending"
+            statusId: (long)StatusEnum.Iniciado
         );
 
         // Marcar como processing inmediatamente
@@ -155,6 +169,48 @@ public class CreatePaymentCommandHandler(
 
         return payment;
     }
+
+    private async Task<string> GenerateUniqueReceiptNumber(long DocumentTypeId, string createdBy, CancellationToken cancellationToken)
+    {
+        try
+        {
+
+            var documentType = await _documentTypeRepository.GetByIdAsync(DocumentTypeId, cancellationToken);
+            if (documentType == null)
+            {
+                _logger.LogWarning("DocumentType con ID {DocumentTypeId} no encontrado. Usando valor por defecto para serie.", DocumentTypeId);
+            }
+
+            var contador = await _contadorRepository.GetEntityWithSpec(new ContadorRawSpec("DocumentType", documentType!.Serie), cancellationToken);
+
+            if (contador == null)
+            {
+                var contadorNew = Contador.Create(
+                    "DocumentType",
+                    documentType!.Serie ?? "R-001",
+                    1,
+                    string.Empty,
+                    "string",
+                    8,
+                    _dateTimeProvider.CurrentTime.ToUniversalTime(),
+                    createdBy
+                );
+
+                await _contadorRepository.AddAsync(contadorNew, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                contador = contadorNew;
+            }
+
+            var nuevoCodigo = contador.Incrementar(_dateTimeProvider.CurrentTime.ToUniversalTime(), createdBy, null);
+            return nuevoCodigo;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al generar número de comprobando único");
+            return $"R-001-{DateTime.Now:yyyyMMddHHmmss}";
+        }
+    }
+
 
     private async Task<bool> DetermineIfPartialPayment(CreatePaymentCommand command, CancellationToken cancellationToken)
     {

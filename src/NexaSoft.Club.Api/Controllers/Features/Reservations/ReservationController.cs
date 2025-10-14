@@ -32,7 +32,6 @@ public class ReservationController(ISender _sender) : ControllerBase
              request.DocumentTypeId,
              request.ReceiptNumber,
              request.TotalAmount,
-             request.AccountingEntryId,
              request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);

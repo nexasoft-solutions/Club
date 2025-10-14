@@ -15,15 +15,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("id")
             .ValueGeneratedOnAdd();
 
-        builder.Property(x => x.UserApellidos)
+        builder.Property(x => x.LastName)
             .HasMaxLength(60)
             .IsRequired(false);
 
-        builder.Property(x => x.UserNombres)
+        builder.Property(x => x.FirstName)
             .HasMaxLength(60)
             .IsRequired(false);
 
-        builder.Property(x => x.NombreCompleto)
+        builder.Property(x => x.FullName)
             .HasMaxLength(120)
             .IsRequired(false);
 
@@ -39,15 +39,31 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(150)
             .IsRequired(false);
 
-        builder.Property(x => x.UserDni)
+        builder.Property(x => x.Dni)
             .HasMaxLength(8)
             .IsRequired(false);
 
-        builder.Property(x => x.UserTelefono)
+        builder.Property(x => x.Phone)
             .HasMaxLength(40)
             .IsRequired(false);
 
-        builder.Property(x => x.EstadoUser)
+        builder.Property(x => x.MemberId)
+            .IsRequired(false);
+
+        builder.Property(x => x.UserTypeId)
+            .IsRequired();
+
+        builder.HasOne(x => x.UserType)
+            .WithMany()
+            .HasForeignKey(x => x.UserTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        builder.HasOne(x => x.Member)
+            .WithMany()
+            .HasForeignKey(x => x.MemberId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.UserStatus)
             .IsRequired();
 
         builder.Property(x => x.CreatedBy)
@@ -63,8 +79,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
          .HasMaxLength(40)
          .IsRequired(false);
 
-        builder.HasIndex(x => x.NombreCompleto)
-            .HasDatabaseName("ix_user_nombrecompleto");
+        builder.HasIndex(x => x.FullName)
+            .HasDatabaseName("ix_user_fullname");
 
         builder.HasIndex(x => x.UserName)
             .HasDatabaseName("ix_user_username");
@@ -73,7 +89,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsUnique()
             .HasDatabaseName("ix_user_email");
 
-        builder.HasIndex(x => x.UserDni)
+        builder.HasIndex(x => x.Dni)
             .HasDatabaseName("ix_user_userdni");
 
     }

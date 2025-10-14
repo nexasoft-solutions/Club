@@ -10,7 +10,7 @@ public class CreateAccountingChartCommandValidator : AbstractValidator<CreateAcc
             .NotEmpty().WithMessage("El campo AccountCode no puede estar vacío.");
         RuleFor(x => x.AccountName)
             .NotEmpty().WithMessage("El campo AccountName no puede estar vacío.");
-        RuleFor(x => x.AccountType)
+        RuleFor(x => x.AccountTypeId)
             .NotEmpty().WithMessage("El campo AccountType no puede estar vacío.");
         RuleFor(x => x.ParentAccountId)
             .GreaterThan(0).WithMessage("Este ParentAccountId debe ser mayor a cero.");

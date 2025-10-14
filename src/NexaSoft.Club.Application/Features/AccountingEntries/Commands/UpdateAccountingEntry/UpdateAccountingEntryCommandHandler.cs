@@ -6,7 +6,7 @@ using NexaSoft.Club.Domain.Features.AccountingEntries;
 
 namespace NexaSoft.Club.Application.Features.AccountingEntries.Commands.UpdateAccountingEntry;
 
-public class UpdateAccountingEntryCommandHandler(
+/*public class UpdateAccountingEntryCommandHandler(
     IGenericRepository<AccountingEntry> _repository,
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
@@ -54,3 +54,4 @@ public class UpdateAccountingEntryCommandHandler(
         }
     }
 }
+*/

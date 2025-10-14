@@ -2,6 +2,9 @@ using NexaSoft.Club.Domain.Abstractions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Features.AccountingEntries;
+using NexaSoft.Club.Domain.Masters.PaymentTypes;
+using NexaSoft.Club.Domain.Masters.DocumentTypes;
+using NexaSoft.Club.Domain.Masters.Statuses;
 
 namespace NexaSoft.Club.Domain.Features.Payments;
 
@@ -11,15 +14,19 @@ public class Payment : Entity
     public Member? Member { get; private set; }
     public decimal TotalAmount { get; private set; }
     public DateOnly PaymentDate { get; private set; }
-    public string? PaymentMethod { get; private set; }
+    public long PaymentMethodId { get; private set; }
+    public PaymentType? PaymentType { get; private set; }
     public string? ReferenceNumber { get; private set; }
+    public long DocumentTypeId { get; private set; }
+    public DocumentType? DocumentType { get; private set; }
     public string? ReceiptNumber { get; private set; }
     public bool IsPartial { get; private set; }
     public long? AccountingEntryId { get; private set; }
     public AccountingEntry? AccountingEntry { get; private set; }
     public int StatePayment { get; private set; }
 
-    public string? Status { get; private set; }
+    public long StatusId { get; private set; }
+    public Status? Status { get; private set; }
 
     public decimal CreditBalance { get; private set; }
 
@@ -32,15 +39,16 @@ public class Payment : Entity
         long memberId,
         decimal totalAmount,
         DateOnly paymentDate,
-        string? paymentMethod,
+        long paymentMethodId,
         string? referenceNumber,
+        long documentTypeId,
         string? receiptNumber,
         bool isPartial,
         long? accountingEntryId,
         int statePayment,
         DateTime createdAt,
         string? createdBy,
-        string? status,
+        long statusId,
         string? updatedBy = null,
         string? deletedBy = null
     ) : base(createdAt, createdBy, updatedBy, deletedBy)
@@ -48,15 +56,16 @@ public class Payment : Entity
         MemberId = memberId;
         TotalAmount = totalAmount;
         PaymentDate = paymentDate;
-        PaymentMethod = paymentMethod;
+        PaymentMethodId = paymentMethodId;
         ReferenceNumber = referenceNumber;
+        DocumentTypeId = documentTypeId;
         ReceiptNumber = receiptNumber;
         IsPartial = isPartial;
         AccountingEntryId = accountingEntryId;
         StatePayment = statePayment;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
-        Status = status;
+        StatusId = statusId;
         UpdatedBy = updatedBy;
         DeletedBy = deletedBy;
     }
@@ -65,63 +74,36 @@ public class Payment : Entity
         long memberId,
         decimal totalAmount,
         DateOnly paymentDate,
-        string? paymentMethod,
+        long paymentMethodId,
         string? referenceNumber,
+        long documentTypeId,
         string? receiptNumber,
         bool isPartial,
         long? accountingEntryId,
         int statePayment,
         DateTime createdAd,
         string? createdBy,
-        string? status
+        long statusId
     )
     {
         var entity = new Payment(
             memberId,
             totalAmount,
             paymentDate,
-            paymentMethod,
+            paymentMethodId,
             referenceNumber,
+            documentTypeId,
             receiptNumber,
             isPartial,
             accountingEntryId,
             statePayment,
             createdAd,
             createdBy,
-            status
+            statusId
         );
         return entity;
     }
 
-
-    public Result Update(
-        long Id,
-        long memberId,
-        decimal totalAmount,
-        DateOnly paymentDate,
-        string? paymentMethod,
-        string? referenceNumber,
-        string? receiptNumber,
-        bool isPartial,
-        long? accountingEntryId,
-        DateTime utcNow,
-        string? updatedBy
-    )
-    {
-        MemberId = memberId;
-        TotalAmount = totalAmount;
-        PaymentDate = paymentDate;
-        PaymentMethod = paymentMethod;
-        ReferenceNumber = referenceNumber;
-        ReceiptNumber = receiptNumber;
-        IsPartial = isPartial;
-        AccountingEntryId = accountingEntryId;
-        UpdatedAt = utcNow;
-        UpdatedBy = updatedBy;
-
-
-        return Result.Success();
-    }
 
     public void SetAccountingEntryId(long accountingEntryId)
     {
@@ -166,21 +148,27 @@ public class Payment : Entity
     public void MarkAsCompleted(long accountingEntryId)
     {
         SetAccountingEntryId(accountingEntryId);
-        Status = "Completed";
+        StatusId = (long)StatusEnum.Completado;
         UpdatedAt = DateTime.UtcNow;
         // Puedes agregar más lógica de estado si es necesario
     }
 
     public void MarkAsFailed()
     {
-        Status = "Failed";
+        StatusId = (long)StatusEnum.Fallido;
         //ErrorMessage = error;
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void MarkAsProcessing()
     {
-        Status = "Processing";
+        StatusId = (long)StatusEnum.Iniciado;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void MarkAsActive()
+    {
+        StatusId = (long)StatusEnum.Activo;
         UpdatedAt = DateTime.UtcNow;
     }
 }

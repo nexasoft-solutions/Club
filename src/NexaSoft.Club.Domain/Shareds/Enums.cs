@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 
 namespace NexaSoft.Club.Domain.Shareds;
 
@@ -13,23 +14,36 @@ public static class Enums
         Eliminado = 2
     }
 
-    public enum EstadosEventosEnum
+    public enum StatusEnum
     {
-        [Description("Programado")]
-        Programado = 1,
+        [Description("Iniciado")]
+        Iniciado = 1,
 
-        [Description("Presentado")]
-        Presentado = 2,
+        [Description("Completado")]
+        Completado = 2,
 
-        [Description("Vencido")]
-        Vencido = 3,
+        [Description("Fallido")]
+        Fallido = 3,
 
-        [Description("Reprogramado")]
-        Reprogramado = 4,
+        [Description("Activo")]
+        Activo = 4,
 
+        [Description("Futura")]
+        Futura = 5,
+
+        [Description("Pagado")]
+        Pagado = 6,
+
+        [Description("Parcialmente Pagado")]
+        ParcialmentePagado = 7,
+
+        [Description("Pendiente")]
+        Pendiente = 8,
         [Description("Cancelado")]
-        Cancelado = 5
+        Cancelado = 9
+
     }
+
 
     public enum UbigeosEnum
     {
@@ -43,17 +57,27 @@ public static class Enums
         Distrito = 3
     }
 
-    public enum TipoEntidadArchivo
+    public enum TipoDocumentoEnum
     {
-        EstudioAmbiental = 1,
-        Capitulo = 2,
-        SubCapitulo = 3,
-        Estructura = 4
-    }
+        [Description("Boleta")]
+        Boleta = 1,
 
+        [Description("Factura")]
+        Factura = 2,
+
+        [Description("Recibo por Honorarios")]
+        ReciboPorHonorarios = 3,
+
+        [Description("Ticket")]
+        Ticket = 4,
+
+        [Description("Otro")]
+        Otro = 5
+    }
 
     public enum PeriodicidadEnum
     {
+        //resetear luego
         UicaVez = 1,
         Diario = 2,
         Semanal = 3,
@@ -69,6 +93,64 @@ public static class Enums
 
     }
 
+    public enum PaymentMethodEnum
+    {
+        [Description("Efectivo")]
+        Efectivo = 1,
+
+        [Description("Tarjeta de Crédito")]
+        TarjetaDeCredito = 2,
+
+        [Description("Tarjeta de Débito")]
+        TarjetaDeDebito = 3,
+
+        [Description("Transferencia Bancaria")]
+        TransferenciaBancaria = 4,
+
+        [Description("Yape")]
+        Yape = 5,
+
+        [Description("Plin")]
+        Plin = 6,
+
+        [Description("Otro")]
+        Otro = 7
+    }
+
+    public enum TipoCuentaEnum
+    {
+        [Description("Caja/Bancos")]
+        CajaBancos = 1,
+
+        [Description("Clientes")]
+        Clientes = 2,
+
+        [Description("Proveedores")]
+        Proveedores = 3,
+
+        [Description("Capital")]
+        Capital = 4,
+
+        [Description("Ingresos")]
+        Ingresos = 5,
+
+        [Description("Costos")]
+        Costos = 6,
+
+        [Description("Gastos")]
+        Gastos = 7,
+
+        [Description("Otros Activos")]
+        OtrosActivos = 8,
+
+        [Description("Otros Pasivos")]
+        OtrosPasivos = 9,
+
+        [Description("Cuentas de Orden")]
+        CuentasDeOrden = 10
+
+    }
+
     public enum VisitTypeEnum
     {
         [Description("Entrada Normal")]
@@ -77,6 +159,39 @@ public static class Enums
         [Description("Entrada con Visita")]
         ConVisita = 2,
 
+    }
+
+    public enum SourceModuleEnum
+    {
+        [Description("Pagos")]
+        Pagos = 1,
+
+        /*[Description("Cobros")]
+        Cobros = 2,
+
+        [Description("Ventas")]
+        Ventas = 3,
+
+        [Description("Compras")]
+        Compras = 4,
+
+        [Description("Ajustes de Inventario")]
+        AjustesDeInventario = 5,*/
+
+        [Description("Reservaciones")]
+        Reservaciones = 2,
+
+        [Description("Ninguno")]
+        Ninguno = 99
+    }
+    
+    public enum TipoCuentaContable
+    {
+        Activo = 1,
+        Pasivo = 2,
+        Patrimonio = 3,
+        Ingreso = 4,
+        Gasto = 5
     }
 
 }

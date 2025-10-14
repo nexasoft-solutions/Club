@@ -4,52 +4,95 @@ namespace NexaSoft.Club.Domain.Specifications;
 
 public class MemberFeeSpecification : BaseSpecification<MemberFee, MemberFeeResponse>
 {
-    public BaseSpecParams SpecParams { get; }
+    public BaseSpecParams? SpecParams { get; }
 
     public MemberFeeSpecification(BaseSpecParams specParams) : base()
     {
 
-       SpecParams = specParams;
+        SpecParams = specParams;
 
-    if (specParams.Id.HasValue)
-    {
-       AddCriteria(x => x.Id == specParams.Id.Value);
-    }
-    else
-    {
-        if (!string.IsNullOrEmpty(specParams.Search) && !string.IsNullOrEmpty(specParams.SearchFields))
+        if (specParams.Id.HasValue)
         {
-            switch (specParams.SearchFields.ToLower())
+            AddCriteria(x => x.Id == specParams.Id.Value);
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(specParams.Search) && !string.IsNullOrEmpty(specParams.SearchFields))
             {
-                case "memberid":
-                    if (long.TryParse(specParams.Search, out var searchNumber))
-                        AddCriteria(x => x.MemberId == searchNumber);
+                switch (specParams.SearchFields.ToLower())
+                {
+                    case "memberid":
+                        if (long.TryParse(specParams.Search, out var searchNumber))
+                            AddCriteria(x => x.MemberId == searchNumber);
+                        break;
+                    case "membertypefee":
+                        if (long.TryParse(specParams.Search, out var searchNumberConfig))
+                            AddCriteria(x => x.MemberTypeFeeId == searchNumberConfig);
+                        break;
+                    case "period":
+                        AddCriteria(x => x.Period != null && x.Period.ToLower().Contains(specParams.Search.ToLower()));
+                        break;                   
+                     case "status":
+                        if (long.TryParse(specParams.Search, out var searchNumberConfigId))
+                            AddCriteria(x => x.StatusId == searchNumberConfigId);
+                        break;
+                    default:
+                        Criteria = x => true;
+                        break;
+                }
+            }
+
+
+            // Aplicar paginación
+            if (!specParams.NoPaging)
+            {
+                ApplyPaging(specParams.PageSize * (specParams.PageIndex - 1), specParams.PageSize);
+            }
+
+            // Aplicar ordenamiento
+            switch (specParams.Sort)
+            {
+                case "memberidasc":
+                    AddOrderBy(x => x.MemberId!);
                     break;
-                case "membertypefee":
-                    if (long.TryParse(specParams.Search, out var searchNumberConfig))
-                        AddCriteria(x => x.MemberTypeFeeId == searchNumberConfig);
-                    break;
-                case "period":
-                    AddCriteria(x => x.Period != null && x.Period.ToLower().Contains(specParams.Search.ToLower()));
-                    break;
-                case "status":
-                    AddCriteria(x => x.Status != null && x.Status.ToLower().Contains(specParams.Search.ToLower()));
+                case "memberiddesc":
+                    AddOrderByDescending(x => x.MemberId!);
                     break;
                 default:
-                    Criteria = x => true;
+                    AddOrderBy(x => x.MemberId!);
                     break;
             }
         }
 
+        AddSelect(x => new MemberFeeResponse(
+               x.Id,
+               x.MemberId,
+               x.Member!.FirstName!,
+               x.Member!.LastName!,
+               x.MemberTypeFeeId,
+               x.MemberTypeFee!.FeeConfiguration.FeeName,
+               x.MemberTypeFee!.FeeConfigurationId,
+               x.Period,
+               x.Amount,
+               x.RemainingAmount,
+               x.PaidAmount,
+               x.DueDate,
+               x.StatusId,
+               x.Status!.Name!,
+               x.CreatedAt,
+               x.UpdatedAt,
+               x.CreatedBy,
+               x.UpdatedBy
+         ));
+    }
 
-        // Aplicar paginación
-        if (!specParams.NoPaging)
-        {
-           ApplyPaging(specParams.PageSize * (specParams.PageIndex - 1), specParams.PageSize);
-        }
+    public MemberFeeSpecification(long memberId, long statusId, string? sort = null) : base()
+    {
+        AddCriteria(x => x.MemberId == memberId);
+        AddCriteria(x => x.StatusId == statusId);
 
-        // Aplicar ordenamiento
-        switch (specParams.Sort)
+        // Aplicar ordenamiento si se especifica
+        switch (sort?.ToLower())
         {
             case "memberidasc":
                 AddOrderBy(x => x.MemberId!);
@@ -57,28 +100,38 @@ public class MemberFeeSpecification : BaseSpecification<MemberFee, MemberFeeResp
             case "memberiddesc":
                 AddOrderByDescending(x => x.MemberId!);
                 break;
+            case "duedateasc":
+                AddOrderBy(x => x.DueDate);
+                break;
+            case "duedatedesc":
+                AddOrderByDescending(x => x.DueDate);
+                break;
             default:
-                AddOrderBy(x => x.MemberId!);
+                AddOrderBy(x => x.MemberId!); // Orden por defecto
                 break;
         }
+
+        // Proyección al DTO MemberFeeResponse
+        AddSelect(x => new MemberFeeResponse(
+            x.Id,
+            x.MemberId,
+            x.Member!.FirstName!,
+            x.Member!.LastName!,
+            x.MemberTypeFeeId,
+            x.MemberTypeFee!.FeeConfiguration.FeeName,
+            x.MemberTypeFee!.FeeConfigurationId,
+            x.Period,
+            x.Amount,
+            x.RemainingAmount,
+            x.PaidAmount,
+            x.DueDate,
+            x.StatusId,
+            x.Status!.Name!,
+            x.CreatedAt,
+            x.UpdatedAt,
+            x.CreatedBy,
+            x.UpdatedBy
+        ));
     }
 
-      AddSelect(x => new MemberFeeResponse(
-             x.Id,
-             x.MemberId,
-             x.Member!.FirstName!,
-             x.Member!.LastName!,
-             x.MemberTypeFeeId,
-             x.MemberTypeFee!.FeeConfiguration.FeeName,
-             x.MemberTypeFee!.FeeConfigurationId,
-             x.Period,
-             x.Amount,
-             x.DueDate,
-             x.Status,
-             x.CreatedAt,
-             x.UpdatedAt,
-             x.CreatedBy,
-             x.UpdatedBy
-       ));
-   }
 }

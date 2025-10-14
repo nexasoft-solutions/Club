@@ -6,17 +6,17 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
     public CreateUserCommandValidator()
     {
-        RuleFor(x => x.UserApellidos)
-            .NotEmpty().WithMessage("El campo UserApellidos no puede estar vacío.");
-        RuleFor(x => x.UserNombres)
-            .NotEmpty().WithMessage("El campo UserNombres no puede estar vacío.");     
-        RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("El campo Password no puede estar vacío.");
+        RuleFor(x => x.LastName)
+            .NotEmpty().WithMessage("El campo LastName no puede estar vacío.");
+        RuleFor(x => x.FirstName)
+            .NotEmpty().WithMessage("El campo FirstName no puede estar vacío.");  
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("El campo Email no puede estar vacío.");
-        RuleFor(x => x.UserDni)
-            .NotEmpty().WithMessage("El campo UserDni no puede estar vacío.");
-        RuleFor(x => x.UserTelefono)
-            .NotEmpty().WithMessage("El campo UserTelefono no puede estar vacío.");
+        RuleFor(x => x.Email)
+            .EmailAddress().WithMessage("El campo Email no es una dirección de correo electrónico válida.");
+        RuleFor(x => x.Dni)
+            .NotEmpty().WithMessage("El campo Dni no puede estar vacío.");
+        RuleFor(x => x.Phone)
+            .NotEmpty().WithMessage("El campo Phone no puede estar vacío.");
     }
 }

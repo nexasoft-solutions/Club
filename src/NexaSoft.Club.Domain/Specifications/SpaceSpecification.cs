@@ -24,11 +24,8 @@ public class SpaceSpecification : BaseSpecification<Space, SpaceResponse>
                 case "spacename":
                     AddCriteria(x => x.SpaceName != null && x.SpaceName.ToLower().Contains(specParams.Search.ToLower()));
                     break;
-                case "spacetype":
-                    AddCriteria(x => x.SpaceType != null && x.SpaceType.ToLower().Contains(specParams.Search.ToLower()));
-                    break;
-                default:
-                    Criteria = x => true;
+                case "spacetypeid":
+                    AddCriteria(x => x.SpaceTypeId == long.Parse(specParams.Search));
                     break;
             }
         }
@@ -57,12 +54,12 @@ public class SpaceSpecification : BaseSpecification<Space, SpaceResponse>
 
       AddSelect(x => new SpaceResponse(
              x.Id,
+             x.SpaceTypeId,
+             x.SpaceType!.Name!,
              x.SpaceName,
-             x.SpaceType,
              x.Capacity,
              x.Description,
              x.StandardRate,
-             x.IsActive,
              x.RequiresApproval,
              x.MaxReservationHours,
              x.IncomeAccountId,

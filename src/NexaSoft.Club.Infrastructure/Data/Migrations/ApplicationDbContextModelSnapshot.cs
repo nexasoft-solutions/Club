@@ -142,10 +142,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("source_id");
 
-                    b.Property<string>("SourceModule")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("source_module");
+                    b.Property<long>("SourceModuleId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("source_module_id");
 
                     b.Property<int>("StateAccountingEntry")
                         .HasColumnType("integer")
@@ -177,10 +176,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("EntryNumber")
                         .HasDatabaseName("ix_accountingentry_entrynumber");
 
-                    b.HasIndex("SourceModule")
+                    b.HasIndex("SourceModuleId")
                         .HasDatabaseName("ix_accountingentry_sourcemodule");
 
-                    b.HasIndex("SourceModule", "SourceId")
+                    b.HasIndex("SourceModuleId", "SourceId")
                         .HasDatabaseName("idx_accounting_entries_source");
 
                     b.ToTable("accounting_entries", (string)null);
@@ -554,8 +553,8 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnName("paid_amount");
 
                     b.Property<string>("Period")
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
                         .HasColumnName("period");
 
                     b.Property<decimal>("RemainingAmount")
@@ -566,10 +565,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("state_member_fee");
 
-                    b.Property<string>("Status")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("status");
+                    b.Property<long>("StatusId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("status_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -592,10 +590,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("Period")
                         .HasDatabaseName("ix_memberfee_period");
 
-                    b.HasIndex("Status")
+                    b.HasIndex("StatusId")
                         .HasDatabaseName("ix_memberfee_status");
 
-                    b.HasIndex("MemberId", "Status")
+                    b.HasIndex("MemberId", "StatusId")
                         .HasDatabaseName("idx_member_fees_member_status");
 
                     b.ToTable("member_fees", (string)null);
@@ -719,10 +717,6 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("numeric")
                         .HasColumnName("balance");
 
-                    b.Property<string>("BiometricToken")
-                        .HasColumnType("text")
-                        .HasColumnName("biometric_token");
-
                     b.Property<DateOnly?>("BirthDate")
                         .HasColumnType("date")
                         .HasColumnName("birth_date");
@@ -745,9 +739,13 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("deleted_by");
 
-                    b.Property<string>("DeviceId")
-                        .HasColumnType("text")
-                        .HasColumnName("device_id");
+                    b.Property<long>("DepartamentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("departament_id");
+
+                    b.Property<long>("DistrictId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("district_id");
 
                     b.Property<string>("Dni")
                         .HasMaxLength(20)
@@ -772,17 +770,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("first_name");
 
-                    b.Property<bool>("HasSetPassword")
-                        .HasColumnType("boolean")
-                        .HasColumnName("has_set_password");
-
                     b.Property<DateOnly>("JoinDate")
                         .HasColumnType("date")
                         .HasColumnName("join_date");
-
-                    b.Property<DateTime?>("LastLoginDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_login_date");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(100)
@@ -805,42 +795,22 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
 
-                    b.Property<DateTime?>("PasswordSetDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("password_set_date");
-
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("phone");
 
-                    b.Property<string>("ProfilePictureUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("profile_picture_url");
-
-                    b.Property<string>("QrCode")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("qr_code");
-
-                    b.Property<DateOnly?>("QrExpiration")
-                        .HasColumnType("date")
-                        .HasColumnName("qr_expiration");
-
-                    b.Property<string>("QrUrl")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("qr_url");
+                    b.Property<long>("ProvinceId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("province_id");
 
                     b.Property<int>("StateMember")
                         .HasColumnType("integer")
                         .HasColumnName("state_member");
 
-                    b.Property<string>("Status")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("status");
+                    b.Property<long?>("StatusId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("status_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -854,6 +824,12 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_members");
 
+                    b.HasIndex("DepartamentId")
+                        .HasDatabaseName("ix_members_departament_id");
+
+                    b.HasIndex("DistrictId")
+                        .HasDatabaseName("ix_members_district_id");
+
                     b.HasIndex("Dni")
                         .HasDatabaseName("ix_member_dni");
 
@@ -866,14 +842,11 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("MemberTypeId")
                         .HasDatabaseName("ix_member_membertypeid");
 
-                    b.HasIndex("QrCode")
-                        .HasDatabaseName("ix_member_qrcode");
+                    b.HasIndex("ProvinceId")
+                        .HasDatabaseName("ix_members_province_id");
 
-                    b.HasIndex("QrExpiration")
-                        .HasDatabaseName("ix_member_qrexpiration");
-
-                    b.HasIndex("Status", "QrExpiration")
-                        .HasDatabaseName("ix_member_status_qrexpiration");
+                    b.HasIndex("StatusId")
+                        .HasDatabaseName("ix_members_status_id");
 
                     b.ToTable("members", (string)null);
                 });
@@ -959,76 +932,6 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasDatabaseName("ix_memberpins_pin");
 
                     b.ToTable("member_pins", (string)null);
-                });
-
-            modelBuilder.Entity("NexaSoft.Club.Domain.Features.Members.MemberQrHistory", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<DateOnly?>("ExpirationDate")
-                        .HasColumnType("date")
-                        .HasColumnName("expiration_date");
-
-                    b.Property<long>("MemberId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("member_id");
-
-                    b.Property<string>("QrCode")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("qr_code");
-
-                    b.Property<string>("QrUrl")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("qr_url");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id")
-                        .HasName("pk_member_qr_history");
-
-                    b.HasIndex("ExpirationDate")
-                        .HasDatabaseName("ix_memberqrhistory_expiration");
-
-                    b.HasIndex("MemberId")
-                        .HasDatabaseName("ix_memberqrhistory_memberid");
-
-                    b.HasIndex("QrCode")
-                        .HasDatabaseName("ix_memberqrhistory_qrcode");
-
-                    b.ToTable("member_qr_history", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Features.Members.MemberRefreshToken", b =>
@@ -1143,6 +1046,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("deleted_by");
 
+                    b.Property<long>("DocumentTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("document_type_id");
+
                     b.Property<bool>("IsPartial")
                         .HasColumnType("boolean")
                         .HasColumnName("is_partial");
@@ -1155,10 +1062,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("date")
                         .HasColumnName("payment_date");
 
-                    b.Property<string>("PaymentMethod")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("payment_method");
+                    b.Property<long>("PaymentMethodId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("payment_method_id");
 
                     b.Property<string>("ReceiptNumber")
                         .HasMaxLength(100)
@@ -1174,10 +1080,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("state_payment");
 
-                    b.Property<string>("Status")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("status");
+                    b.Property<long>("StatusId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("status_id");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric")
@@ -1198,21 +1103,24 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("AccountingEntryId")
                         .HasDatabaseName("ix_payment_accountingentryid");
 
+                    b.HasIndex("DocumentTypeId")
+                        .HasDatabaseName("ix_payments_document_type_id");
+
                     b.HasIndex("MemberId")
                         .HasDatabaseName("ix_payment_memberid");
 
                     b.HasIndex("PaymentDate")
                         .HasDatabaseName("ix_payment_paymentdate");
 
-                    b.HasIndex("PaymentMethod")
+                    b.HasIndex("PaymentMethodId")
                         .HasDatabaseName("ix_payment_paymentmethod");
 
                     b.HasIndex("ReceiptNumber")
                         .IsUnique()
                         .HasDatabaseName("ix_payment_receiptnumber");
 
-                    b.HasIndex("StatePayment")
-                        .HasDatabaseName("ix_payment_state");
+                    b.HasIndex("StatusId")
+                        .HasDatabaseName("ix_payments_status_id");
 
                     b.HasIndex("MemberId", "PaymentDate")
                         .HasDatabaseName("idx_payments_member_date");
@@ -1320,6 +1228,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("created_by");
 
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date")
+                        .HasColumnName("date");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
@@ -1329,30 +1241,51 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("deleted_by");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<long>("DocumentTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("document_type_id");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time without time zone")
                         .HasColumnName("end_time");
 
                     b.Property<long>("MemberId")
                         .HasColumnType("bigint")
                         .HasColumnName("member_id");
 
-                    b.Property<long>("SpaceId")
+                    b.Property<long>("PaymentMethodId")
                         .HasColumnType("bigint")
-                        .HasColumnName("space_id");
+                        .HasColumnName("payment_method_id");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<string>("ReceiptNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("receipt_number");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("reference_number");
+
+                    b.Property<long>("SpaceAvailabilityId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("space_availability_id");
+
+                    b.Property<long>("SpaceRateId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("space_rate_id");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone")
                         .HasColumnName("start_time");
 
                     b.Property<int>("StateReservation")
                         .HasColumnType("integer")
                         .HasColumnName("state_reservation");
 
-                    b.Property<string>("Status")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("status");
+                    b.Property<long?>("StatusId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("status_id");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric")
@@ -1373,19 +1306,87 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("AccountingEntryId")
                         .HasDatabaseName("ix_reservation_accountingentryid");
 
+                    b.HasIndex("DocumentTypeId")
+                        .HasDatabaseName("ix_reservations_document_type_id");
+
                     b.HasIndex("MemberId")
                         .HasDatabaseName("ix_reservation_memberid");
 
-                    b.HasIndex("SpaceId")
-                        .HasDatabaseName("ix_reservation_spaceid");
+                    b.HasIndex("PaymentMethodId")
+                        .HasDatabaseName("ix_reservations_payment_method_id");
+
+                    b.HasIndex("SpaceAvailabilityId")
+                        .HasDatabaseName("ix_reservations_space_availability_id");
+
+                    b.HasIndex("SpaceRateId")
+                        .HasDatabaseName("ix_reservation_spacerateid");
 
                     b.HasIndex("StartTime")
                         .HasDatabaseName("ix_reservation_starttime");
 
-                    b.HasIndex("Status")
+                    b.HasIndex("StatusId")
                         .HasDatabaseName("ix_reservation_status");
 
                     b.ToTable("reservations", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.AccountTypes.AccountType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateAccountType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_account_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_account_types");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_accounttype_name");
+
+                    b.ToTable("account_types", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.AccountingCharts.AccountingChart", b =>
@@ -1407,10 +1408,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("account_name");
 
-                    b.Property<string>("AccountType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("account_type");
+                    b.Property<long>("AccountTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("account_type_id");
 
                     b.Property<bool>("AllowsTransactions")
                         .HasColumnType("boolean")
@@ -1465,7 +1465,7 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("AccountCode")
                         .HasDatabaseName("ix_accountingchart_accountcode");
 
-                    b.HasIndex("AccountType")
+                    b.HasIndex("AccountTypeId")
                         .HasDatabaseName("ix_accountingchart_accounttype");
 
                     b.HasIndex("AllowsTransactions")
@@ -1478,72 +1478,6 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasDatabaseName("ix_accounting_charts_parent_account_id");
 
                     b.ToTable("accounting_charts", (string)null);
-                });
-
-            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Constantes.Constante", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("Clave")
-                        .HasColumnType("integer")
-                        .HasColumnName("clave");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<int>("EstadoConstante")
-                        .HasColumnType("integer")
-                        .HasColumnName("estado_constante");
-
-                    b.Property<string>("TipoConstante")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
-                        .HasColumnName("tipo_constante");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("Valor")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("valor");
-
-                    b.HasKey("Id")
-                        .HasName("pk_constantes");
-
-                    b.HasIndex("TipoConstante")
-                        .HasDatabaseName("ix_constante_tipoconstante");
-
-                    b.HasIndex("Clave", "Valor")
-                        .HasDatabaseName("ix_constante_clave_valor");
-
-                    b.ToTable("constantes", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Contadores.Contador", b =>
@@ -1617,6 +1551,73 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasDatabaseName("ix_contador_entidad_prefijo");
 
                     b.ToTable("contadores", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.DocumentTypes.DocumentType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Serie")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("serie");
+
+                    b.Property<int>("StateDocumentType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_document_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_document_types");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_documenttype_name");
+
+                    b.HasIndex("Serie")
+                        .HasDatabaseName("ix_documenttype_serie");
+
+                    b.ToTable("document_types", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.FeeConfigurations.FeeConfiguration", b =>
@@ -2001,6 +2002,65 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.ToTable("menu_roles", (string)null);
                 });
 
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.PaymentTypes.PaymentType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StatePaymentType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_payment_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_payment_types");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_paymenttype_name");
+
+                    b.ToTable("payment_types", (string)null);
+                });
+
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Periodicities.Periodicity", b =>
                 {
                     b.Property<long>("Id")
@@ -2183,6 +2243,197 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.ToTable("roles", (string)null);
                 });
 
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SourceModules.SourceModule", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateSourceModule")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_source_module");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_source_modules");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_sourcemodule_name");
+
+                    b.ToTable("source_modules", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpaceAvailabilities.SpaceAvailability", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer")
+                        .HasColumnName("day_of_week");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval")
+                        .HasColumnName("end_time");
+
+                    b.Property<long>("SpaceId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("space_id");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval")
+                        .HasColumnName("start_time");
+
+                    b.Property<int>("StateSpaceAvailability")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_space_availability");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_space_availabilities");
+
+                    b.HasIndex("SpaceId")
+                        .HasDatabaseName("ix_spaceavailability_spaceid");
+
+                    b.ToTable("space_availabilities", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpacePhotos.SpacePhoto", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer")
+                        .HasColumnName("order");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("photo_url");
+
+                    b.Property<long>("SpaceId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("space_id");
+
+                    b.Property<int>("StateSpacePhoto")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_space_photo");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_space_photos");
+
+                    b.HasIndex("SpaceId")
+                        .HasDatabaseName("ix_spacephoto_spaceid");
+
+                    b.ToTable("space_photos", (string)null);
+                });
+
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpaceRates.SpaceRate", b =>
                 {
                     b.Property<long>("Id")
@@ -2254,6 +2505,65 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.ToTable("space_rates", (string)null);
                 });
 
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpaceTypes.SpaceType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateSpaceType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_space_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_space_types");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_spacetype_name");
+
+                    b.ToTable("space_types", (string)null);
+                });
+
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Spaces.Space", b =>
                 {
                     b.Property<long>("Id")
@@ -2293,10 +2603,6 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("income_account_id");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
                     b.Property<int>("MaxReservationHours")
                         .HasColumnType("integer")
                         .HasColumnName("max_reservation_hours");
@@ -2310,10 +2616,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("space_name");
 
-                    b.Property<string>("SpaceType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("space_type");
+                    b.Property<long>("SpaceTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("space_type_id");
 
                     b.Property<decimal>("StandardRate")
                         .HasColumnType("numeric")
@@ -2338,19 +2643,16 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("IncomeAccountId")
                         .HasDatabaseName("ix_spaces_income_account_id");
 
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_space_isactive");
-
                     b.HasIndex("SpaceName")
                         .HasDatabaseName("ix_space_spacename");
 
-                    b.HasIndex("SpaceType")
+                    b.HasIndex("SpaceTypeId")
                         .HasDatabaseName("ix_space_spacetype");
 
                     b.ToTable("spaces", (string)null);
                 });
 
-            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SystemUsers.SystemUser", b =>
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Statuses.Status", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -2377,33 +2679,19 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("deleted_by");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("email");
+                    b.Property<string>("Description")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("description");
 
-                    b.Property<string>("FirstName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("first_name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("LastName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("last_name");
-
-                    b.Property<string>("Role")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("role");
-
-                    b.Property<int>("StateSystemUser")
+                    b.Property<int>("StateStatus")
                         .HasColumnType("integer")
-                        .HasColumnName("state_system_user");
+                        .HasColumnName("state_status");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -2414,27 +2702,13 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("updated_by");
 
-                    b.Property<string>("Username")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("username");
-
                     b.HasKey("Id")
-                        .HasName("pk_system_users");
+                        .HasName("pk_statuses");
 
-                    b.HasIndex("Email")
-                        .HasDatabaseName("ix_systemuser_email");
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_status_name");
 
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_systemuser_isactive");
-
-                    b.HasIndex("Role")
-                        .HasDatabaseName("ix_systemuser_role");
-
-                    b.HasIndex("Username")
-                        .HasDatabaseName("ix_systemuser_username");
-
-                    b.ToTable("system_users", (string)null);
+                    b.ToTable("statuses", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Ubigeos.Ubigeo", b =>
@@ -2464,22 +2738,22 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("deleted_by");
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("Description")
                         .HasMaxLength(180)
                         .HasColumnType("character varying(180)")
-                        .HasColumnName("descripcion");
+                        .HasColumnName("description");
 
-                    b.Property<int>("EstadoUbigeo")
+                    b.Property<int>("Level")
                         .HasColumnType("integer")
-                        .HasColumnName("estado_ubigeo");
+                        .HasColumnName("level");
 
-                    b.Property<int>("Nivel")
-                        .HasColumnType("integer")
-                        .HasColumnName("nivel");
-
-                    b.Property<long?>("PadreId")
+                    b.Property<long?>("ParentId")
                         .HasColumnType("bigint")
-                        .HasColumnName("padre_id");
+                        .HasColumnName("parent_id");
+
+                    b.Property<int>("StateUbigeo")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_ubigeo");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -2493,19 +2767,85 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_ubigeos");
 
-                    b.HasIndex("Descripcion")
-                        .HasDatabaseName("ix_ubigeo_descripcion");
+                    b.HasIndex("Description")
+                        .HasDatabaseName("ix_ubigeo_description");
 
-                    b.HasIndex("Nivel")
-                        .HasDatabaseName("ix_ubigeo_nivel");
+                    b.HasIndex("Level")
+                        .HasDatabaseName("ix_ubigeo_level");
 
-                    b.HasIndex("PadreId")
-                        .HasDatabaseName("ix_ubigeos_padre_id");
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("ix_ubigeos_parent_id");
 
-                    b.HasIndex("Nivel", "Descripcion")
-                        .HasDatabaseName("ix_ubigeo_nivel_descripcion");
+                    b.HasIndex("Level", "Description")
+                        .HasDatabaseName("ix_ubigeo_level_description");
 
                     b.ToTable("ubigeos", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.UserTypes.UserType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsAdministrative")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_administrative");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateUserType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_user_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_types");
+
+                    b.HasIndex("IsAdministrative")
+                        .HasDatabaseName("ix_usertype_isadministrative");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_usertype_name");
+
+                    b.ToTable("user_types", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Users.RolePermission", b =>
@@ -2536,6 +2876,14 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("BiometricToken")
+                        .HasColumnType("text")
+                        .HasColumnName("biometric_token");
+
+                    b.Property<DateOnly?>("BirthDate")
+                        .HasColumnType("date")
+                        .HasColumnName("birth_date");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -2554,24 +2902,76 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("deleted_by");
 
+                    b.Property<string>("DeviceId")
+                        .HasColumnType("text")
+                        .HasColumnName("device_id");
+
+                    b.Property<string>("Dni")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("dni");
+
                     b.Property<string>("Email")
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)")
                         .HasColumnName("email");
 
-                    b.Property<int>("EstadoUser")
-                        .HasColumnType("integer")
-                        .HasColumnName("estado_user");
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("first_name");
 
-                    b.Property<string>("NombreCompleto")
+                    b.Property<string>("FullName")
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
-                        .HasColumnName("nombre_completo");
+                        .HasColumnName("full_name");
+
+                    b.Property<bool>("HasSetPassword")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_set_password");
+
+                    b.Property<DateTime?>("LastLoginDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_login_date");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("last_name");
+
+                    b.Property<long?>("MemberId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("member_id");
 
                     b.Property<string>("Password")
                         .HasMaxLength(220)
                         .HasColumnType("character varying(220)")
                         .HasColumnName("password");
+
+                    b.Property<DateTime?>("PasswordSetDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("password_set_date");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("phone");
+
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("profile_picture_url");
+
+                    b.Property<string>("QrCode")
+                        .HasColumnType("text")
+                        .HasColumnName("qr_code");
+
+                    b.Property<DateOnly?>("QrExpiration")
+                        .HasColumnType("date")
+                        .HasColumnName("qr_expiration");
+
+                    b.Property<string>("QrUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("qr_url");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -2582,48 +2982,113 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("updated_by");
 
-                    b.Property<string>("UserApellidos")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("user_apellidos");
-
-                    b.Property<string>("UserDni")
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)")
-                        .HasColumnName("user_dni");
-
                     b.Property<string>("UserName")
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
                         .HasColumnName("user_name");
 
-                    b.Property<string>("UserNombres")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("user_nombres");
+                    b.Property<int>("UserStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_status");
 
-                    b.Property<string>("UserTelefono")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("user_telefono");
+                    b.Property<long>("UserTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_type_id");
 
                     b.HasKey("Id")
                         .HasName("pk_users");
+
+                    b.HasIndex("Dni")
+                        .HasDatabaseName("ix_user_userdni");
 
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasDatabaseName("ix_user_email");
 
-                    b.HasIndex("NombreCompleto")
-                        .HasDatabaseName("ix_user_nombrecompleto");
+                    b.HasIndex("FullName")
+                        .HasDatabaseName("ix_user_fullname");
 
-                    b.HasIndex("UserDni")
-                        .HasDatabaseName("ix_user_userdni");
+                    b.HasIndex("MemberId")
+                        .HasDatabaseName("ix_users_member_id");
 
                     b.HasIndex("UserName")
                         .HasDatabaseName("ix_user_username");
 
+                    b.HasIndex("UserTypeId")
+                        .HasDatabaseName("ix_users_user_type_id");
+
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Users.UserQrHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateOnly?>("ExpirationDate")
+                        .HasColumnType("date")
+                        .HasColumnName("expiration_date");
+
+                    b.Property<string>("QrCode")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("qr_code");
+
+                    b.Property<string>("QrUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("qr_url");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_qr_historys");
+
+                    b.HasIndex("ExpirationDate")
+                        .HasDatabaseName("ix_userqrhistory_expirationdate");
+
+                    b.HasIndex("QrCode")
+                        .HasDatabaseName("ix_userqrhistory_qrcode");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_userqrhistory_userid");
+
+                    b.ToTable("user_qr_historys", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Users.UserRole", b =>
@@ -2647,6 +3112,18 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasDatabaseName("ix_userroles_roleid");
 
                     b.ToTable("user_roles", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Features.AccountingEntries.AccountingEntry", b =>
+                {
+                    b.HasOne("NexaSoft.Club.Domain.Masters.SourceModules.SourceModule", "SourceModule")
+                        .WithMany()
+                        .HasForeignKey("SourceModuleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_accounting_entries_source_module_source_module_id");
+
+                    b.Navigation("SourceModule");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Features.AccountingEntries.AccountingEntryItem", b =>
@@ -2739,9 +3216,18 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_member_fees_member_type_fee_member_type_fee_id");
 
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Statuses.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_member_fees_status_status_id");
+
                     b.Navigation("Member");
 
                     b.Navigation("MemberTypeFee");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Features.MemberVisits.MemberVisit", b =>
@@ -2757,6 +3243,20 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Features.Members.Member", b =>
                 {
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Ubigeos.Ubigeo", "Departament")
+                        .WithMany()
+                        .HasForeignKey("DepartamentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_members_ubigeo_departament_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Ubigeos.Ubigeo", "District")
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_members_ubigeo_district_id");
+
                     b.HasOne("NexaSoft.Club.Domain.Masters.MemberStatuses.MemberStatus", "MemberStatus")
                         .WithMany()
                         .HasForeignKey("MemberStatusId")
@@ -2771,9 +3271,30 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_members_member_type_member_type_id");
 
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Ubigeos.Ubigeo", "Province")
+                        .WithMany()
+                        .HasForeignKey("ProvinceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_members_ubigeo_province_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Statuses.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_members_status_status_id");
+
+                    b.Navigation("Departament");
+
+                    b.Navigation("District");
+
                     b.Navigation("MemberStatus");
 
                     b.Navigation("MemberType");
+
+                    b.Navigation("Province");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Features.Members.MemberPin", b =>
@@ -2784,18 +3305,6 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_member_pins_members");
-
-                    b.Navigation("Member");
-                });
-
-            modelBuilder.Entity("NexaSoft.Club.Domain.Features.Members.MemberQrHistory", b =>
-                {
-                    b.HasOne("NexaSoft.Club.Domain.Features.Members.Member", "Member")
-                        .WithMany("QrHistory")
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_member_qr_history_member_member_id");
 
                     b.Navigation("Member");
                 });
@@ -2820,6 +3329,13 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_payments_accounting_entries_accounting_entry_id");
 
+                    b.HasOne("NexaSoft.Club.Domain.Masters.DocumentTypes.DocumentType", "DocumentType")
+                        .WithMany()
+                        .HasForeignKey("DocumentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_payments_document_types_document_type_id");
+
                     b.HasOne("NexaSoft.Club.Domain.Features.Members.Member", "Member")
                         .WithMany()
                         .HasForeignKey("MemberId")
@@ -2827,9 +3343,29 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_payments_members_member_id");
 
+                    b.HasOne("NexaSoft.Club.Domain.Masters.PaymentTypes.PaymentType", "PaymentType")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_payments_payment_type_payment_method_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Statuses.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_payments_status_status_id");
+
                     b.Navigation("AccountingEntry");
 
+                    b.Navigation("DocumentType");
+
                     b.Navigation("Member");
+
+                    b.Navigation("PaymentType");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Features.Payments.PaymentItem", b =>
@@ -2861,6 +3397,13 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_reservations_accounting_entries_accounting_entry_id");
 
+                    b.HasOne("NexaSoft.Club.Domain.Masters.DocumentTypes.DocumentType", "DocumentType")
+                        .WithMany()
+                        .HasForeignKey("DocumentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_reservations_document_types_document_type_id");
+
                     b.HasOne("NexaSoft.Club.Domain.Features.Members.Member", "Member")
                         .WithMany()
                         .HasForeignKey("MemberId")
@@ -2868,27 +3411,64 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_reservations_members_member_id");
 
-                    b.HasOne("NexaSoft.Club.Domain.Masters.Spaces.Space", "Space")
+                    b.HasOne("NexaSoft.Club.Domain.Masters.PaymentTypes.PaymentType", "PaymentType")
                         .WithMany()
-                        .HasForeignKey("SpaceId")
+                        .HasForeignKey("PaymentMethodId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_reservations_space_space_id");
+                        .HasConstraintName("fk_reservations_payment_types_payment_method_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.SpaceAvailabilities.SpaceAvailability", "SpaceAvailability")
+                        .WithMany()
+                        .HasForeignKey("SpaceAvailabilityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_reservations_space_availability_space_availability_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.SpaceRates.SpaceRate", "SpaceRate")
+                        .WithMany()
+                        .HasForeignKey("SpaceRateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_reservations_space_rate_space_rate_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Statuses.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_reservations_status_status_id");
 
                     b.Navigation("AccountingEntry");
 
+                    b.Navigation("DocumentType");
+
                     b.Navigation("Member");
 
-                    b.Navigation("Space");
+                    b.Navigation("PaymentType");
+
+                    b.Navigation("SpaceAvailability");
+
+                    b.Navigation("SpaceRate");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.AccountingCharts.AccountingChart", b =>
                 {
+                    b.HasOne("NexaSoft.Club.Domain.Masters.AccountTypes.AccountType", "AccountType")
+                        .WithMany()
+                        .HasForeignKey("AccountTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_accounting_charts_account_type_account_type_id");
+
                     b.HasOne("NexaSoft.Club.Domain.Masters.AccountingCharts.AccountingChart", "ParentAccount")
                         .WithMany()
                         .HasForeignKey("ParentAccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_accounting_charts_accounting_charts_parent_account_id");
+
+                    b.Navigation("AccountType");
 
                     b.Navigation("ParentAccount");
                 });
@@ -2955,6 +3535,30 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasConstraintName("fk_menu_roles_menu_item_options_menu_item_option_id");
                 });
 
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpaceAvailabilities.SpaceAvailability", b =>
+                {
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Spaces.Space", "Space")
+                        .WithMany()
+                        .HasForeignKey("SpaceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_space_availabilities_space_space_id");
+
+                    b.Navigation("Space");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpacePhotos.SpacePhoto", b =>
+                {
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Spaces.Space", "Space")
+                        .WithMany()
+                        .HasForeignKey("SpaceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_space_photos_spaces_space_id");
+
+                    b.Navigation("Space");
+                });
+
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpaceRates.SpaceRate", b =>
                 {
                     b.HasOne("NexaSoft.Club.Domain.Masters.MemberTypes.MemberType", "MemberType")
@@ -2984,18 +3588,27 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_spaces_accounting_charts_income_account_id");
 
+                    b.HasOne("NexaSoft.Club.Domain.Masters.SpaceTypes.SpaceType", "SpaceType")
+                        .WithMany()
+                        .HasForeignKey("SpaceTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_spaces_space_type_space_type_id");
+
                     b.Navigation("IncomeAccount");
+
+                    b.Navigation("SpaceType");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Ubigeos.Ubigeo", b =>
                 {
-                    b.HasOne("NexaSoft.Club.Domain.Masters.Ubigeos.Ubigeo", "Padre")
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Ubigeos.Ubigeo", "Parent")
                         .WithMany()
-                        .HasForeignKey("PadreId")
+                        .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_ubigeos_ubigeos_padre_id");
+                        .HasConstraintName("fk_ubigeos_ubigeos_parent_id");
 
-                    b.Navigation("Padre");
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Users.RolePermission", b =>
@@ -3008,9 +3621,36 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasConstraintName("fk_role_permissions_permissions_permission_id");
                 });
 
-            modelBuilder.Entity("NexaSoft.Club.Domain.Features.Members.Member", b =>
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Users.User", b =>
                 {
-                    b.Navigation("QrHistory");
+                    b.HasOne("NexaSoft.Club.Domain.Features.Members.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_users_members_member_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.UserTypes.UserType", "UserType")
+                        .WithMany()
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_users_user_type_user_type_id");
+
+                    b.Navigation("Member");
+
+                    b.Navigation("UserType");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Users.UserQrHistory", b =>
+                {
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Users.User", "User")
+                        .WithMany("QrHistory")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_qr_historys_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Features.Payments.Payment", b =>
@@ -3028,6 +3668,11 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Permissions.Permission", b =>
                 {
                     b.Navigation("_rolePermissions");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Users.User", b =>
+                {
+                    b.Navigation("QrHistory");
                 });
 #pragma warning restore 612, 618
         }

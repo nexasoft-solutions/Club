@@ -25,11 +25,11 @@ public class UpdateUbigeoCommandHandler(
 
         entity.Update(
             command.Id,
-            command.Descripcion,
-            command.Nivel,
-            command.PadreId,
+            command.Description,
+            command.Level,
+            command.ParentId,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
-            command.UsuarioModificacion
+            command.UserModification
         );
 
         try

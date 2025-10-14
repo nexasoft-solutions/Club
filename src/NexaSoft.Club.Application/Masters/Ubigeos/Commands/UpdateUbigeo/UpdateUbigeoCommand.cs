@@ -4,8 +4,8 @@ namespace NexaSoft.Club.Application.Masters.Ubigeos.Commands.UpdateUbigeo;
 
 public sealed record UpdateUbigeoCommand(
     long Id,
-    string? Descripcion,
-    int Nivel,
-    long? PadreId,
-    string UsuarioModificacion
+    string? Description,
+    int Level,
+    long? ParentId,
+    string UserModification
 ) : ICommand<bool>;

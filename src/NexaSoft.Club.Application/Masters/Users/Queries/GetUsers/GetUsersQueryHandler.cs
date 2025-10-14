@@ -15,7 +15,7 @@ public class GetUsersQueryHandler(
         try
         {
             var spec = new UserSpecification(query.SpecParams);
-            var responses = await _repository.ListAsync<UserResponse>(spec,cancellationToken);
+            var responses = await _repository.ListAsync<UserResponse>(spec, cancellationToken);
             var totalItems = await _repository.CountAsync(spec, cancellationToken);
 
             var pagination = new Pagination<UserResponse>(

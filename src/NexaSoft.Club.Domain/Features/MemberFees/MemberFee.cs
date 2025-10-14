@@ -2,6 +2,7 @@ using NexaSoft.Club.Domain.Abstractions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Masters.FeeConfigurations;
+using NexaSoft.Club.Domain.Masters.Statuses;
 
 namespace NexaSoft.Club.Domain.Features.MemberFees;
 
@@ -14,7 +15,8 @@ public class MemberFee : Entity
     public string? Period { get; private set; }
     public decimal Amount { get; private set; }
     public DateOnly DueDate { get; private set; }
-    public string? Status { get; private set; }
+    public long StatusId { get; private set; }
+    public Status? Status { get; private set; }
     public decimal PaidAmount { get; private set; }
     public decimal RemainingAmount { get; private set; }
     public int StateMemberFee { get; private set; }
@@ -27,7 +29,7 @@ public class MemberFee : Entity
         string? period,
         decimal amount,
         DateOnly dueDate,
-        string? status,
+        long statusId,
         decimal paidAmount,
         decimal remainingAmount,
         int stateMemberFee,
@@ -42,7 +44,7 @@ public class MemberFee : Entity
         Period = period;
         Amount = amount;
         DueDate = dueDate;
-        Status = status;
+        StatusId = statusId;
         PaidAmount = paidAmount;
         RemainingAmount = remainingAmount;
         StateMemberFee = stateMemberFee;
@@ -58,7 +60,7 @@ public class MemberFee : Entity
         string? period,
         decimal amount,
         DateOnly dueDate,
-        string? status,
+        long statusId,
         decimal paidAmount,
         decimal remainingAmount,
         int stateMemberFee,
@@ -72,7 +74,7 @@ public class MemberFee : Entity
             period,
             amount,
             dueDate,
-            status,
+            statusId,
             paidAmount,
             remainingAmount,
             stateMemberFee,
@@ -111,15 +113,15 @@ public class MemberFee : Entity
     {
         if (RemainingAmount <= 0)
         {
-            Status = "Pagado";
+            StatusId = (long)StatusEnum.Pagado;
         }
         else if (PaidAmount > 0)
         {
-            Status = "Parcial";
+            StatusId  = (long)StatusEnum.ParcialmentePagado;
         }
         else
         {
-            Status = "Pendiente";
+            StatusId = (long)StatusEnum.Pendiente;
         }
     }
 
@@ -154,7 +156,7 @@ public class MemberFee : Entity
         string? period,
         decimal amount,
         DateOnly dueDate,
-        string? status,
+        long statusId,
         decimal paidAmount,
         decimal remainingAmount,
         DateTime utcNow,
@@ -166,7 +168,7 @@ public class MemberFee : Entity
         Period = period;
         Amount = amount;
         DueDate = dueDate;
-        Status = status;
+        StatusId = statusId;
         PaidAmount = paidAmount;
         RemainingAmount = remainingAmount;
         UpdatedAt = utcNow;
@@ -185,9 +187,9 @@ public class MemberFee : Entity
     }
 
     // Domain/Features/MemberFees/MemberFee.cs (agregar método)
-    public void UpdateStatus(string newStatus, DateTime updatedAt, string updatedBy)
+    public void UpdateStatus(long newStatus, DateTime updatedAt, string updatedBy)
     {
-        Status = newStatus;
+        StatusId = newStatus;
         UpdatedAt = updatedAt;
         UpdatedBy = updatedBy;
     }

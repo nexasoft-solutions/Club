@@ -5,12 +5,12 @@ namespace NexaSoft.Club.Domain.Specifications;
 
 public class ActiveReservationsSpecification: BaseSpecification<Reservation>
 {
-    public ActiveReservationsSpecification(long memberId, DateTime currentTime) : base()
+    public ActiveReservationsSpecification(long memberId, DateOnly currentTime) : base()
     {
-        AddCriteria(x => x.MemberId == memberId && 
+        AddCriteria(x => x.MemberId == memberId &&
                         x.StateReservation == (int)EstadosEnum.Activo &&
-                        x.StartTime > currentTime &&
-                        x.Status != "Cancelled" &&
-                        x.Status != "Completed");
+                        x.Date > currentTime);// &&
+                        /*x.Status != (int)StatusEnum.Ca &&
+                        x.Status != "Completed");*/
     }
 }

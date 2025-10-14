@@ -35,11 +35,34 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
             .HasMaxLength(20)
             .IsRequired(false);
 
+        builder.Property(x => x.DepartamentId)
+            .IsRequired();
+
+        builder.HasOne(x => x.Departament)
+               .WithMany()
+               .HasForeignKey(x => x.DepartamentId)
+               .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Property(x => x.ProvinceId)
+            .IsRequired();  
+
+        builder.HasOne(x => x.Province)
+               .WithMany()
+               .HasForeignKey(x => x.ProvinceId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.DistrictId)
+            .IsRequired();  
+
+        builder.HasOne(x => x.District)
+               .WithMany()
+               .HasForeignKey(x => x.DistrictId)
+               .OnDelete(DeleteBehavior.Restrict);
+
         builder.Property(x => x.Address)
             .IsRequired(false);
 
-        builder.Property(x => x.Status)
-            .HasMaxLength(20)
+        builder.Property(x => x.StatusId)
             .IsRequired(false);
 
         builder.Property(x => x.BirthDate)
@@ -57,17 +80,20 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(x => x.MemberStatusId)
             .IsRequired();
 
-
+      
         builder.HasOne(x => x.MemberStatus)
                .WithMany()
                .HasForeignKey(x => x.MemberStatusId)
                .OnDelete(DeleteBehavior.Restrict);
 
-        // 🔥 NUEVA: Configuración para la colección de historial QR
-        builder.HasMany(x => x.QrHistory)
-               .WithOne(x => x.Member)
-               .HasForeignKey(x => x.MemberId)
-               .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(x => x.EntryFeePaid)
+            .IsRequired();
+
+        builder.HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
+
 
         builder.Property(x => x.JoinDate)
             .IsRequired();
@@ -78,22 +104,9 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(x => x.Balance)
             .IsRequired();
 
-        builder.Property(x => x.QrCode)
-            .HasMaxLength(255)
-            .IsRequired(false);
-
-        builder.Property(x => x.QrUrl)
-            .HasMaxLength(1000)  // 🔥 AUMENTADO A 1000
-            .IsRequired(false);
-
-        builder.Property(x => x.QrExpiration)
-            .IsRequired(false);
+     
 
         builder.Property(x => x.LastPaymentDate)
-            .IsRequired(false);
-
-        builder.Property(x => x.ProfilePictureUrl)
-            .HasMaxLength(255)
             .IsRequired(false);
 
 
@@ -124,16 +137,7 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.HasIndex(x => x.MemberStatusId)
             .HasDatabaseName("ix_member_statusid");
 
-        builder.HasIndex(x => x.QrCode)
-            .HasDatabaseName("ix_member_qrcode");
-
-         // 🔥 NUEVO: Índice para búsqueda por expiración de QR
-        builder.HasIndex(x => x.QrExpiration)
-            .HasDatabaseName("ix_member_qrexpiration");
-
-        // 🔥 NUEVO: Índice compuesto para estado y expiración
-        builder.HasIndex(x => new { x.Status, x.QrExpiration })
-            .HasDatabaseName("ix_member_status_qrexpiration");
+    
 
     }
 }

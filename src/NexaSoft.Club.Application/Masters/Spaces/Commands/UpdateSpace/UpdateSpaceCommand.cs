@@ -4,12 +4,11 @@ namespace NexaSoft.Club.Application.Masters.Spaces.Commands.UpdateSpace;
 
 public sealed record UpdateSpaceCommand(
     long Id,
-    string? SpaceName,
-    string? SpaceType,
-    int? Capacity,
-    string? Description,
+    string SpaceName,
+    long SpaceTypeId,
+    int Capacity,
+    string Description,
     decimal StandardRate,
-    bool IsActive,
     bool RequiresApproval,
     int MaxReservationHours,
     long? IncomeAccountId,

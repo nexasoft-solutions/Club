@@ -84,7 +84,7 @@ public class Contador : Entity
     }
 
 
-    public string Incrementar(DateTime utcNow,string updatedBy,string? sufijo)
+    public string Incrementar(DateTime utcNow,string updatedBy,string? sufijo, bool isComprobante = false)
     {
         ValorActual++;
         UpdatedAt = utcNow;

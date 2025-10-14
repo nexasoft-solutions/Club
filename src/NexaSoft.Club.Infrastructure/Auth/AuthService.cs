@@ -99,7 +99,7 @@ public class AuthService : IAuthService
             var accessToken = GenerateAccessToken(entity.Value, roles, permissions, roleDefault.Id);
             var refreshTokenStr = GenerateRefreshToken();
 
-            var refresh = RefreshToken.Create(refreshTokenStr, entity.Value.Id, DateTime.UtcNow.AddHours(8),userName);
+            var refresh = RefreshToken.Create(refreshTokenStr, entity.Value.Id, DateTime.UtcNow.AddHours(8), userName);
             await _repository.AddAsync(refresh, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
@@ -130,7 +130,7 @@ public class AuthService : IAuthService
             tokenEntity.Value.Revoke();
 
             var newRefreshTokenStr = GenerateRefreshToken();
-            var newRefreshToken = RefreshToken.Create(newRefreshTokenStr, user.Id, DateTime.UtcNow.AddHours(8),user.UserName!);
+            var newRefreshToken = RefreshToken.Create(newRefreshTokenStr, user.Id, DateTime.UtcNow.AddHours(8), user.UserName!);
             await _repository.AddAsync(newRefreshToken, cancellationToken);
 
             // Obtener roles
@@ -164,18 +164,17 @@ public class AuthService : IAuthService
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
 
         var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
-        new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-
-        new Claim("userName", user.UserName!),
-        new Claim("userNombres", user.UserNombres!),
-        new Claim("userNombreCompleto", user.NombreCompleto!),
-        new Claim("roleActive", activeRoleId.ToString())
-    };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+            new Claim("userName", user.UserName!),
+            new Claim("LastName", user.LastName!),
+            new Claim("FullName", user.FullName!),
+            new Claim("roleActive", activeRoleId.ToString())
+        };
 
         /*foreach (var role in roles)
         {
@@ -266,7 +265,7 @@ public class AuthService : IAuthService
 
             // Crear nuevo refresh token
             var refreshTokenStr = GenerateRefreshToken();
-            var newRefreshToken = RefreshToken.Create(refreshTokenStr, user.Id, DateTime.UtcNow.AddHours(8),user.UserName!);
+            var newRefreshToken = RefreshToken.Create(refreshTokenStr, user.Id, DateTime.UtcNow.AddHours(8), user.UserName!);
             await _repository.AddAsync(newRefreshToken, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);

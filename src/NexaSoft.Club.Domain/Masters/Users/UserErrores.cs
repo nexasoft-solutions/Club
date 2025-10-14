@@ -86,4 +86,16 @@ public class UserErrores
      "User.ErrorUserSinRol",
      "Usuario sin rol"
     );
+
+    public static readonly Error PasswordErrado = new
+    (
+        "User.PasswordErrado",
+        "El password debe tener por lo menos 6 caracteres"
+    );
+
+    public static readonly Error ErrorHasPassword = new
+  (
+      "User.ErrorHasPassword",
+      "Usuario no tiene password configurado"
+  );
 }

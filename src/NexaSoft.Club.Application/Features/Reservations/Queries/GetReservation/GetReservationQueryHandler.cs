@@ -16,8 +16,8 @@ public class GetReservationQueryHandler(
             var specParams = new BaseSpecParams { Id = query.Id };
             var spec = new ReservationSpecification(specParams);
             var entity = await _repository.GetEntityWithSpec(spec, cancellationToken);
-                if (entity is null)
-                    return Result.Failure<ReservationResponse>(ReservationErrores.NoEncontrado);
+            if (entity is null)
+                return Result.Failure<ReservationResponse>(ReservationErrores.NoEncontrado);
 
             return Result.Success(entity);
         }

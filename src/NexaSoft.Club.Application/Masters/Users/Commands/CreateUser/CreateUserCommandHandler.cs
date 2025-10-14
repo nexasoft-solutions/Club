@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Abstractions.Time;
-using NexaSoft.Club.Application.Exceptions;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Masters.Users;
 using static NexaSoft.Club.Domain.Shareds.Enums;
@@ -20,21 +19,13 @@ public class CreateUserCommandHandler(
   {
 
     _logger.LogInformation("Iniciando proceso de creación de User");
-    var validator = new CreateUserCommandValidator();
-    var validationResult = validator.Validate(command);
-    if (!validationResult.IsValid)
-    {
-      var errors = validationResult.Errors
-         .Select(failure => new ValidationError(failure.PropertyName, failure.ErrorMessage));
 
-      throw new ValidationExceptions(errors);
-    }
 
-    var nombreCompleto = UserService.CreateNombreCompleto(command.UserApellidos ?? "", command.UserNombres ?? "");
-    var userName = UserService.CreateUserName(command.UserApellidos ?? "", command.UserNombres ?? "");
+    var fullName = UserService.CreateFullName(command.LastName ?? "", command.FirstName ?? "");
+    var userName = UserService.CreateUserName(command.LastName ?? "", command.FirstName ?? "");
 
-    bool existsNombreCompleto = await _repository.ExistsAsync(c => c.NombreCompleto == nombreCompleto, cancellationToken);
-    if (existsNombreCompleto)
+    bool existsFullName = await _repository.ExistsAsync(c => c.FullName == fullName, cancellationToken);
+    if (existsFullName)
     {
       return Result.Failure<long>(UserErrores.Duplicado);
     }
@@ -52,28 +43,30 @@ public class CreateUserCommandHandler(
       return Result.Failure<long>(UserErrores.Duplicado);
     }
 
-    bool existsUserDni = await _repository.ExistsAsync(c => c.UserDni == command.UserDni, cancellationToken);
-    if (existsUserDni)
+    bool existsDni = await _repository.ExistsAsync(c => c.Dni == command.Dni, cancellationToken);
+    if (existsDni)
     {
       return Result.Failure<long>(UserErrores.Duplicado);
     }
 
-    bool existsUserTelefono = await _repository.ExistsAsync(c => c.UserTelefono == command.UserTelefono, cancellationToken);
-    if (existsUserTelefono)
+    bool existsPhone = await _repository.ExistsAsync(c => c.Phone == command.Phone, cancellationToken);
+    if (existsPhone)
     {
       return Result.Failure<long>(UserErrores.Duplicado);
     }
 
     var entity = User.Create(
-        command.UserApellidos,
-        command.UserNombres,
-        BC.HashPassword(command.Password),
-            command.Email,
-            command.UserDni,
-            command.UserTelefono,
-            (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime(),
-            userName
+        command.LastName,
+        command.FirstName,
+        command.Email,
+        command.Dni,
+        command.Phone,
+        command.UserTypeId,
+        command.BirthDate,
+        command.MemberId,
+        (int)EstadosEnum.Activo,
+         _dateTimeProvider.CurrentTime.ToUniversalTime(),
+        userName
         );
 
     try

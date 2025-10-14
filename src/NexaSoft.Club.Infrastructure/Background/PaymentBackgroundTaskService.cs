@@ -87,7 +87,7 @@ public class PaymentBackgroundTaskService: IPaymentBackgroundTaskService
             var member = await memberRepository.GetByIdAsync(command.MemberId, cancellationToken);
             if (member != null)
             {
-                member.RevertBalance(command.Amount);//, "System - Rollback por falla en procesamiento");
+                member.RevertBalance(command.Amount,command.CreatedBy);//, "System - Rollback por falla en procesamiento");
                 await memberRepository.UpdateAsync(member);
                 _logger.LogInformation("Balance revertido para miembro {MemberId}", member.Id);
             }

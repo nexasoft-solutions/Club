@@ -16,8 +16,8 @@ public class GetUserQueryHandler(
             var specParams = new BaseSpecParams { Id = query.Id };
             var spec = new UserSpecification(specParams);
             var entity = await _repository.GetEntityWithSpec(spec, cancellationToken);
-                if (entity is null)
-                    return Result.Failure<UserResponse>(UserErrores.NoEncontrado);
+            if (entity is null)
+                return Result.Failure<UserResponse>(UserErrores.NoEncontrado);
 
             return Result.Success(entity);
         }

@@ -15,15 +15,15 @@ public class DeleteUserCommandHandler(
 {
     public async Task<Result<bool>> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de eliminación de User con ID {UserId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de eliminación de User con ID {UserId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("User con ID {UserId} no encontrado", command.Id);
-                return Result.Failure<bool>(UserErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(UserErrores.NoEncontrado);
+        }
 
-         entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(), command.UserDelete);
 
         try
         {
@@ -37,7 +37,7 @@ public class DeleteUserCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al eliminar User con ID {UserId}", command.Id);
+            _logger.LogError(ex, "Error al eliminar User con ID {UserId}", command.Id);
             return Result.Failure<bool>(UserErrores.ErrorDelete);
         }
     }

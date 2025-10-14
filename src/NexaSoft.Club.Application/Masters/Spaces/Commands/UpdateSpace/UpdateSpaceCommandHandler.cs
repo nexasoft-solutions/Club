@@ -15,22 +15,21 @@ public class UpdateSpaceCommandHandler(
 {
     public async Task<Result<bool>> Handle(UpdateSpaceCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de actualización de Space con ID {SpaceId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de actualización de Space con ID {SpaceId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("Space con ID {SpaceId} no encontrado", command.Id);
-                return Result.Failure<bool>(SpaceErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(SpaceErrores.NoEncontrado);
+        }
 
         entity.Update(
             command.Id,
             command.SpaceName,
-            command.SpaceType,
+            command.SpaceTypeId,
             command.Capacity,
             command.Description,
             command.StandardRate,
-            command.IsActive,
             command.RequiresApproval,
             command.MaxReservationHours,
             command.IncomeAccountId,
@@ -51,7 +50,7 @@ public class UpdateSpaceCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al actualizar Space con ID {SpaceId}", command.Id);
+            _logger.LogError(ex, "Error al actualizar Space con ID {SpaceId}", command.Id);
             return Result.Failure<bool>(SpaceErrores.ErrorEdit);
         }
     }

@@ -6,7 +6,7 @@ public class CreateUbigeoCommandValidator : AbstractValidator<CreateUbigeoComman
 {
     public CreateUbigeoCommandValidator()
     {
-        RuleFor(x => x.Descripcion)
+        RuleFor(x => x.Description)
             .NotEmpty().WithMessage("El campo Descripcion no puede estar vacío.");
         /*RuleFor(x => x.PadreId)
             .NotEmpty().WithMessage("El identificador no puede estar vacío.");*/

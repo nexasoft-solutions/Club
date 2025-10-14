@@ -6,7 +6,7 @@ public sealed record UpdateAccountingChartCommand(
     long Id,
     string? AccountCode,
     string? AccountName,
-    string? AccountType,
+    long AccountTypeId,
     long? ParentAccountId,
     int Level,
     bool AllowsTransactions,

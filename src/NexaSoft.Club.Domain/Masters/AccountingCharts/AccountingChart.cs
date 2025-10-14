@@ -1,6 +1,6 @@
 using NexaSoft.Club.Domain.Abstractions;
+using NexaSoft.Club.Domain.Masters.AccountTypes;
 using static NexaSoft.Club.Domain.Shareds.Enums;
-using NexaSoft.Club.Domain.Masters.AccountingCharts;
 
 namespace NexaSoft.Club.Domain.Masters.AccountingCharts;
 
@@ -8,7 +8,8 @@ public class AccountingChart : Entity
 {
     public string? AccountCode { get; private set; }
     public string? AccountName { get; private set; }
-    public string? AccountType { get; private set; }
+    public long AccountTypeId { get; private set; }
+    public AccountType? AccountType { get; set; }
     public long? ParentAccountId { get; private set; }
     public AccountingChart? ParentAccount { get; private set; }
     public int Level { get; private set; }
@@ -21,7 +22,7 @@ public class AccountingChart : Entity
     private AccountingChart(
         string? accountCode, 
         string? accountName, 
-        string? accountType, 
+        long accountTypeId, 
         long? parentAccountId, 
         int level, 
         bool allowsTransactions, 
@@ -35,7 +36,7 @@ public class AccountingChart : Entity
     {
         AccountCode = accountCode;
         AccountName = accountName;
-        AccountType = accountType;
+        AccountTypeId = accountTypeId;
         ParentAccountId = parentAccountId;
         Level = level;
         AllowsTransactions = allowsTransactions;
@@ -50,7 +51,7 @@ public class AccountingChart : Entity
     public static AccountingChart Create(
         string? accountCode, 
         string? accountName, 
-        string? accountType, 
+        long accountTypeId, 
         long? parentAccountId, 
         int level, 
         bool allowsTransactions, 
@@ -63,7 +64,7 @@ public class AccountingChart : Entity
         var entity = new AccountingChart(
             accountCode,
             accountName,
-            accountType,
+            accountTypeId,
             parentAccountId,
             level,
             allowsTransactions,
@@ -79,7 +80,7 @@ public class AccountingChart : Entity
         long Id,
         string? accountCode, 
         string? accountName, 
-        string? accountType, 
+        long accountTypeId, 
         long? parentAccountId, 
         int level, 
         bool allowsTransactions, 
@@ -90,7 +91,7 @@ public class AccountingChart : Entity
     {
         AccountCode = accountCode;
         AccountName = accountName;
-        AccountType = accountType;
+        AccountTypeId = accountTypeId;
         ParentAccountId = parentAccountId;
         Level = level;
         AllowsTransactions = allowsTransactions;

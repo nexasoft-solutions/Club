@@ -32,4 +32,11 @@ public interface IUserRoleRepository
 
     Task<List<string>> GetPermissionsForDefaultRoleAsync(long userId, long RoleId, CancellationToken cancellationToken = default);
 
+    Task<User> GetUserWithMemberAsync(long menberId, CancellationToken cancellationToken = default);
+
+    Task<List<UserMemberResponse>> MembersPendingUserSpec(CancellationToken cancellationToken = default);
+    Task<List<UserMemberResponse>> MembersNeedingQrRenewalSpec(CancellationToken cancellationToken = default);
+
+    
+
 }

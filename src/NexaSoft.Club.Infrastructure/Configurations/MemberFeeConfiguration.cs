@@ -34,7 +34,7 @@ public class MemberFeeConfiguration : IEntityTypeConfiguration<MemberFee>
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.Period)
-            .HasMaxLength(7)
+            .HasMaxLength(30)
             .IsRequired(false);
 
         builder.Property(x => x.Amount)
@@ -43,9 +43,13 @@ public class MemberFeeConfiguration : IEntityTypeConfiguration<MemberFee>
         builder.Property(x => x.DueDate)
             .IsRequired();
 
-        builder.Property(x => x.Status)
-            .HasMaxLength(20)
-            .IsRequired(false);
+        builder.Property(x => x.StatusId)
+            .IsRequired();
+
+        builder.HasOne(x => x.Status)
+           .WithMany()
+           .HasForeignKey(x => x.StatusId)
+           .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.StateMemberFee)
             .IsRequired();
@@ -71,10 +75,10 @@ public class MemberFeeConfiguration : IEntityTypeConfiguration<MemberFee>
         builder.HasIndex(x => x.Period)
             .HasDatabaseName("ix_memberfee_period");
 
-        builder.HasIndex(x => x.Status)
+        builder.HasIndex(x => x.StatusId)
             .HasDatabaseName("ix_memberfee_status");
 
-        builder.HasIndex(x => new { x.MemberId, x.Status })
+        builder.HasIndex(x => new { x.MemberId, x.StatusId })
             .HasDatabaseName("idx_member_fees_member_status");
 
     }

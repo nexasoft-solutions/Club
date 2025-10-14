@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Abstractions.Time;
-using NexaSoft.Club.Application.Exceptions;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Masters.Spaces;
 using static NexaSoft.Club.Domain.Shareds.Enums;
@@ -20,19 +19,18 @@ public class CreateSpaceCommandHandler(
 
         _logger.LogInformation("Iniciando proceso de creación de Space");
 
-     bool existsSpaceName = await _repository.ExistsAsync(c => c.SpaceName == command.SpaceName, cancellationToken);
-     if (existsSpaceName)
-     {
-       return Result.Failure<long>(SpaceErrores.Duplicado);
-     }
+        bool existsSpaceName = await _repository.ExistsAsync(c => c.SpaceName == command.SpaceName, cancellationToken);
+        if (existsSpaceName)
+        {
+            return Result.Failure<long>(SpaceErrores.Duplicado);
+        }
 
         var entity = Space.Create(
             command.SpaceName,
-            command.SpaceType,
+            command.SpaceTypeId,
             command.Capacity,
             command.Description,
             command.StandardRate,
-            command.IsActive,
             command.RequiresApproval,
             command.MaxReservationHours,
             command.IncomeAccountId,

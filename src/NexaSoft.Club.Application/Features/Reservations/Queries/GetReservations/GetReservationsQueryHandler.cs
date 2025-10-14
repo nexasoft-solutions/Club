@@ -15,7 +15,7 @@ public class GetReservationsQueryHandler(
         try
         {
             var spec = new ReservationSpecification(query.SpecParams);
-            var responses = await _repository.ListAsync<ReservationResponse>(spec,cancellationToken);
+            var responses = await _repository.ListAsync<ReservationResponse>(spec, cancellationToken);
             var totalItems = await _repository.CountAsync(spec, cancellationToken);
 
             var pagination = new Pagination<ReservationResponse>(

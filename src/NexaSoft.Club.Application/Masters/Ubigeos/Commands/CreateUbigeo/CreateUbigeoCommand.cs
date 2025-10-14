@@ -4,8 +4,8 @@ using NexaSoft.Club.Application.Abstractions.Messaging;
 namespace NexaSoft.Club.Application.Masters.Ubigeos.Commands.CreateUbigeo;
 
 public sealed record CreateUbigeoCommand(
-    string? Descripcion,
-    int Nivel,
-    long? PadreId,
-    string? UsuarioCreacion
+    string? Description,
+    int Level,
+    long? ParentId,
+    string? CreatedBy
 ) : ICommand<long>;

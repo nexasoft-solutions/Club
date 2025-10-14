@@ -12,7 +12,10 @@ public sealed record InitMemberRegistrationCommand(
 public sealed record MemberRegistrationResponse(
     bool Success,
     string Message,
-    string? MemberName = null,
+    string? MemberName,
+    string? Dni,
+    string? DeviceId,
+    DateOnly? BirthDate,
     string? Email = null,
     int PinExpirationMinutes = 10
 );

@@ -25,9 +25,13 @@ public class AccountingEntryConfiguration : IEntityTypeConfiguration<AccountingE
         builder.Property(x => x.Description)
             .IsRequired(false);
 
-        builder.Property(x => x.SourceModule)
-            .HasMaxLength(50)
-            .IsRequired(false);
+        builder.Property(x => x.SourceModuleId)
+            .IsRequired();
+
+        builder.HasOne(x => x.SourceModule)
+            .WithMany()
+            .HasForeignKey(x => x.SourceModuleId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.SourceId)
             .IsRequired(false);
@@ -65,10 +69,10 @@ public class AccountingEntryConfiguration : IEntityTypeConfiguration<AccountingE
         builder.HasIndex(x => x.EntryDate)
             .HasDatabaseName("ix_accountingentry_entrydate");
 
-        builder.HasIndex(x => x.SourceModule)
+        builder.HasIndex(x => x.SourceModuleId)
             .HasDatabaseName("ix_accountingentry_sourcemodule");
 
-        builder.HasIndex(x => new { x.SourceModule, x.SourceId })
+        builder.HasIndex(x => new { x.SourceModuleId, x.SourceId })
             .HasDatabaseName("idx_accounting_entries_source");
 
     }

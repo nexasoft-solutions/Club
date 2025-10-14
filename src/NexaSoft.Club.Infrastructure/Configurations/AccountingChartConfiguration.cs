@@ -23,9 +23,13 @@ public class AccountingChartConfiguration : IEntityTypeConfiguration<AccountingC
             .HasMaxLength(200)
             .IsRequired(false);
 
-        builder.Property(x => x.AccountType)
-            .HasMaxLength(50)
-            .IsRequired(false);
+        builder.Property(x => x.AccountTypeId)
+            .IsRequired();
+            
+        builder.HasOne(x => x.AccountType)
+               .WithMany()
+               .HasForeignKey(x => x.AccountTypeId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.ParentAccountId)
             .IsRequired(false);
@@ -63,7 +67,7 @@ public class AccountingChartConfiguration : IEntityTypeConfiguration<AccountingC
         builder.HasIndex(x => x.AccountCode)
             .HasDatabaseName("ix_accountingchart_accountcode");
 
-        builder.HasIndex(x => x.AccountType)
+        builder.HasIndex(x => x.AccountTypeId)
             .HasDatabaseName("ix_accountingchart_accounttype");
 
         builder.HasIndex(x => x.Level)

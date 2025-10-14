@@ -3,12 +3,11 @@ using NexaSoft.Club.Application.Abstractions.Messaging;
 namespace NexaSoft.Club.Application.Masters.Spaces.Commands.CreateSpace;
 
 public sealed record CreateSpaceCommand(
-    string? SpaceName,
-    string? SpaceType,
+    string SpaceName,
+    long SpaceTypeId,
     int? Capacity,
     string? Description,
     decimal StandardRate,
-    bool IsActive,
     bool RequiresApproval,
     int MaxReservationHours,
     long? IncomeAccountId,

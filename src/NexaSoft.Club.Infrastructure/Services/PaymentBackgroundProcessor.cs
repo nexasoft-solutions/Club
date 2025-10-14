@@ -205,7 +205,7 @@ public class PaymentBackgroundProcessor : IPaymentBackgroundProcessor
             entryNumber,
             payment.PaymentDate,
             $"Pago recibido - {member.FirstName} {member.LastName} - {payment.ReceiptNumber}",
-            "Pagos",
+            (long)SourceModuleEnum.Pagos,
             payment.Id,
             payment.TotalAmount,
             payment.TotalAmount,
@@ -231,15 +231,17 @@ public class PaymentBackgroundProcessor : IPaymentBackgroundProcessor
         CreatePaymentCommand command,
         CancellationToken cancellationToken)
     {
+        //var paymentMethodName = (PaymentMethodEnum)command.PaymentMethodId; // Aquí usamos el ID del método de pago
+
         // 1. DÉBITO: Caja/Bancos
-        var debitAccountId = await GetCashAccountId(command.PaymentMethod!, cancellationToken);
+        var debitAccountId = await GetCashAccountId(command.PaymentMethodId, cancellationToken);
 
         var debitItem = AccountingEntryItem.Create(
             accountingEntry.Id,
             debitAccountId,
             payment.TotalAmount,
             0.00M,
-            $"Ingreso por pago - {command.PaymentMethod} - Comprobante: {payment.ReceiptNumber}",
+            $"Ingreso por pago - {command.PaymentMethodId} - Comprobante: {payment.ReceiptNumber}",
             (int)EstadosEnum.Activo,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.CreatedBy
@@ -367,13 +369,14 @@ public class PaymentBackgroundProcessor : IPaymentBackgroundProcessor
         }
     }
 
-    private async Task<long> GetCashAccountId(string paymentMethod, CancellationToken cancellationToken)
+    private async Task<long> GetCashAccountId(long paymentMethodId, CancellationToken cancellationToken)
     {
-        var accountCode = paymentMethod?.ToLower() switch
+        var accountCode = paymentMethodId switch
         {
-            "cash" or "efectivo" => "1.1.1.1",
-            "creditcard" or "debitcard" or "tarjeta" => "1.1.1.2",
-            "transfer" or "transferencia" => "1.1.1.2",
+            (long)PaymentMethodEnum.Efectivo => "1.1.1.1",
+            (long)PaymentMethodEnum.TarjetaDeCredito => "1.1.1.2",
+            (long)PaymentMethodEnum.TarjetaDeDebito => "1.1.1.2",
+            (long)PaymentMethodEnum.TransferenciaBancaria => "1.1.1.2",
             _ => "1.1.1.1"
         };
 

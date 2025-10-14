@@ -29,6 +29,7 @@ public class MemberBackgroundTaskService : IMemberBackgroundTaskService
             command.MemberTypeId,
             command.JoinDate,
             command.ExpirationDate,
+            command.userTypeId,
             command.CreatedBy
         );
 
@@ -37,7 +38,7 @@ public class MemberBackgroundTaskService : IMemberBackgroundTaskService
             await _semaphore.WaitAsync(cancellationToken);
             try
             {
-                await GenerateMemberFeesWithCompensationAsync(backgroundData, cancellationToken);
+                await ProcessMemberAsync(backgroundData, cancellationToken);
             }
             finally
             {
@@ -48,7 +49,7 @@ public class MemberBackgroundTaskService : IMemberBackgroundTaskService
         return Task.CompletedTask;
     }
 
-    private async Task GenerateMemberFeesWithCompensationAsync(MemberFeesBackgroundData data, CancellationToken cancellationToken)
+    private async Task ProcessMemberAsync(MemberFeesBackgroundData data, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
 
@@ -62,10 +63,20 @@ public class MemberBackgroundTaskService : IMemberBackgroundTaskService
 
             _logger.LogInformation("Cuotas generadas exitosamente para member {MemberId}", data.MemberId);
 
-             // 2. LUEGO: Generar QR
-            var qrGenerator = scope.ServiceProvider.GetRequiredService<IMemberQrBackgroundGenerator>();
-            await qrGenerator.GenerateMemberQrAsync(data.MemberId, data.CreatedBy, cancellationToken);
+            // 2. SEGUNDO: Generar usuario
+            
+            var userGenerator = scope.ServiceProvider.GetRequiredService<IMemberUserBackgroundGenerator>();
+            var createdUserId = await userGenerator.GenerateMemberUserAsync(data.MemberId,data.userTypeId, data.CreatedBy, cancellationToken);
 
+            _logger.LogInformation("Usuario generado exitosamente para member {MemberId}", data.MemberId);
+
+            // 3. TERCERO: Generar QR        
+            var qrGenerator = scope.ServiceProvider.GetRequiredService<IMemberQrBackgroundGenerator>();
+            await qrGenerator.GenerateUserQrAsync(createdUserId ?? 0,data.MemberId, data.CreatedBy, cancellationToken);
+
+            _logger.LogInformation("QR generado exitosamente para member {MemberId}", data.MemberId);
+
+           
             _logger.LogInformation("Procesamiento completado para member {MemberId}", data.MemberId);
 
         }

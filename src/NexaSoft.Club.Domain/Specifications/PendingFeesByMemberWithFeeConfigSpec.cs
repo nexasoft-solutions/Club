@@ -1,11 +1,12 @@
 using NexaSoft.Club.Domain.Features.MemberFees;
+using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Domain.Specifications;
 
 public class PendingFeesByMemberWithFeeConfigSpec : BaseSpecification<MemberFee>
 {
     public PendingFeesByMemberWithFeeConfigSpec(long memberId)
-        : base(f => f.MemberId == memberId && f.Status != "Pagado" && f.RemainingAmount > 0)
+        : base(f => f.MemberId == memberId && f.StatusId != (int)StatusEnum.Pagado && f.RemainingAmount > 0)
     {
         // 🔹 Incluir MemberTypeFee y FeeConfiguration para poder acceder a Priority, IncomeAccountId, etc.
         AddInclude(f => f.MemberTypeFee!);

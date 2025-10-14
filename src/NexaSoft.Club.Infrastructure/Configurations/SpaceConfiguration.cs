@@ -19,9 +19,8 @@ public class SpaceConfiguration : IEntityTypeConfiguration<Space>
             .HasMaxLength(100)
             .IsRequired(false);
 
-        builder.Property(x => x.SpaceType)
-            .HasMaxLength(50)
-            .IsRequired(false);
+        builder.Property(x => x.SpaceTypeId)
+            .IsRequired();
 
         builder.Property(x => x.Capacity)
             .IsRequired(false);
@@ -32,8 +31,6 @@ public class SpaceConfiguration : IEntityTypeConfiguration<Space>
         builder.Property(x => x.StandardRate)
             .IsRequired();
 
-        builder.Property(x => x.IsActive)
-            .IsRequired();
 
         builder.Property(x => x.RequiresApproval)
             .IsRequired();
@@ -44,6 +41,10 @@ public class SpaceConfiguration : IEntityTypeConfiguration<Space>
         builder.Property(x => x.IncomeAccountId)
             .IsRequired(false);
 
+        builder.HasOne(x => x.SpaceType)
+                .WithMany()
+                .HasForeignKey(x => x.SpaceTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
          builder.HasOne(x => x.IncomeAccount)
                 .WithMany()
@@ -68,11 +69,8 @@ public class SpaceConfiguration : IEntityTypeConfiguration<Space>
         builder.HasIndex(x => x.SpaceName)
             .HasDatabaseName("ix_space_spacename");
 
-        builder.HasIndex(x => x.SpaceType)
+        builder.HasIndex(x => x.SpaceTypeId)
             .HasDatabaseName("ix_space_spacetype");
-
-        builder.HasIndex(x => x.IsActive)
-            .HasDatabaseName("ix_space_isactive");
 
     }
 }

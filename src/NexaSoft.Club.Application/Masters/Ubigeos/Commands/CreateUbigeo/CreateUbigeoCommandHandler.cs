@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Abstractions.Time;
-using NexaSoft.Club.Application.Exceptions;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Masters.Ubigeos;
 using static NexaSoft.Club.Domain.Shareds.Enums;
@@ -19,32 +18,24 @@ public class CreateUbigeoCommandHandler(
     {
 
         _logger.LogInformation("Iniciando proceso de creación de Ubigeo");
-        var validator = new CreateUbigeoCommandValidator();
-        var validationResult = validator.Validate(command);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors
-               .Select(failure => new ValidationError(failure.PropertyName, failure.ErrorMessage));
-
-            throw new ValidationExceptions(errors);
-        }
+       
 
 
-        bool existsDescripcin = await _repository.ExistsAsync(c => c.Nivel == command.Nivel && c.Descripcion == command.Descripcion, cancellationToken);
-        if (existsDescripcin)
+        bool existsDescription = await _repository.ExistsAsync(c => c.Level == command.Level && c.Description == command.Description, cancellationToken);
+        if (existsDescription)
         {
             return Result.Failure<long>(UbigeoErrores.Duplicado);
         }
 
-        var padre = command.Nivel == 1 ? (long?)null : command.PadreId;
+        var parent = command.Level == 1 ? (long?)null : command.ParentId;
 
         var entity = Ubigeo.Create(
-            command.Descripcion,
-            command.Nivel,
-            padre,
+            command.Description,
+            command.Level,
+            parent,
             (int)EstadosEnum.Activo,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
-            command.UsuarioCreacion
+            command.CreatedBy
         );
 
         try

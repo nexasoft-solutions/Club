@@ -4,7 +4,6 @@ using NexaSoft.Club.Application.Abstractions.Time;
 using NexaSoft.Club.Application.Features.Members.Background;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.Members;
-using NexaSoft.Club.Domain.Features.Members.Events;
 using NexaSoft.Club.Domain.Masters.MemberTypes;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 
@@ -36,12 +35,6 @@ public class CreateMemberCommandHandler(
       return Result.Failure<long>(MemberErrores.Duplicado);
     }
 
-    /*bool existsQrCode = await _repository.ExistsAsync(c => c.QrCode == command.QrCode, cancellationToken);
-    if (existsQrCode)
-    {
-      return Result.Failure<long>(MemberErrores.Duplicado);
-    }*/
-
     var memberType = await _memberTypeRepository.GetByIdAsync(command.MemberTypeId, cancellationToken);
     if (memberType is null) return Result.Failure<long>(MemberErrores.TipoNoExiste);
 
@@ -51,13 +44,16 @@ public class CreateMemberCommandHandler(
 
     try
     {
-
+        
       entity = Member.Create(
         command.Dni,
         command.FirstName,
         command.LastName,
         command.Email,
         command.Phone,
+        command.DepartamentId,
+        command.ProvinceId,
+        command.DistrictId,
         command.Address,
         command.BirthDate,
         command.MemberTypeId,
@@ -65,12 +61,8 @@ public class CreateMemberCommandHandler(
         command.JoinDate,
         command.ExpirationDate,
         command.Balance,
-        //command.QrCode,
-        //command.QrExpiration,
-        command.ProfilePictureUrl,
         (int)EstadosEnum.Activo,
         false,
-        null,
         _dateTimeProvider.CurrentTime.ToUniversalTime(),
         command.CreatedBy
     );
@@ -88,17 +80,6 @@ public class CreateMemberCommandHandler(
       // 3. ENCOLAR GENERACIÓN DE CUOTAS EN BACKGROUND
       await _backgroundTaskService.QueueMemberFeesGenerationAsync(entity.Id, command, cancellationToken);
 
-      // 4. DISPARAR EVENTO MANUALMENTE después de tener el ID     
-      /*entity.RaiseDomainEvent(new MemberQrGenerationRequiredDomainEvent(
-        entity.Id,
-        $"{entity.FirstName} {entity.LastName}",
-        entity.Dni!,
-        entity.JoinDate,
-        entity.ExpirationDate ?? entity.JoinDate.AddYears(1),
-        command.CreatedBy,
-        _dateTimeProvider.CurrentTime.ToUniversalTime()
-      ));*/
-      
       await _unitOfWork.CommitAsync(cancellationToken);
       _logger.LogInformation("Member con ID {MemberId} creado satisfactoriamente", entity.Id);
 

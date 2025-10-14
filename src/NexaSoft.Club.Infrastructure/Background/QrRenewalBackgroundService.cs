@@ -2,9 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Features.Members.Services;
-using NexaSoft.Club.Domain.Abstractions;
-using NexaSoft.Club.Domain.Features.Members;
-using NexaSoft.Club.Domain.Specifications;
+using NexaSoft.Club.Application.Masters.Users;
+
 
 namespace NexaSoft.Club.Infrastructure.Background;
 
@@ -47,8 +46,7 @@ public class QrRenewalBackgroundService : BackgroundService
     private async Task CheckAndRenewQrCodesAsync(CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        
-        var memberRepository = scope.ServiceProvider.GetRequiredService<IGenericRepository<Member>>();
+        var userRepository = scope.ServiceProvider.GetRequiredService<IUserRoleRepository>();
         var qrGenerator = scope.ServiceProvider.GetRequiredService<IMemberQrBackgroundGenerator>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<QrRenewalBackgroundService>>();
 
@@ -56,22 +54,20 @@ public class QrRenewalBackgroundService : BackgroundService
         {
             logger.LogInformation("Iniciando verificación de QR codes...");
 
-            var membersNeedingQr = await memberRepository.ListAsync(
-                new MembersNeedingQrRenewalSpec(),
-                cancellationToken);
+            var usersNeedingQr = await userRepository.MembersNeedingQrRenewalSpec(cancellationToken);
 
-            logger.LogInformation("Encontrados {Count} members que necesitan renovación de QR", membersNeedingQr.Count);
+            logger.LogInformation("Encontrados {Count} users que necesitan renovación de QR", usersNeedingQr.Count);
 
-            foreach (var member in membersNeedingQr)
+            foreach (var user in usersNeedingQr)
             {
                 try
                 {
-                    await qrGenerator.GenerateMemberQrAsync(member.Id, member.CreatedBy!, cancellationToken);
-                    logger.LogInformation("QR renovado para member {MemberId}", member.Id);
+                    await qrGenerator.GenerateUserQrAsync(user.UserId, user.MemberId, user.CreatedBy!, cancellationToken);
+                    logger.LogInformation("QR renovado para user {UserId}", user.UserId);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Error renovando QR para member {MemberId}", member.Id);
+                    logger.LogError(ex, "Error renovando QR para user {UserId}", user.UserId);
                 }
 
                 await Task.Delay(100, cancellationToken);
