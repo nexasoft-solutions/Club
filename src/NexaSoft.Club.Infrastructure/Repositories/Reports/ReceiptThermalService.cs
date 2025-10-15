@@ -1,3 +1,4 @@
+using System.Globalization;
 using NexaSoft.Club.Application.Abstractions.Reporting;
 using NexaSoft.Club.Domain.Features.Payments;
 using QuestPDF.Fluent;
@@ -37,18 +38,15 @@ public class ReceiptThermalService : IReceiptThermalService
 
     private byte[] GenerateThermalReceipt(PaymentResponse payment, ThermalReceiptConfig config)
     {
-        // Aumentar ligeramente el ancho para mejor ajuste
-        var thermal80mmWidth = 72 * 3.3f; // De 3.15 a 3.3 pulgadas
-        var thermal80mmHeight = 72 * 11.7f;
-
-        var thermalPageSize = new PageSize(thermal80mmWidth, thermal80mmHeight);
+        var thermal80mmWidth = 72 * 3.15f; // 80mm EXACTO
+        var thermalPageSize = new PageSize(thermal80mmWidth, 400);
 
         var document = Document.Create(container =>
         {
             container.Page(page =>
             {
                 page.Size(thermalPageSize);
-                page.Margin(3); // Reducir márgenes aún más
+                page.Margin(2); // Márgenes mínimos para térmicas
                 page.PageColor(Colors.White);
                 page.DefaultTextStyle(x => x
                     .FontSize(config.FontSizeNormal)
@@ -61,114 +59,117 @@ public class ReceiptThermalService : IReceiptThermalService
 
         return document.GeneratePdf();
     }
-
     private void ComposeThermalContent(IContainer container, PaymentResponse payment, ThermalReceiptConfig config)
     {
         container.Column(column =>
         {
-            // ENCABEZADO CENTRADO - TEXTO MÁS CORTO
+            // ENCABEZADO MINIMALISTA
             if (config.ShowHeader)
             {
-                column.Item().AlignCenter().Text("CLUB CENTRO SOCIAL ICA").FontSize(config.FontSizeLarge).Bold();
-                column.Item().AlignCenter().Text("El club de todos los socios").FontSize(config.FontSizeSmall);
-                column.Item().AlignCenter().Text("Calle Bolivar 166 - Ica").FontSize(config.FontSizeSmall);
-                column.Item().AlignCenter().Text("Tel: 056-219198").FontSize(config.FontSizeSmall);
+                column.Item().AlignCenter().Text(config.ClubName).Bold();
+                column.Item().AlignCenter().Text(config.ClubAddress).FontSize(config.FontSizeSmall);
                 column.Item().AlignCenter().Text($"RUC: {config.ClubRUC}").FontSize(config.FontSizeSmall);
 
                 if (config.ShowSeparators)
                 {
-                    column.Item().PaddingVertical(1).LineHorizontal(1);
+                    column.Item().PaddingVertical(1).AlignCenter().Text(new string('-', 36));
                 }
             }
 
-            // INFORMACIÓN DEL COMPROBANTE - MÁS COMPACTO
-            column.Item().PaddingBottom(1).Row(row =>
+            // INFORMACIÓN BÁSICA DEL COMPROBANTE
+            column.Item().Row(row =>
             {
-                row.ConstantItem(40).AlignLeft().Text("COMPROBANTE:").SemiBold();
-                row.RelativeItem().AlignLeft().Text(payment.ReceiptNumber ?? "N/A").SemiBold();
+                row.ConstantItem(40).Text(payment.DocumentTypeDescription).SemiBold();
+                row.RelativeItem().Text(payment.ReceiptNumber);
             });
 
             column.Item().Row(row =>
             {
-                row.ConstantItem(40).AlignLeft().Text("FECHA:");
-                row.RelativeItem().AlignLeft().Text(payment.PaymentDate.ToString("dd/MM/yyyy"));
+                row.ConstantItem(40).Text("FECHA:");
+                row.RelativeItem().Text(payment.CreatedAt.ToString("dd/MM/yyyy HH:mm"));
             });
 
             column.Item().Row(row =>
             {
-                row.ConstantItem(40).AlignLeft().Text("HORA:");
-                row.RelativeItem().AlignLeft().Text(DateTime.Now.ToString("HH:mm:ss"));
-            });
-
-            column.Item().Row(row =>
-            {
-                row.ConstantItem(40).AlignLeft().Text("DOCUMENTO:");
-                row.RelativeItem().AlignLeft().Text("Boleta");
-            });
-
-            column.Item().PaddingBottom(1).Row(row =>
-            {
-                row.ConstantItem(40).AlignLeft().Text("METODO:");
-                row.RelativeItem().AlignLeft().Text("Efectivo");
+                row.ConstantItem(40).Text("METODO:");
+                row.RelativeItem().Text(payment.PaymentMethodDescription);
             });
 
             if (config.ShowSeparators)
             {
-                column.Item().PaddingVertical(1).LineHorizontal(1);
+                column.Item().PaddingVertical(1).AlignCenter().Text(new string('-', 36));
             }
 
-            // MIEMBRO
-            column.Item().PaddingBottom(1).Text("MIEMBRO:").SemiBold();
-            column.Item().PaddingBottom(1).Text(payment.MemberFullName ?? "");
+            // INFORMACIÓN DEL SOCIO
+            column.Item().Row(row =>
+            {
+                row.ConstantItem(40).Text("SOCIO:").SemiBold();
+                row.RelativeItem().Text(TruncateText(payment.MemberFullName ?? "", 30));
+            });
 
             if (config.ShowSeparators)
             {
-                column.Item().PaddingVertical(1).LineHorizontal(1);
+                column.Item().PaddingVertical(1).AlignCenter().Text(new string('=', 36));
             }
 
-            // DETALLE DE PAGOS - FORMATO MÁS SIMPLE
+            // DETALLE DE PAGOS - OPTIMIZADO PARA 80mm
             if (config.ShowItems && payment.AppliedItems.Any())
             {
-                column.Item().PaddingBottom(1).Text("DETALLE DE PAGOS:").SemiBold();
+                column.Item().PaddingBottom(1).Text("DETALLE:").SemiBold();
 
                 foreach (var item in payment.AppliedItems)
                 {
-                    column.Item().Row(row =>
+                    column.Item().PaddingBottom(1).Row(row =>
                     {
-                        row.RelativeItem(3).Text(item.Concept ?? "");
-                        row.ConstantItem(25).AlignRight().Text(item.Amount.ToString("C"));
+                        // Concepto truncado a 22 caracteres + monto
+                        row.RelativeItem().Text(
+                            TruncateText(
+                                item.Concept == "Cuota de Ingreso"
+                                    ? (item.Concept ?? "")
+                                    : $"Cuota {item.Period ?? ""}",
+                                22)
+                        );
+                        row.ConstantItem(70).AlignRight().Text(item.Amount.ToString("C", CultureInfo.GetCultureInfo("es-PE")));
                     });
                 }
 
                 if (config.ShowSeparators)
                 {
-                    column.Item().PaddingVertical(1).LineHorizontal(1);
+                    column.Item().PaddingVertical(1).AlignCenter().Text(new string('-', 36));
                 }
             }
 
-            // TOTAL
-            column.Item().Row(row =>
+            // TOTAL - EN UNA SOLA LÍNEA
+            column.Item().PaddingTop(1).Row(row =>
             {
                 row.RelativeItem().Text("TOTAL:").SemiBold().FontSize(config.FontSizeLarge);
-                row.ConstantItem(35).AlignRight().Text(payment.TotalAmount.ToString("C"))
+                row.ConstantItem(70).AlignRight().Text(
+                        payment.TotalAmount.ToString("C", CultureInfo.GetCultureInfo("es-PE"))
+                    )
                     .SemiBold().FontSize(config.FontSizeLarge);
             });
 
-            // PIE DE PÁGINA SIMPLIFICADO
+            // MONTO EN LETRAS
+            column.Item().PaddingTop(2).AlignCenter().Text(ConvertAmountToText(payment.TotalAmount)).Italic().FontSize(config.FontSizeSmall);
+
+            // PIE DE PÁGINA MÍNIMO
             if (config.ShowFooter)
             {
-                column.Item().PaddingTop(2).AlignCenter().Text("GRACIAS POR SU PAGO!").SemiBold();
-                column.Item().AlignCenter().Text(DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+                column.Item().PaddingTop(4).AlignCenter().Text("GRACIAS POR SU PAGO").SemiBold();
+                column.Item().AlignCenter().Text(DateTime.Now.ToString("dd/MM/yy HH:mm"));
             }
+
+            // LÍNEA DE CORTE
+            column.Item().PaddingTop(3).AlignCenter().Text(new string('-', 36));
+            column.Item().AlignCenter().Text("▲ CORTAR AQUÍ ▲").FontSize(config.FontSizeSmall);
         });
     }
 
     private string TruncateText(string text, int maxLength)
     {
         if (string.IsNullOrEmpty(text)) return "";
-        return text.Length <= maxLength ? text : text.Substring(0, maxLength - 3) + "...";
+        return text.Length <= maxLength ? text : text.Substring(0, maxLength - 1);
     }
-
     private List<string> SplitTextIntoLines(string text, int maxLineLength)
     {
         var lines = new List<string>();

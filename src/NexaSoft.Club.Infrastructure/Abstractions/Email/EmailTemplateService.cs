@@ -383,5 +383,168 @@ public class EmailTemplateService : IEmailTemplateService
 </html>";
     }
 
-    
+
+    public string GenerateReceiptTemplate(ReceiptTemplateData data)
+    {
+        var itemsHtml = new StringBuilder();
+
+        if (data.Items.Any())
+        {
+            itemsHtml.AppendLine(@"<table border='0' cellpadding='8' cellspacing='0' style='border-collapse: collapse; width: 100%; margin: 15px 0; background: white;'>");
+            itemsHtml.AppendLine(@"<tr style='background: #2c3e50; color: white;'>");
+            itemsHtml.AppendLine(@"<th style='padding: 10px; text-align: left;'>Descripción</th>");
+            itemsHtml.AppendLine(@"<th style='padding: 10px; text-align: right; width: 120px;'>Monto</th>");
+            itemsHtml.AppendLine(@"</tr>");
+
+            foreach (var item in data.Items)
+            {
+                itemsHtml.AppendLine($@"<tr style='border-bottom: 1px solid #eee;'>");
+                itemsHtml.AppendLine($@"<td style='padding: 10px;'>{item.Description}</td>");
+                itemsHtml.AppendLine($@"<td style='padding: 10px; text-align: right;'>S/ {item.Amount:N2}</td>");
+                itemsHtml.AppendLine(@"</tr>");
+            }
+
+            itemsHtml.AppendLine(@"</table>");
+        }
+
+        return $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{ font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: #ffffff; }}
+        .header {{ background: #2c3e50; color: white; padding: 30px; text-align: center; }}
+        .content {{ padding: 30px; background: #f8f9fa; }}
+        .footer {{ padding: 20px; text-align: center; font-size: 12px; color: #666; background: #2c3e50; color: white; }}
+        .receipt-card {{ background: white; padding: 25px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+        .total-section {{ background: #e8f5e8; padding: 20px; border-radius: 5px; margin-top: 20px; text-align: right; }}
+        .info-row {{ display: flex; justify-content: space-between; margin: 8px 0; }}
+        .info-label {{ font-weight: bold; color: #555; }}
+        .total-amount {{ font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }}
+        .amount-in-words {{ font-style: italic; color: #555; margin-top: 10px; text-align: center; border-top: 1px dashed #ccc; padding-top: 10px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>{data.OrganizationName}</h1>
+            <p>{data.DocumentType}</p>
+        </div>
+        
+        <div class='content'>
+            <p>Estimado(a) <strong>{data.CustomerName}</strong>,</p>
+            
+            <p>{data.Message}</p>
+            
+            <div class='receipt-card'>
+                <div class='info-row'>
+                    <span class='info-label'>Número de Comprobante:</span>
+                    <span>{data.DocumentNumber}</span>
+                </div>
+                <div class='info-row'>
+                    <span class='info-label'>Fecha de Emisión:</span>
+                    <span>{data.IssueDate:dd/MM/yyyy}</span>
+                </div>
+                <div class='info-row'>
+                    <span class='info-label'>Hora:</span>
+                    <span>{data.IssueDate:HH:mm}</span>
+                </div>
+                {(string.IsNullOrEmpty(data.Reference) ? "" : $@"
+                <div class='info-row'>
+                    <span class='info-label'>Referencia:</span>
+                    <span>{data.Reference}</span>
+                </div>")}
+
+                <div style='margin: 20px 0;'>
+                    <h3 style='color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 8px;'>Detalles</h3>
+                    {itemsHtml}
+                </div>
+
+                <div class='total-section'>
+                    <div class='total-amount'>
+                        TOTAL: S/ {data.TotalAmount:N2}
+                    </div>
+                    {(string.IsNullOrEmpty(data.AmountInWords) ? "" : $@"
+                    <div class='amount-in-words'>
+                        Son: {data.AmountInWords}
+                    </div>")}
+                </div>
+            </div>
+            
+            <p>{data.AdditionalNotes}</p>
+        </div>
+        
+        <div class='footer'>
+            <p><strong>{data.OrganizationName}</strong><br>
+            {data.OrganizationAddress}<br>
+            {data.OrganizationContact}</p>
+            <p>Este es un mensaje automático, por favor no responda a este correo.</p>
+        </div>
+    </div>
+</body>
+</html>";
+    }
+
+    public string GenerateNotificationTemplate(NotificationTemplateData data)
+    {
+        var detailsHtml = new StringBuilder();
+
+        if (data.Details.Any())
+        {
+            detailsHtml.AppendLine(@"<div style='background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;'>");
+            foreach (var detail in data.Details)
+            {
+                detailsHtml.AppendLine($@"<div style='margin: 5px 0;'><strong>{detail.Key}:</strong> {detail.Value}</div>");
+            }
+            detailsHtml.AppendLine(@"</div>");
+        }
+
+        return $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{ font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: #ffffff; }}
+        .header {{ background: {(data.IsUrgent ? "linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)")}; 
+                  color: white; padding: 30px; text-align: center; }}
+        .content {{ padding: 30px; background: #f8f9fa; }}
+        .footer {{ padding: 20px; text-align: center; font-size: 12px; color: #666; }}
+        .button {{ background: {(data.IsUrgent ? "#dc3545" : "#667eea")}; 
+                  color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; }}
+        .urgent {{ background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>{(data.IsUrgent ? "🚨 " : "")}{data.Title}</h1>
+        </div>
+        <div class='content'>
+            <h2>{data.Greeting}</h2>
+            
+            {(data.IsUrgent ? @"<div class='urgent'><h3>⚠️ ATENCIÓN REQUERIDA</h3></div>" : "")}
+            
+            <p>{data.Message}</p>
+            
+            {detailsHtml}
+            
+            {(string.IsNullOrEmpty(data.ActionUrl) ? "" : $@"
+            <p style='text-align: center; margin: 30px 0;'>
+                <a href='{data.ActionUrl}' class='button'>{data.ActionText ?? "Tomar Acción"}</a>
+            </p>")}
+            
+            <p><strong>Atentamente,</strong><br>{data.OrganizationName}</p>
+        </div>
+        <div class='footer'>
+            <p>© {DateTime.Now.Year} {data.OrganizationName}. {data.FooterNotes}</p>
+        </div>
+    </div>
+</body>
+</html>";
+    }
+
 }

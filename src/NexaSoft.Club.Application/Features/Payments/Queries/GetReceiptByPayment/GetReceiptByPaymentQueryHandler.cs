@@ -26,11 +26,11 @@ public class GetReceiptByPaymentQueryHandler(
             // Usar configuración optimizada para térmicas
             var pdfBytes = _receiptThermalService.GeneratePaymentReceipt(payment, config =>
             {
-                config.FontSizeNormal = 7;
-                config.FontSizeSmall = 6;
-                config.FontSizeLarge = 8;
+                config.FontSizeNormal = 8;
+                config.FontSizeSmall = 7;
+                config.FontSizeLarge = 9;
                 config.MaxCharsPerLine = 38;
-                config.PaperWidth = 226; // 80mm en puntos
+                config.PaperWidth = 226;
             });
 
             return Result.Success(pdfBytes);

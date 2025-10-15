@@ -12,4 +12,6 @@ public interface IEmailTemplateService
     string GenerateProjectUpdate(string projectName, string updateMessage, string projectUrl);
 
     string GenerateCustomTemplate(TemplateData templateData);
+
+    string GenerateReceiptTemplate(ReceiptTemplateData data);
 }

@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Logging;
+using NexaSoft.Club.Application.Abstractions.Email;
+using NexaSoft.Club.Application.Abstractions.Reporting;
 using NexaSoft.Club.Application.Abstractions.Time;
 using NexaSoft.Club.Application.Features.Payments.Commands.CreatePayment;
 using NexaSoft.Club.Application.Features.Payments.Services;
@@ -30,6 +32,11 @@ public class PaymentBackgroundProcessor : IPaymentBackgroundProcessor
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<PaymentBackgroundProcessor> _logger;
 
+    private readonly IEmailService _emailService;
+    private readonly IReceiptThermalService _receiptThermalService;
+
+    private readonly IEmailTemplateService _templateService;
+
     public PaymentBackgroundProcessor(
         IGenericRepository<Payment> paymentRepository,
         IGenericRepository<PaymentItem> paymentItemRepository,
@@ -42,7 +49,10 @@ public class PaymentBackgroundProcessor : IPaymentBackgroundProcessor
         IGenericRepository<Contador> contadorRepository,
         IUnitOfWork unitOfWork,
         IDateTimeProvider dateTimeProvider,
-        ILogger<PaymentBackgroundProcessor> logger)
+        ILogger<PaymentBackgroundProcessor> logger,
+        IEmailService emailService,
+        IReceiptThermalService receiptThermalService,
+        IEmailTemplateService templateService)
     {
         _paymentRepository = paymentRepository;
         _paymentItemRepository = paymentItemRepository;
@@ -56,6 +66,9 @@ public class PaymentBackgroundProcessor : IPaymentBackgroundProcessor
         _unitOfWork = unitOfWork;
         _dateTimeProvider = dateTimeProvider;
         _logger = logger;
+        _emailService = emailService;
+        _receiptThermalService = receiptThermalService;
+        _templateService = templateService;
     }
 
     public async Task ProcessPaymentAsync(long paymentId, CreatePaymentCommand command, CancellationToken cancellationToken)
@@ -94,6 +107,9 @@ public class PaymentBackgroundProcessor : IPaymentBackgroundProcessor
             await _unitOfWork.CommitAsync(cancellationToken);
 
             _logger.LogInformation("Pago {PaymentId} procesado exitosamente en background", paymentId);
+
+            // 6. ENVIAR COMPROBANTE POR CORREO (DESPUÉS DEL COMMIT)
+            await SendReceiptByEmail(payment, member, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -405,4 +421,176 @@ public class PaymentBackgroundProcessor : IPaymentBackgroundProcessor
             return 1;
         }
     }
+
+    private async Task SendReceiptByEmail(Payment payment, Member member, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(member.Email))
+            {
+                _logger.LogWarning("Miembro {MemberId} no tiene email configurado, no se enviará comprobante", member.Id);
+                return;
+            }
+
+            _logger.LogInformation("Enviando comprobante por correo para pago {PaymentId}", payment.Id);
+
+            var specParams = new BaseSpecParams { Id = payment.Id };
+            var spec = new PaymentSpecification(specParams);
+            var paymentResponse = await _paymentRepository.GetEntityWithSpec(spec, cancellationToken);
+            if (paymentResponse == null)
+            {
+                _logger.LogWarning("No se encontró el pago {PaymentId} para generar comprobante", payment.Id);
+                return;
+            }
+
+            // 1. Generar el PDF del comprobante
+            //var paymentResponse = MapToPaymentResponse(payment, member);
+            var pdfBytes = _receiptThermalService.GeneratePaymentReceipt(paymentResponse, config =>
+            {
+                config.FontSizeNormal = 8;
+                config.FontSizeSmall = 7;
+                config.FontSizeLarge = 9;
+                config.MaxCharsPerLine = 38;
+                config.PaperWidth = 226;
+            });
+
+            // 2. Preparar datos para el template
+            var receiptData = new ReceiptTemplateData
+            {
+                DocumentNumber = paymentResponse.ReceiptNumber!,
+                IssueDate = paymentResponse.CreatedAt,
+                CustomerName = $"{member.FirstName} {member.LastName}",
+                TotalAmount = paymentResponse.TotalAmount,
+                AmountInWords = ConvertAmountToText(paymentResponse.TotalAmount),
+                Items = paymentResponse.AppliedItems.Select(item => new ReceiptItemRecord
+                {
+                    Description = item.Concept + "-" + item.Period ?? "Pago general",
+                    Amount = item.Amount
+                }).ToList(),
+                Message = "Adjuntamos su comprobante de pago generado recientemente. Este documento acredita su transacción en nuestro sistema."
+            };
+
+            // 3. Generar contenido HTML del email
+            var htmlContent = _templateService.GenerateReceiptTemplate(receiptData);
+
+            // 4. Crear y enviar el mensaje de email
+            var emailMessage = new EmailMessage
+            {
+                To = member.Email,
+                ToName = $"{member.FirstName} {member.LastName}",
+                Subject = $"Comprobante de Pago - {payment.ReceiptNumber}",
+                HtmlContent = htmlContent,
+                IsImportant = true,
+                Attachments = new List<EmailAttachment>
+            {
+                new EmailAttachment
+                {
+                    Name = $"Comprobante-{payment.ReceiptNumber}.pdf",
+                    Content = pdfBytes
+                }
+            }
+            };
+
+            await _emailService.SendAsync(emailMessage);
+            _logger.LogInformation("Comprobante enviado exitosamente a {Email} para pago {PaymentId}", member.Email, payment.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al enviar comprobante por correo para pago {PaymentId}", payment.Id);
+        }
+    }
+
+    //Pasar a un utilitario
+    private string ConvertAmountToText(decimal amount)
+    {
+        if (amount == 0) return "CERO CON 00/100 SOLES";
+
+        var integerPart = (int)Math.Truncate(amount);
+        var decimalPart = (int)((amount - integerPart) * 100);
+
+        // Convertir la parte entera a texto
+        var integerText = ConvertIntegerToText(integerPart);
+
+        return $"{integerText} CON {decimalPart:00}/100 SOLES";
+    }
+
+    private string ConvertIntegerToText(int number)
+    {
+        if (number == 0) return "CERO";
+
+        if (number < 0)
+            return "MENOS " + ConvertIntegerToText(Math.Abs(number));
+
+        string words = "";
+
+        if ((number / 1000000) > 0)
+        {
+            words += ConvertIntegerToText(number / 1000000) + " MILLÓN ";
+            number %= 1000000;
+        }
+
+        if ((number / 1000) > 0)
+        {
+            words += ConvertIntegerToText(number / 1000) + " MIL ";
+            number %= 1000;
+        }
+
+        if ((number / 100) > 0)
+        {
+            if (number == 100)
+                words += "CIEN";
+            else if (number < 200)
+                words += "CIENTO " + ConvertIntegerToText(number % 100);
+            else
+            {
+                var hundreds = number / 100;
+                var hundredText = hundreds switch
+                {
+                    1 => "CIENTO",
+                    2 => "DOSCIENTOS",
+                    3 => "TRESCIENTOS",
+                    4 => "CUATROCIENTOS",
+                    5 => "QUINIENTOS",
+                    6 => "SEISCIENTOS",
+                    7 => "SETECIENTOS",
+                    8 => "OCHOCIENTOS",
+                    9 => "NOVECIENTOS",
+                    _ => ""
+                };
+                words += hundredText + " " + ConvertIntegerToText(number % 100);
+            }
+            number %= 100;
+        }
+
+        if (number > 0)
+        {
+            if (words != "")
+                words += " ";
+
+            var unitsMap = new[] { "CERO", "UNO", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE", "DIEZ",
+                              "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISÉIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE" };
+            var tensMap = new[] { "CERO", "DIEZ", "VEINTE", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA" };
+
+            if (number < 20)
+                words += unitsMap[number];
+            else
+            {
+                if (number >= 20 && number < 30)
+                {
+                    if (number == 20)
+                        words += "VEINTE";
+                    else
+                        words += "VEINTI" + unitsMap[number - 20];
+                }
+                else
+                {
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0)
+                        words += " Y " + unitsMap[number % 10];
+                }
+            }
+        }
+
+        return words.Trim().Replace("  ", " ");
+    }  
 }

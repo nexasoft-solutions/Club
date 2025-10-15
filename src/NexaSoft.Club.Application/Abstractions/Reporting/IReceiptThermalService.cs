@@ -13,24 +13,21 @@ public interface IReceiptThermalService
 
 public class ThermalReceiptConfig
 {
-    // Configuración del club
+    // Configuración del club (MINIMALISTA)
     public string ClubName { get; set; } = "CLUB CENTRO SOCIAL ICA";
-    public string ClubSlogan { get; set; } = "El club de todos los socios";
-    public string ClubAddress { get; set; } = "Calle Bolivar Nº166 Plaza de Armas - Ica";
-    public string ClubPhone { get; set; } = "056-219198 / 231411";
+    public string ClubAddress { get; set; } = "Calle Bolivar 166 - Ica";
     public string ClubRUC { get; set; } = "20123456781";
 
-   // Configuración optimizada para 80mm (ACTUALIZADA)
-    public int PaperWidth { get; set; } = 226; // 80mm en puntos (72 * 3.15)
-    public int FontSizeNormal { get; set; } = 7;  // Reducido para impresoras térmicas
-    public int FontSizeSmall { get; set; } = 6;   // Más pequeño
-    public int FontSizeLarge { get; set; } = 8;   // Reducido
-    public int MaxCharsPerLine { get; set; } = 38; // Menos caracteres por línea
+    // Configuración optimizada para térmicas
+    public int PaperWidth { get; set; } = 230; // 80mm exacto
+    public int FontSizeNormal { get; set; } = 8;
+    public int FontSizeSmall { get; set; } = 7;
+    public int FontSizeLarge { get; set; } = 9;
+    public int MaxCharsPerLine { get; set; } = 38; // Menos caracteres
 
-    // Elementos visibles
+    // Elementos visibles (SIMPLIFICADOS)
     public bool ShowHeader { get; set; } = true;
     public bool ShowItems { get; set; } = true;
     public bool ShowFooter { get; set; } = true;
     public bool ShowSeparators { get; set; } = true;
-    public bool ShowCutLine { get; set; } = true;
 }

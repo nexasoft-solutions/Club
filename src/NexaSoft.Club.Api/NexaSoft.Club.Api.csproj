@@ -21,4 +21,8 @@
    <ProjectReference Include="..\NexaSoft.Club.Infrastructure\NexaSoft.Club.Infrastructure.csproj" />
  </ItemGroup>
 
+ <ItemGroup>
+   <Folder Include="pages\" />
+ </ItemGroup>
+
 </Project>
