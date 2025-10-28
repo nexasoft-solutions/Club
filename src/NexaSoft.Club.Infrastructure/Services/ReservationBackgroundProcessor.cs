@@ -4,11 +4,9 @@ using NexaSoft.Club.Application.Features.Reservations.Commands.CreateReservation
 using NexaSoft.Club.Application.Features.Reservations.Services;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.AccountingEntries;
-using NexaSoft.Club.Domain.Features.Payments;
 using NexaSoft.Club.Domain.Features.Reservations;
 using NexaSoft.Club.Domain.Masters.AccountingCharts;
 using NexaSoft.Club.Domain.Masters.Contadores;
-using NexaSoft.Club.Domain.Masters.SpaceRates;
 using NexaSoft.Club.Domain.Masters.Spaces;
 using NexaSoft.Club.Domain.Specifications;
 using static NexaSoft.Club.Domain.Shareds.Enums;
@@ -18,10 +16,9 @@ namespace NexaSoft.Club.Infrastructure.Services;
 public class ReservationBackgroundProcessor : IReservationBackgroundProcessor
 {
     private readonly IGenericRepository<Reservation> _reservationRepository;
-    private readonly IGenericRepository<Payment> _paymentRepository;
     private readonly IGenericRepository<AccountingEntry> _accountingEntryRepository;
     private readonly IGenericRepository<AccountingEntryItem> _entryItemRepository;
-    private readonly IGenericRepository<SpaceRate> _spaceRateRepository;
+    private readonly IGenericRepository<Space> _spaceRepository;
     private readonly IGenericRepository<AccountingChart> _accountingChartRepository;
     private readonly IGenericRepository<Contador> _contadorRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -30,10 +27,9 @@ public class ReservationBackgroundProcessor : IReservationBackgroundProcessor
 
     public ReservationBackgroundProcessor(
         IGenericRepository<Reservation> reservationRepository,
-        IGenericRepository<Payment> paymentRepository,
         IGenericRepository<AccountingEntry> accountingEntryRepository,
         IGenericRepository<AccountingEntryItem> entryItemRepository,
-        IGenericRepository<SpaceRate> spaceRateRepository,
+        IGenericRepository<Space> spaceRepository,
         IGenericRepository<AccountingChart> accountingChartRepository,
         IGenericRepository<Contador> contadorRepository,
         IUnitOfWork unitOfWork,
@@ -41,10 +37,9 @@ public class ReservationBackgroundProcessor : IReservationBackgroundProcessor
         ILogger<ReservationBackgroundProcessor> logger)
     {
         _reservationRepository = reservationRepository;
-        _paymentRepository = paymentRepository;
         _accountingEntryRepository = accountingEntryRepository;
         _entryItemRepository = entryItemRepository;
-        _spaceRateRepository = spaceRateRepository;
+        _spaceRepository = spaceRepository;
         _accountingChartRepository = accountingChartRepository;
         _contadorRepository = contadorRepository;
         _unitOfWork = unitOfWork;
@@ -67,18 +62,15 @@ public class ReservationBackgroundProcessor : IReservationBackgroundProcessor
                 throw new InvalidOperationException($"Reserva {reservationId} no encontrada");
             }
 
-            // 2. CREAR PAGO ASOCIADO A LA RESERVA
-            //var payment = await CreatePaymentForReservation(reservation, command, cancellationToken);
-
-            // 3. GENERAR ASIENTO CONTABLE
+            // 2. GENERAR ASIENTO CONTABLE
             var accountingEntry = await GenerateAccountingEntryForReservation(reservation, command, cancellationToken);
 
-            // 4. ACTUALIZAR RESERVA CON LOS IDs GENERADOS
+            // 3. ACTUALIZAR RESERVA CON LOS IDs GENERADOS
             reservation.SetAccountingEntryId(accountingEntry.Id);
             reservation.MarkAsCompleted(accountingEntry.Id);
             await _reservationRepository.UpdateAsync(reservation);
 
-            // 5. GUARDAR TODO
+            // 4. GUARDAR TODO
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 
@@ -93,33 +85,7 @@ public class ReservationBackgroundProcessor : IReservationBackgroundProcessor
     }
 
     
-    /*private async Task<Payment> CreatePaymentForReservation(Reservation reservation, CreateReservationCommand command, CancellationToken cancellationToken)
-    {
-        var payment = Payment.Create(
-            command.MemberId,
-            reservation.TotalAmount,
-            reservation.Date, //.ToDateTime(TimeOnly.MinValue), // Convertir DateOnly a DateTime
-            command.PaymentMethodId, //?? (long)PaymentMethodEnum.Efectivo, // Default a efectivo
-            command.ReferenceNumber,
-            command.DocumentTypeId,
-            reservation.ReceiptNumber, // Usar número de reserva como referencia
-            isPartial: false,
-            accountingEntryId: null, // Se asignará después
-            (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime(),
-            command.CreatedBy,
-            statusId: (long)StatusEnum.Completado
-        //sourceModuleId: (long)SourceModuleEnum.Reservaciones,
-        //sourceId: reservation.Id
-        );
-
-        await _paymentRepository.AddAsync(payment, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken); // Guardar para obtener ID
-
-        _logger.LogInformation("Pago {PaymentId} creado para reserva {ReservationId}", payment.Id, reservation.Id);
-
-        return payment;
-    }*/
+   
 
     private async Task<AccountingEntry> GenerateAccountingEntryForReservation(
         Reservation reservation,
@@ -129,16 +95,13 @@ public class ReservationBackgroundProcessor : IReservationBackgroundProcessor
         var entryNumber = await GenerateUniqueEntryNumber(command.CreatedBy!, cancellationToken);
 
         // Cargar SpaceRate con Space y MemberType
-        var spaceRateSpec = new SpaceRateWithSpaceAndMemberTypeSpec(reservation.SpaceRateId);
-        var spaceRate = await _spaceRateRepository.GetEntityWithSpec(spaceRateSpec, cancellationToken);
+        var space = await _spaceRepository.GetByIdAsync(reservation.SpaceId, cancellationToken);
 
-        var spaceName = spaceRate?.Space?.SpaceName ?? "Espacio";
-        //var memberTypeName = spaceRate?.MemberType?.TypeName ?? "Miembro";
 
         var accountingEntry = AccountingEntry.Create(
             entryNumber,
             reservation.Date, 
-            $"Ingreso por reserva - {spaceName} - {reservation.ReceiptNumber}",
+            $"Ingreso por reserva - {space!.SpaceName} - {reservation.ReceiptNumber}",
             (long)SourceModuleEnum.Reservaciones,
             reservation.Id,
             reservation.TotalAmount,
@@ -153,7 +116,7 @@ public class ReservationBackgroundProcessor : IReservationBackgroundProcessor
         await _unitOfWork.SaveChangesAsync(cancellationToken); // Guardar para obtener ID
 
         // Generar items del asiento contable
-        await GenerateAccountingEntryItemsForReservation(accountingEntry, reservation, spaceRate?.Space, command, cancellationToken);
+        await GenerateAccountingEntryItemsForReservation(accountingEntry, reservation, space, command, cancellationToken);
 
         return accountingEntry;
     }

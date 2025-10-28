@@ -3,12 +3,15 @@ using NexaSoft.Club.Application.Abstractions.Auth;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Features.Members.Commands.VerifyMemberPin;
 using NexaSoft.Club.Application.Features.Members.Services;
+using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.Members;
+using NexaSoft.Club.Domain.Masters.Users;
 
 namespace NexaSoft.Club.Application.Features.Members.Commands.RefreshMemberToken;
 
 public class RefreshMemberTokenCommandHandler(
     IMemberTokenService _memberTokenService,
+    //IGenericRepository<User> _userRepository,
     IMemberQrService _qrService,
     ILogger<RefreshMemberTokenCommandHandler> _logger
 ) : ICommandHandler<RefreshMemberTokenCommand, MemberLoginResponse>

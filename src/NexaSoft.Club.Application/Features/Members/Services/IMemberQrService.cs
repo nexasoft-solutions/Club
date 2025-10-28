@@ -2,9 +2,9 @@ namespace NexaSoft.Club.Application.Features.Members.Services;
 
 public interface IMemberQrService
 {
-    Task<QrData> GenerateOrGetMonthlyQr(long memberId, CancellationToken cancellationToken);
-    Task<bool> ValidateQr(string qrCode, long memberId, CancellationToken cancellationToken);
-    Task<string> GetCurrentQrCode(long memberId, CancellationToken cancellationToken); // Obtener QR actual del 
+    Task<QrData> GenerateOrGetMonthlyQr(long userId, CancellationToken cancellationToken);
+    Task<bool> ValidateQr(string qrCode, long userId, CancellationToken cancellationToken);
+    Task<string> GetCurrentQrCode(long userId, CancellationToken cancellationToken); // Obtener QR actual del 
 
 }
 

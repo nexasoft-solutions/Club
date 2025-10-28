@@ -3,6 +3,7 @@ using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Abstractions.Time;
 using NexaSoft.Club.Application.Features.Reservations.Background;
 using NexaSoft.Club.Domain.Abstractions;
+using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Features.Reservations;
 using NexaSoft.Club.Domain.Masters.Contadores;
 using NexaSoft.Club.Domain.Masters.DocumentTypes;
@@ -14,6 +15,7 @@ using static NexaSoft.Club.Domain.Shareds.Enums;
 namespace NexaSoft.Club.Application.Features.Reservations.Commands.CreateReservation;
 
 public class CreateReservationCommandHandler(
+    IGenericRepository<Member> _memberRepository,
     IGenericRepository<Reservation> _reservationRepository,
     IGenericRepository<SpaceRate> _spaceRateRepository,
     IGenericRepository<SpaceAvailability> _spaceAvailabilityRepository,
@@ -27,7 +29,7 @@ public class CreateReservationCommandHandler(
 {
     public async Task<Result<ReservationResponse>> Handle(CreateReservationCommand command, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Iniciando proceso de creación de Reservation para SpaceRateId: {SpaceRateId}", command.SpaceRateId);
+        _logger.LogInformation("Iniciando proceso de creación de Reservation para SpaceId: {SpaceId}", command.SpaceId);
 
         try
         {
@@ -68,7 +70,7 @@ public class CreateReservationCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex, "Error al crear Reservation para SpaceRateId: {SpaceRateId}", command.SpaceRateId);
+            _logger.LogError(ex, "Error al crear Reservation para SpaceId: {SpaceId}", command.SpaceId);
             return Result.Failure<ReservationResponse>(ReservationErrores.ErrorSave);
         }
     }
@@ -84,34 +86,41 @@ public class CreateReservationCommandHandler(
             reservation.StartTime,
             reservation.EndTime,
             StatusEnum.Iniciado.ToString(), // Estado inicial
-            "Pendiente", // Estado de pago
-            "Pendiente"  // Estado de asiento contable
+            StatusEnum.Pendiente.ToString()  // Estado de asiento contable
         );
     }
 
-    private async Task<Result<(SpaceRate SpaceRate, SpaceAvailability SpaceAvailability)>> ValidateReservation(
+    private async Task<Result<(SpaceRateResponse SpaceRate, SpaceAvailability SpaceAvailability)>> ValidateReservation(
         CreateReservationCommand command, CancellationToken cancellationToken)
     {
-        // Validar SpaceRate
-        var spaceRate = await _spaceRateRepository.GetByIdAsync(command.SpaceRateId, cancellationToken);
-        if (spaceRate is null || !spaceRate.IsActive || spaceRate.StateSpaceRate == (int)EstadosEnum.Eliminado)
-            return Result.Failure<(SpaceRate, SpaceAvailability)>(ReservationErrores.TarifaNoValida);
+        // Validar Space
+        var member = await _memberRepository.GetByIdAsync(command.MemberId, cancellationToken);
+        if (member is null)
+            return Result.Failure<(SpaceRateResponse, SpaceAvailability)>(ReservationErrores.NoEncontrado);
+
+        var spec = new SpaceRateSpecification(command.SpaceId, member.MemberTypeId);
+        var spaceRate = await _spaceRateRepository.GetEntityWithSpec(spec, cancellationToken);
+
+       
+        if (spaceRate is null || !spaceRate.IsActive)
+            return Result.Failure<(SpaceRateResponse , SpaceAvailability)>(ReservationErrores.TarifaNoValida);
 
         // Validar SpaceAvailability
-        var spec = new SpaceAvailabilitiesBySpaceSpec(command.SpaceAvailabilityId);
-        var spaceAvailability = await _spaceAvailabilityRepository.GetEntityWithSpec(spec, cancellationToken);
+        var specAva = new SpaceAvailabilitiesBySpaceSpec(command.SpaceAvailabilityId);
+        var spaceAvailability = await _spaceAvailabilityRepository.GetEntityWithSpec(specAva, cancellationToken);
+
 
         if (spaceAvailability is null || spaceAvailability.SpaceId != spaceRate.SpaceId)
-            return Result.Failure<(SpaceRate, SpaceAvailability)>(ReservationErrores.DisponibilidadNoValida);
+            return Result.Failure<(SpaceRateResponse, SpaceAvailability)>(ReservationErrores.DisponibilidadNoValida);
 
         // Validar que la fecha y horario coincidan con la disponibilidad
         if (!AreDatesCompatible(command, spaceAvailability))
-            return Result.Failure<(SpaceRate, SpaceAvailability)>(ReservationErrores.HorarioNoCompatible);
+            return Result.Failure<(SpaceRateResponse , SpaceAvailability)>(ReservationErrores.HorarioNoCompatible);
 
         // Validar que el horario no exceda la máxima reservación permitida
         var duration = CalculateDuration(command.StartTime, command.EndTime);
         if (spaceAvailability.Space != null && duration.TotalHours > spaceAvailability.Space.MaxReservationHours)
-            return Result.Failure<(SpaceRate, SpaceAvailability)>(ReservationErrores.TiempoExcedido);
+            return Result.Failure<(SpaceRateResponse , SpaceAvailability)>(ReservationErrores.TiempoExcedido);
 
         return Result.Success((spaceRate, spaceAvailability));
     }
@@ -141,14 +150,13 @@ public class CreateReservationCommandHandler(
     {
         try
         {
-            // Verificar si ya existe una reserva en el mismo espacio, fecha y horario
+            // Verificar si ya existe una reserva que se solape en el mismo espacio, fecha y estado activo
             var existingReservation = await _reservationRepository.ExistsAsync(
-                r => r.SpaceRate!.SpaceId == spaceId &&
+                r => r.SpaceId == spaceId &&
                      r.Date == command.Date &&
-                     r.StatusId != (int)StatusEnum.Cancelado &&
-                     ((r.StartTime <= command.StartTime && r.EndTime > command.StartTime) ||
-                      (r.StartTime < command.EndTime && r.EndTime >= command.EndTime) ||
-                      (r.StartTime >= command.StartTime && r.EndTime <= command.EndTime)),
+                     r.StatusId != (int)StatusEnum.Cancelado && // O puedes usar EstadosEnum si corresponde
+                     r.StartTime < command.EndTime &&
+                     command.StartTime < r.EndTime,
                 cancellationToken);
 
             return !existingReservation;
@@ -159,6 +167,7 @@ public class CreateReservationCommandHandler(
             return false;
         }
     }
+
 
     private async Task<Reservation> CreateReservationRecord(CreateReservationCommand command, decimal rate, CancellationToken cancellationToken)
     {
@@ -178,7 +187,7 @@ public class CreateReservationCommandHandler(
 
         var reservation = Reservation.Create(
             command.MemberId,
-            command.SpaceRateId,
+            command.SpaceId,
             command.SpaceAvailabilityId,
             command.Date,
             command.StartTime,
@@ -214,21 +223,6 @@ public class CreateReservationCommandHandler(
 
         return endTime - startTime;
     }
-
-    /*private async Task<string> GenerateUniqueReservationNumber(string createdBy, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-            var random = new Random().Next(1000, 9999);
-            return $"RES-{timestamp}-{random}";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al generar número de reserva único");
-            return $"RES-{DateTime.Now:yyyyMMddHHmmss}";
-        }
-    }*/
 
     private async Task<string> GenerateUniqueReceiptNumber(long DocumentTypeId, string createdBy, CancellationToken cancellationToken)
     {

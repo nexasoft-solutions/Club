@@ -5,8 +5,8 @@ using NexaSoft.Club.Domain.Features.AccountingEntries;
 using NexaSoft.Club.Domain.Masters.Statuses;
 using NexaSoft.Club.Domain.Masters.PaymentTypes;
 using NexaSoft.Club.Domain.Masters.DocumentTypes;
-using NexaSoft.Club.Domain.Masters.SpaceRates;
 using NexaSoft.Club.Domain.Masters.SpaceAvailabilities;
+using NexaSoft.Club.Domain.Masters.Spaces;
 
 namespace NexaSoft.Club.Domain.Features.Reservations;
 
@@ -14,8 +14,8 @@ public class Reservation : Entity
 {
     public long MemberId { get; private set; }
     public Member? Member { get; private set; }
-    public long SpaceRateId { get; private set; }
-    public SpaceRate? SpaceRate { get; private set; }
+    public long SpaceId { get; private set; }
+    public Space? Space { get; private set; }
 
     public long SpaceAvailabilityId { get; private set; }
     public SpaceAvailability? SpaceAvailability { get; private set; }
@@ -34,11 +34,13 @@ public class Reservation : Entity
     public long? AccountingEntryId { get; private set; }
     public AccountingEntry? AccountingEntry { get; private set; }
     public int StateReservation { get; private set; }
+    public int Year { get; private set; }
+    public int WeekNumber { get; private set; }
     private Reservation() { }
 
     private Reservation(
         long memberId,
-        long spaceRateId,
+        long spaceId,
         long spaceAvailabilityId,
         DateOnly date,
         TimeOnly startTime,
@@ -58,7 +60,7 @@ public class Reservation : Entity
     ) : base(createdAt, createdBy, updatedBy, deletedBy)
     {
         MemberId = memberId;
-        SpaceRateId = spaceRateId;
+        SpaceId = spaceId;
         SpaceAvailabilityId = spaceAvailabilityId;
         StartTime = startTime;
         Date = date;
@@ -79,7 +81,7 @@ public class Reservation : Entity
 
     public static Reservation Create(
         long memberId,
-        long spaceRateId,
+        long spaceId,
         long spaceAvailabilityId,
         DateOnly date,
         TimeOnly startTime,
@@ -92,13 +94,19 @@ public class Reservation : Entity
         decimal totalAmount,
         long? accountingEntryId,
         int stateReservation,
-        DateTime createdAd,
+        DateTime createdAt,
         string? createdBy
     )
     {
+        // Calcular año y número de semana basado en date
+        var dateTime = date.ToDateTime(new TimeOnly(0, 0));
+        var calendar = System.Globalization.CultureInfo.InvariantCulture.Calendar;
+        var weekNumber = calendar.GetWeekOfYear(dateTime, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        var year = dateTime.Year;
+
         var entity = new Reservation(
             memberId,
-            spaceRateId,
+            spaceId,
             spaceAvailabilityId,
             date,
             startTime,
@@ -111,9 +119,14 @@ public class Reservation : Entity
             totalAmount,
             accountingEntryId,
             stateReservation,
-            createdAd,
+            createdAt,
             createdBy
-        );
+        )
+        {
+            Year = year,
+            WeekNumber = weekNumber
+        };
+
         return entity;
     }
 

@@ -77,7 +77,8 @@ public class AccountingChartSpecification : BaseSpecification<AccountingChart, A
                x.CreatedAt,
                x.UpdatedAt,
                x.CreatedBy,
-               x.UpdatedBy
+               x.UpdatedBy,
+               null
          ));
     }
 }

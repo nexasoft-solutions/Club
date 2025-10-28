@@ -51,7 +51,7 @@ public class AccountingEntryItemConfiguration: IEntityTypeConfiguration<Accounti
         
         // Relaciones (FK)
         builder.HasOne(x => x.AccountingEntry)
-            .WithMany() // o .WithMany(a => a.Items) si tenés navegación inversa
+            .WithMany(x => x.AccountingDetails ) 
             .HasForeignKey(x => x.AccountingEntryId)
             .HasConstraintName("fk_accounting_entry_items_accounting_entries")
             .OnDelete(DeleteBehavior.Restrict); // O .Cascade si corresponde

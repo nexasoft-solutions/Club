@@ -20,7 +20,7 @@ public class SpacePhotoConfiguration : IEntityTypeConfiguration<SpacePhoto>
 
 
          builder.HasOne(x => x.Space)
-                .WithMany()
+                .WithMany(x => x.SpacePhotos)
                 .HasForeignKey(x => x.SpaceId)
                 .OnDelete(DeleteBehavior.Restrict);
 

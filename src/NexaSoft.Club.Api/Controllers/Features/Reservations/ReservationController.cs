@@ -8,6 +8,8 @@ using NexaSoft.Club.Application.Features.Reservations.Queries.GetReservations;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
+using NexaSoft.Club.Api.Controllers.Features.Reservations.Requests;
+using NexaSoft.Club.Application.Features.Reservations.Queries.ReservationByWeek;
 
 namespace NexaSoft.Club.Api.Controllers.Features.Reservations;
 
@@ -21,7 +23,7 @@ public class ReservationController(ISender _sender) : ControllerBase
     {
         var command = new CreateReservationCommand(
              request.MemberId,
-             request.SpaceRateId,
+             request.SpaceId,
              request.SpaceAvailabilityId,
              request.Date,
              request.StartTime,
@@ -77,5 +79,21 @@ public class ReservationController(ISender _sender) : ControllerBase
 
         return resultado.ToActionResult(this);
     }
+
+    [HttpGet("by-week")]
+    public async Task<IActionResult> GetReservationByWeek(
+        [FromQuery] GetReservationByWeekRequest request,
+        CancellationToken cancellationToken
+     )
+    {
+        var query = new GetReservationByWeekQuery(
+            request.Year,
+            request.WeekNumber,
+            request.SpaceId
+        );
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.ToActionResult(this);
+    }   
 
 }

@@ -2,6 +2,8 @@ using NexaSoft.Club.Domain.Abstractions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Domain.Masters.AccountingCharts;
 using NexaSoft.Club.Domain.Masters.SpaceTypes;
+using NexaSoft.Club.Domain.Masters.SpacePhotos;
+using NexaSoft.Club.Domain.Masters.SpaceAvailabilities;
 
 namespace NexaSoft.Club.Domain.Masters.Spaces;
 
@@ -20,18 +22,21 @@ public class Space : Entity
     public AccountingChart? IncomeAccount { get; private set; }
     public int StateSpace { get; private set; }
 
+    public ICollection<SpacePhoto> SpacePhotos { get; private set; } = new List<SpacePhoto>();
+    public ICollection<SpaceAvailability> SpaceAvailabilities { get; private set; } = new List<SpaceAvailability>();
+
     private Space() { }
 
     private Space(
-        string? spaceName, 
-        long spaceTypeId, 
-        int? capacity, 
-        string? description, 
-        decimal standardRate, 
-        bool requiresApproval, 
-        int maxReservationHours, 
-        long? incomeAccountId, 
-        int stateSpace, 
+        string? spaceName,
+        long spaceTypeId,
+        int? capacity,
+        string? description,
+        decimal standardRate,
+        bool requiresApproval,
+        int maxReservationHours,
+        long? incomeAccountId,
+        int stateSpace,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -54,15 +59,15 @@ public class Space : Entity
     }
 
     public static Space Create(
-        string? spaceName, 
-        long spaceTypeId, 
-        int? capacity, 
-        string? description, 
-        decimal standardRate, 
-        bool requiresApproval, 
-        int maxReservationHours, 
-        long? incomeAccountId, 
-        int stateSpace, 
+        string? spaceName,
+        long spaceTypeId,
+        int? capacity,
+        string? description,
+        decimal standardRate,
+        bool requiresApproval,
+        int maxReservationHours,
+        long? incomeAccountId,
+        int stateSpace,
         DateTime createdAd,
         string? createdBy
     )
@@ -85,14 +90,14 @@ public class Space : Entity
 
     public Result Update(
         long Id,
-        string? spaceName, 
-        long spaceTypeId, 
-        int? capacity, 
-        string? description, 
-        decimal standardRate, 
-        bool requiresApproval, 
-        int maxReservationHours, 
-        long? incomeAccountId, 
+        string? spaceName,
+        long spaceTypeId,
+        int? capacity,
+        string? description,
+        decimal standardRate,
+        bool requiresApproval,
+        int maxReservationHours,
+        long? incomeAccountId,
         DateTime utcNow,
         string? updatedBy
     )
@@ -112,7 +117,7 @@ public class Space : Entity
         return Result.Success();
     }
 
-    public Result Delete(DateTime utcNow,string deletedBy)
+    public Result Delete(DateTime utcNow, string deletedBy)
     {
         StateSpace = (int)EstadosEnum.Eliminado;
         DeletedAt = utcNow;

@@ -20,7 +20,7 @@ public class SpaceAvailabilityConfiguration : IEntityTypeConfiguration<SpaceAvai
 
 
          builder.HasOne(x => x.Space)
-                .WithMany()
+                .WithMany(x => x.SpaceAvailabilities)
                 .HasForeignKey(x => x.SpaceId)
                 .OnDelete(DeleteBehavior.Restrict);
 

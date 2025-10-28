@@ -15,5 +15,17 @@ public sealed record AccountingEntryResponse(
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,
-    string? UpdatedBy
+    string? UpdatedBy,
+    List<AccountingEntryItemResponse> AccountingDetails
 );
+
+public sealed record AccountingEntryItemResponse(
+    long Id,
+    decimal DebitAmount,
+    decimal CreditAmount,
+    string? Description,
+    string? AccountingChartName,
+    string? AccountingChartCode 
+
+);
+

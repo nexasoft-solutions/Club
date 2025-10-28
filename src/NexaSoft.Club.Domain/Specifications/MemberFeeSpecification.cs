@@ -31,8 +31,8 @@ public class MemberFeeSpecification : BaseSpecification<MemberFee, MemberFeeResp
                         break;
                     case "period":
                         AddCriteria(x => x.Period != null && x.Period.ToLower().Contains(specParams.Search.ToLower()));
-                        break;                   
-                     case "status":
+                        break;
+                    case "status":
                         if (long.TryParse(specParams.Search, out var searchNumberConfigId))
                             AddCriteria(x => x.StatusId == searchNumberConfigId);
                         break;
@@ -86,12 +86,11 @@ public class MemberFeeSpecification : BaseSpecification<MemberFee, MemberFeeResp
          ));
     }
 
-    public MemberFeeSpecification(long memberId, long statusId, string? sort = null) : base()
+    public MemberFeeSpecification(long memberId, IEnumerable<long> statusIds, string? sort = null) : base()
     {
         AddCriteria(x => x.MemberId == memberId);
-        AddCriteria(x => x.StatusId == statusId);
+        AddCriteria(x => statusIds.Contains(x.StatusId));
 
-        // Aplicar ordenamiento si se especifica
         switch (sort?.ToLower())
         {
             case "memberidasc":
@@ -107,11 +106,10 @@ public class MemberFeeSpecification : BaseSpecification<MemberFee, MemberFeeResp
                 AddOrderByDescending(x => x.DueDate);
                 break;
             default:
-                AddOrderBy(x => x.MemberId!); // Orden por defecto
+                AddOrderBy(x => x.MemberId!);
                 break;
         }
 
-        // Proyección al DTO MemberFeeResponse
         AddSelect(x => new MemberFeeResponse(
             x.Id,
             x.MemberId,
@@ -133,5 +131,6 @@ public class MemberFeeSpecification : BaseSpecification<MemberFee, MemberFeeResp
             x.UpdatedBy
         ));
     }
+
 
 }

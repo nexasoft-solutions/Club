@@ -19,6 +19,7 @@ public class UserQrService(
     {
         try
         {
+            
             var user = await _userRepository.GetByIdAsync(userId,cancellationToken);
             if (user == null)
                 throw new Exception($"User {userId} no encontrado");

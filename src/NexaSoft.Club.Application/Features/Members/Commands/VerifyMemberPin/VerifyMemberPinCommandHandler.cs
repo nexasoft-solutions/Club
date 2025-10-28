@@ -6,7 +6,6 @@ using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Masters.Users;
 using NexaSoft.Club.Domain.Specifications;
-using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Application.Features.Members.Commands.VerifyMemberPin;
 
@@ -60,7 +59,7 @@ public class VerifyMemberPinCommandHandler(
             await _pinRepository.UpdateAsync(validPin);
 
             // 4. Obtener QR (usa tu sistema existente a través de IMemberQrService)
-            var qrData = await _qrService.GenerateOrGetMonthlyQr(member.Id, cancellationToken);
+            var qrData = await _qrService.GenerateOrGetMonthlyQr(user.Id, cancellationToken);
 
             // 5. Generar token JWT
             var tokenResult = await _memberTokenService.GenerateMemberToken(member, qrData, cancellationToken);

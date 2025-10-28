@@ -33,6 +33,7 @@ public class AccountingEntryConfiguration : IEntityTypeConfiguration<AccountingE
             .HasForeignKey(x => x.SourceModuleId)
             .OnDelete(DeleteBehavior.Restrict);
 
+       
         builder.Property(x => x.SourceId)
             .IsRequired(false);
 

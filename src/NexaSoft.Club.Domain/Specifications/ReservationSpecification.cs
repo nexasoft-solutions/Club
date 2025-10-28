@@ -27,7 +27,7 @@ public class ReservationSpecification : BaseSpecification<Reservation, Reservati
                     break;
                 case "spaceid":
                     if (long.TryParse(specParams.Search, out var searchNumberSpace))
-                        AddCriteria(x => x.SpaceRateId == searchNumberSpace);
+                        AddCriteria(x => x.SpaceId == searchNumberSpace);
                     break;               
                 case "status":
                     if (long.TryParse(specParams.Search, out var searchNumberStatus))
@@ -66,8 +66,8 @@ public class ReservationSpecification : BaseSpecification<Reservation, Reservati
              x.MemberId,
              x.Member!.FirstName! + ", " + x.Member!.LastName!,
              x.Member!.MemberType!.TypeName!,
-             x.SpaceRateId,
-             x.SpaceRate!.Space!.SpaceName,
+             x.SpaceId,
+             x.Space!.SpaceName,
              x.SpaceAvailabilityId,
              x.Date,
              x.StartTime,

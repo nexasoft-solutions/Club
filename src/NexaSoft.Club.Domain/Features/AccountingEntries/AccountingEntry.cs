@@ -18,6 +18,11 @@ public class AccountingEntry : Entity
     public string? AdjustmentReason { get; private set; }
     public int StateAccountingEntry { get; private set; }
 
+     public ICollection<AccountingEntryItem> AccountingDetails
+     { get; private set; } = new List<AccountingEntryItem>();
+
+
+
     private AccountingEntry() { }
 
     private AccountingEntry(

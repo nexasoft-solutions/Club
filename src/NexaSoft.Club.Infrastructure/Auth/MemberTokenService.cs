@@ -14,6 +14,7 @@ using NexaSoft.Club.Domain.Auth;
 using NexaSoft.Club.Domain.Features.Members;
 using NexaSoft.Club.Domain.Masters.Users;
 using NexaSoft.Club.Infrastructure.ConfigSettings;
+using static NexaSoft.Club.Domain.Shareds.Enums;
 using BC = BCrypt.Net.BCrypt;
 
 namespace NexaSoft.Club.Infrastructure.Auth;
@@ -108,7 +109,7 @@ public class MemberTokenService : IMemberTokenService
             // Guardar refresh token
             var refreshToken = MemberRefreshToken.Create(
                 refreshTokenStr,
-                user.Id,
+                user.MemberId ?? 0,
                 _dateTimeProvider.CurrentTime.AddHours(8),
                 user.CreatedBy!
             );
@@ -160,6 +161,8 @@ public class MemberTokenService : IMemberTokenService
 
             // Invalidar refresh token anterior
             tokenEntity.Value.Revoke();
+
+            
 
             // Generar nuevo QR
             var qrData = await _qrService.GenerateOrGetMonthlyQr(member.Id, cancellationToken);
@@ -227,7 +230,7 @@ public class MemberTokenService : IMemberTokenService
             new Claim("qrImageUrl", qrData.QrImageUrl ?? ""),
             new Claim("qrExpiration", qrData.ExpirationDate.ToString("O")),
             new Claim("memberType", member.MemberType?.TypeName ?? "Regular"),
-            new Claim("membershipStatus", member.StatusId.ToString()!)
+            new Claim("membershipStatus", ((StatusEnum)member.StatusId!).ToString())
         };
 
         // Si tienes roles/permissions para members en el futuro, los agregas aquí
@@ -249,6 +252,7 @@ public class MemberTokenService : IMemberTokenService
             new Claim("FirstName", user.FirstName!),
             new Claim("FullName", $"{user.FullName}"),
             new Claim("userType", "User"),
+            new Claim("userName", user.UserName!),
             new Claim("memberId", user.Member!.Id.ToString()),
             new Claim("dni", user.Dni!),
             new Claim("email", user.Email ?? ""),

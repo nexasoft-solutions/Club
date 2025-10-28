@@ -19,15 +19,16 @@ public class MinioStorageService : IFileStorageService
 
 
         //_bucketName = config["Storage:Bucket"] ?? throw new ArgumentNullException("Bucket no configurado");
+        //Console.WriteLine($"Url=>: {config.ServiceUrl}");
 
         _s3Client = new AmazonS3Client(
             config.AccessKey,
             config.SecretKey,
             new AmazonS3Config
             {
-                ServiceURL = config.ServiceUrl, 
+                ServiceURL = config.ServiceUrl,
                 ForcePathStyle = true
-            }
+            }            
         );
     }
 
@@ -41,6 +42,19 @@ public class MinioStorageService : IFileStorageService
         };
 
         var url = _s3Client.GetPreSignedURL(request);
+        //Cambiar para prod comentar esta linea
+        url = url.Replace("https://", "http://");
+
+
+        // Reemplazar localhost con IP local detectada dinámicamente
+        /*if (url.Contains("localhost"))
+        {
+            var localIp = GetLocalIPAddress();
+            url = url.Replace("https://localhost", "http://"+localIp);
+        }*/
+
+        
+
         return Task.FromResult(url);
     }
 
@@ -59,7 +73,8 @@ public class MinioStorageService : IFileStorageService
         if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             throw new Exception("Error al subir el archivo");
 
-        return $"{_bucketName}/{fileName}";
+        //return $"{_bucketName}/{fileName}";
+        return fileName;
     }
 
     public async Task DeleteAsync(string fileName, CancellationToken cancellationToken)
@@ -111,4 +126,19 @@ public class MinioStorageService : IFileStorageService
             return false;
         }
     }
+
+    // solo para desarrollo local
+    /*private string GetLocalIPAddress()
+    {
+        var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork && !System.Net.IPAddress.IsLoopback(ip))
+            {
+                return ip.ToString(); // Ej: 192.168.1.100
+            }
+        }
+
+        throw new Exception("No se pudo encontrar una IP local válida.");
+    }*/
 }

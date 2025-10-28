@@ -6,7 +6,7 @@ namespace NexaSoft.Club.Application.Features.Members.Commands.SetMemberPassword;
 
 
 public record class SetMemberPasswordCommand(
-    long UserId,
+    long MemberId,
     string Password,
     string? BiometricToken, // Para guardar huella/face ID
     string DeviceId

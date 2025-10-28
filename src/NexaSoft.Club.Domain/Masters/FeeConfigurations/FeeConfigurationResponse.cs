@@ -12,6 +12,7 @@ public sealed record FeeConfigurationResponse(
     bool AppliesToFamily,
     long? IncomeAccountId,
     string? AccountName,
+    string? AccountCode,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,

@@ -14,5 +14,6 @@ public sealed record AccountingChartResponse(
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,
-    string? UpdatedBy
+    string? UpdatedBy,
+    List<AccountingChartResponse>? Children = null 
 );

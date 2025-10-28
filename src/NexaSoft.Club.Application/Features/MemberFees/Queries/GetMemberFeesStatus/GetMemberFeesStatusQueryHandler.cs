@@ -13,7 +13,7 @@ public class GetMemberFeesStatusQueryHandler(
     {
         try
         {
-            var spec = new MemberFeeSpecification(query.MemberId, query.StatusId, query.OrderBy);
+            var spec = new MemberFeeSpecification(query.MemberId, query.StatusIds, query.OrderBy);
             var items = await _repository.ListAsync<MemberFeeResponse>(spec,cancellationToken);
 
             return Result.Success(items.ToList());

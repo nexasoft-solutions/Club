@@ -8,6 +8,7 @@ using NexaSoft.Club.Application.Masters.AccountingCharts.Queries.GetAccountingCh
 using NexaSoft.Club.Application.Masters.AccountingCharts.Queries.GetAccountingCharts;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using NexaSoft.Club.Application.Masters.AccountingCharts.Queries.GetTreeAccountingChart;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.AccountingCharts;
 
@@ -85,6 +86,17 @@ public class AccountingChartController(ISender _sender) : ControllerBase
      )
     {
         var query = new GetAccountingChartQuery(id);
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.ToActionResult(this);
+    }
+
+    [HttpGet("tree")]
+    public async Task<IActionResult> GetTreeAccountingChart(
+        CancellationToken cancellationToken
+     )
+    {
+        var query = new GetTreeAccountingChartQuery();
         var resultado = await _sender.Send(query, cancellationToken);
 
         return resultado.ToActionResult(this);

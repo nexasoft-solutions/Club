@@ -24,22 +24,22 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-         builder.HasOne(x => x.Member)
-                .WithMany()
-                .HasForeignKey(x => x.MemberId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Member)
+               .WithMany()
+               .HasForeignKey(x => x.MemberId)
+               .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(x => x.SpaceRateId)
+        builder.Property(x => x.SpaceId)
             .IsRequired();
 
-          builder.Property(x => x.SpaceAvailabilityId)
-            .IsRequired();
+        builder.Property(x => x.SpaceAvailabilityId)
+          .IsRequired();
 
 
-         builder.HasOne(x => x.SpaceRate)
-                .WithMany()
-                .HasForeignKey(x => x.SpaceRateId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Space)
+               .WithMany()
+               .HasForeignKey(x => x.SpaceId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.StartTime)
             .IsRequired();
@@ -55,6 +55,12 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
 
         builder.Property(x => x.AccountingEntryId)
             .IsRequired(false);
+
+        builder.Property(x => x.WeekNumber)
+            .IsRequired();
+
+        builder.Property(x => x.Year)
+          .IsRequired();
 
         builder.HasOne(x => x.Status)
                .WithMany()
@@ -105,11 +111,17 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.HasIndex(x => x.MemberId)
             .HasDatabaseName("ix_reservation_memberid");
 
-        builder.HasIndex(x => x.SpaceRateId)
-            .HasDatabaseName("ix_reservation_spacerateid");
+        builder.HasIndex(x => x.SpaceId)
+            .HasDatabaseName("ix_reservation_spaceid");
 
         builder.HasIndex(x => x.StartTime)
             .HasDatabaseName("ix_reservation_starttime");
+
+        builder.HasIndex(x => new { x.Year, x.WeekNumber, x.SpaceId })
+            .HasDatabaseName("ix_reservation_year_weeknumber_spaceid");
+
+        builder.HasIndex(x => x.Date)
+            .HasDatabaseName("ix_reservation_date");
 
         builder.HasIndex(x => x.StatusId)
             .HasDatabaseName("ix_reservation_status");

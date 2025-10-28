@@ -1,0 +1,30 @@
+namespace NexaSoft.Club.Domain.HumanResources.EmployeesInfo;
+
+public sealed record EmployeeInfoResponse(
+    long Id,
+    string? EmployeeCode,
+    long? UserId,
+    string? UserName,
+    long? PositionId,
+    string? PositionCode,
+    long? EmployeeTypeId,
+    string? EmployeeTypeCode,
+    long? DepartmentId,
+    string? DepartamentCode,
+    DateOnly HireDate,
+    decimal BaseSalary,
+    long? PaymentMethodId,
+    string? PaymentMethodCode,
+    long? BankId,
+    string? BankCode,
+    long? BankAccountTypeId,
+    string? BankAccountCode,
+    long? CurrencyId,
+    string? CurrencyCode,
+    string? BankAccountNumber,
+    string? CciNumber,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt,
+    string? CreatedBy,
+    string? UpdatedBy
+);

@@ -54,5 +54,16 @@ public class ReservationErrores
         "El espacio no está disponible en el horario solicitado");
     public static readonly Error TiempoExcedido = new(
         "Reservation.TiempoExcedido",
-        "El tiempo de reserva excede el máximo permitido");
+        "El tiempo de reserva excede el máximo permitido"
+    );
+
+    public static readonly Error ErrorConsultaReservaPorFecha = new(
+        "Reservation.ErrorConsultaReservaPorFecha",
+        "Error al consultar reservas por fecha"
+    );
+
+    public static readonly Error NoExisteReservaEnlaSemana = new(
+        "Reservation.NoExisteReservaEnlaSemana",
+        "No existe reservas en la semana solicitada"
+    );
 }

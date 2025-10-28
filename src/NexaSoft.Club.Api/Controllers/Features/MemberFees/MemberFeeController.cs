@@ -98,7 +98,7 @@ public class MemberFeeController(ISender _sender) : ControllerBase
     {
         var query = new GetMemberFeesStatusQuery(
             request.MemberId,
-            request.StatusId,
+            request.StatusIds,
             request.OrderBy
         );
         var resultado = await _sender.Send(query, cancellationToken);

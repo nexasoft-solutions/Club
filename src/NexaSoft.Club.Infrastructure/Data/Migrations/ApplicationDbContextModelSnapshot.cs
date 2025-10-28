@@ -1110,7 +1110,7 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasDatabaseName("ix_payment_memberid");
 
                     b.HasIndex("PaymentDate")
-                        .HasDatabaseName("ix_payment_paymentdate");
+                        .HasDatabaseName("ix_payment_date");
 
                     b.HasIndex("PaymentMethodId")
                         .HasDatabaseName("ix_payment_paymentmethod");
@@ -1271,9 +1271,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("space_availability_id");
 
-                    b.Property<long>("SpaceRateId")
+                    b.Property<long>("SpaceId")
                         .HasColumnType("bigint")
-                        .HasColumnName("space_rate_id");
+                        .HasColumnName("space_id");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time without time zone")
@@ -1300,11 +1300,22 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("updated_by");
 
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("week_number");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer")
+                        .HasColumnName("year");
+
                     b.HasKey("Id")
                         .HasName("pk_reservations");
 
                     b.HasIndex("AccountingEntryId")
                         .HasDatabaseName("ix_reservation_accountingentryid");
+
+                    b.HasIndex("Date")
+                        .HasDatabaseName("ix_reservation_date");
 
                     b.HasIndex("DocumentTypeId")
                         .HasDatabaseName("ix_reservations_document_type_id");
@@ -1318,8 +1329,8 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("SpaceAvailabilityId")
                         .HasDatabaseName("ix_reservations_space_availability_id");
 
-                    b.HasIndex("SpaceRateId")
-                        .HasDatabaseName("ix_reservation_spacerateid");
+                    b.HasIndex("SpaceId")
+                        .HasDatabaseName("ix_reservation_spaceid");
 
                     b.HasIndex("StartTime")
                         .HasDatabaseName("ix_reservation_starttime");
@@ -1327,7 +1338,1304 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.HasIndex("StatusId")
                         .HasDatabaseName("ix_reservation_status");
 
+                    b.HasIndex("Year", "WeekNumber", "SpaceId")
+                        .HasDatabaseName("ix_reservation_year_weeknumber_spaceid");
+
                     b.ToTable("reservations", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.AttendanceStatusTypes.AttendanceStatusType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<bool?>("IsPaid")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_paid");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateAttendanceStatusType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_attendance_status_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_attendance_status_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_attendancestatustype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_attendancestatustype_name");
+
+                    b.ToTable("attendance_status_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.BankAccountTypes.BankAccountType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateBankAccountType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_bank_account_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_bank_account_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_bankaccounttype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_bankaccounttype_name");
+
+                    b.ToTable("bank_account_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.Banks.Bank", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("phone");
+
+                    b.Property<int>("StateBank")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_bank");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("WebSite")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("web_site");
+
+                    b.HasKey("Id")
+                        .HasName("pk_banks");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_bank_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_bank_name");
+
+                    b.ToTable("banks", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.ConceptApplicationTypes.ConceptApplicationType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateConceptApplicationType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_concept_application_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_concept_application_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_conceptapplicationtype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_conceptapplicationtype_name");
+
+                    b.ToTable("concept_application_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.ConceptCalculationTypes.ConceptCalculationType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateConceptCalculationType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_concept_calculation_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_concept_calculation_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_conceptcalculationtype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_conceptcalculationtype_name");
+
+                    b.ToTable("concept_calculation_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.ContractTypes.ContractType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateContractType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_contract_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_contract_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_contracttype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_contracttype_name");
+
+                    b.ToTable("contract_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.CostCenterTypes.CostCenterType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateCostCenterType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_cost_center_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cost_center_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_costcentertype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_costcentertype_name");
+
+                    b.ToTable("cost_center_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.CostCenters.CostCenter", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("Budget")
+                        .HasColumnType("numeric")
+                        .HasColumnName("budget");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<long?>("CostCenterTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("cost_center_type_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date")
+                        .HasColumnName("end_date");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<long?>("ParentCostCenterId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("parent_cost_center_id");
+
+                    b.Property<long?>("ResponsibleId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("responsible_id");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("start_date");
+
+                    b.Property<int>("StateCostCenter")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_cost_center");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cost_centers");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_costcenter_code");
+
+                    b.HasIndex("CostCenterTypeId")
+                        .HasDatabaseName("ix_costcenter_costcentertypeid");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_costcenter_name");
+
+                    b.HasIndex("ParentCostCenterId")
+                        .HasDatabaseName("ix_costcenter_parentcostcenterid");
+
+                    b.HasIndex("ResponsibleId")
+                        .HasDatabaseName("ix_costcenter_responsibleid");
+
+                    b.ToTable("cost_centers", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.Currencies.Currency", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateCurrency")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_currency");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_currencies");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_currency_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_currency_name");
+
+                    b.ToTable("currencies", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.Departments.Department", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<long?>("CostCenterId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("cost_center_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("location");
+
+                    b.Property<long?>("ManagerId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("manager_id");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<long?>("ParentDepartmentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("parent_department_id");
+
+                    b.Property<string>("PhoneExtension")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("phone_extension");
+
+                    b.Property<int>("StateDepartment")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_department");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_departments");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_department_code");
+
+                    b.HasIndex("CostCenterId")
+                        .HasDatabaseName("ix_department_costcenterid");
+
+                    b.HasIndex("ManagerId")
+                        .HasDatabaseName("ix_department_managerid");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_department_name");
+
+                    b.HasIndex("ParentDepartmentId")
+                        .HasDatabaseName("ix_department_parentdepartmentid");
+
+                    b.ToTable("departments", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.EmployeeTypes.EmployeeType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("BaseSalary")
+                        .HasColumnType("numeric")
+                        .HasColumnName("base_salary");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateEmployeeType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_employee_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employee_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_employeetype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_employeetype_name");
+
+                    b.ToTable("employee_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.EmployeesInfo.EmployeeInfo", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("BankAccountNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("bank_account_number");
+
+                    b.Property<long?>("BankAccountTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("bank_account_type_id");
+
+                    b.Property<long?>("BankId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("bank_id");
+
+                    b.Property<decimal>("BaseSalary")
+                        .HasColumnType("numeric")
+                        .HasColumnName("base_salary");
+
+                    b.Property<string>("Cci_Number")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("cci_number");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<long?>("CurrencyId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("currency_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<long?>("DepartmentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("department_id");
+
+                    b.Property<string>("EmployeeCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("employee_code");
+
+                    b.Property<long?>("EmployeeTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("employee_type_id");
+
+                    b.Property<DateOnly>("HireDate")
+                        .HasColumnType("date")
+                        .HasColumnName("hire_date");
+
+                    b.Property<long?>("PaymentMethodId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("payment_method_id");
+
+                    b.Property<long?>("PositionId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("position_id");
+
+                    b.Property<int>("StateEmployeeInfo")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_employee_info");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<long?>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employees_info");
+
+                    b.HasIndex("BankAccountTypeId")
+                        .HasDatabaseName("ix_employeeinfo_bankaccounttypeid");
+
+                    b.HasIndex("BankId")
+                        .HasDatabaseName("ix_employeeinfo_bankid");
+
+                    b.HasIndex("CurrencyId")
+                        .HasDatabaseName("ix_employeeinfo_currencyid");
+
+                    b.HasIndex("DepartmentId")
+                        .HasDatabaseName("ix_employeeinfo_departmentid");
+
+                    b.HasIndex("EmployeeCode")
+                        .HasDatabaseName("ix_employeeinfo_employeecode");
+
+                    b.HasIndex("EmployeeTypeId")
+                        .HasDatabaseName("ix_employeeinfo_employeetypeid");
+
+                    b.HasIndex("PaymentMethodId")
+                        .HasDatabaseName("ix_employeeinfo_paymentmethodid");
+
+                    b.HasIndex("PositionId")
+                        .HasDatabaseName("ix_employeeinfo_positionid");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_employeeinfo_userid");
+
+                    b.ToTable("employees_info", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.PayPeriodTypes.PayPeriodType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int?>("Days")
+                        .HasColumnType("integer")
+                        .HasColumnName("days");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StatePayPeriodType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_pay_period_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_pay_period_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_payperiodtype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_payperiodtype_name");
+
+                    b.ToTable("pay_period_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.PaymentMethodTypes.PaymentMethodType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StatePaymentMethodType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_payment_method_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_payment_method_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_paymentmethodtype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_paymentmethodtype_name");
+
+                    b.ToTable("payment_method_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.PayrollStatusTypes.PayrollStatusType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StatePayrollStatusType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_payroll_status_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_payrolls_tatus_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_payrollstatustype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_payrollstatustype_name");
+
+                    b.ToTable("payrolls_tatus_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.Positions.Position", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("BaseSalary")
+                        .HasColumnType("numeric")
+                        .HasColumnName("base_salary");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<long?>("DepartmentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("department_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<long?>("EmployeeTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("employee_type_id");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StatePosition")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_position");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_positions");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_position_code");
+
+                    b.HasIndex("DepartmentId")
+                        .HasDatabaseName("ix_position_departmentid");
+
+                    b.HasIndex("EmployeeTypeId")
+                        .HasDatabaseName("ix_position_employeetypeid");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_position_name");
+
+                    b.ToTable("positions", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.TimeRequestTypes.TimeRequestType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StateTimeRequestType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_time_request_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_time_request_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_timerequesttype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_timerequesttype_name");
+
+                    b.ToTable("time_request_types", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.AccountTypes.AccountType", b =>
@@ -3136,7 +4444,7 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasConstraintName("fk_accounting_entry_items_accounting_charts");
 
                     b.HasOne("NexaSoft.Club.Domain.Features.AccountingEntries.AccountingEntry", "AccountingEntry")
-                        .WithMany()
+                        .WithMany("AccountingDetails")
                         .HasForeignKey("AccountingEntryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
@@ -3425,12 +4733,12 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_reservations_space_availability_space_availability_id");
 
-                    b.HasOne("NexaSoft.Club.Domain.Masters.SpaceRates.SpaceRate", "SpaceRate")
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Spaces.Space", "Space")
                         .WithMany()
-                        .HasForeignKey("SpaceRateId")
+                        .HasForeignKey("SpaceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_reservations_space_rate_space_rate_id");
+                        .HasConstraintName("fk_reservations_space_space_id");
 
                     b.HasOne("NexaSoft.Club.Domain.Masters.Statuses.Status", "Status")
                         .WithMany()
@@ -3446,11 +4754,151 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
                     b.Navigation("PaymentType");
 
+                    b.Navigation("Space");
+
                     b.Navigation("SpaceAvailability");
 
-                    b.Navigation("SpaceRate");
-
                     b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.CostCenters.CostCenter", b =>
+                {
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.CostCenterTypes.CostCenterType", "CostCenterType")
+                        .WithMany()
+                        .HasForeignKey("CostCenterTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_cost_centers_cost_center_type_cost_center_type_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.CostCenters.CostCenter", "ParentCostCenter")
+                        .WithMany()
+                        .HasForeignKey("ParentCostCenterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_cost_centers_cost_centers_parent_cost_center_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.EmployeesInfo.EmployeeInfo", "EmployeeInfo")
+                        .WithMany()
+                        .HasForeignKey("ResponsibleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_cost_centers_employee_info_responsible_id");
+
+                    b.Navigation("CostCenterType");
+
+                    b.Navigation("EmployeeInfo");
+
+                    b.Navigation("ParentCostCenter");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.Departments.Department", b =>
+                {
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.CostCenters.CostCenter", "CostCenter")
+                        .WithMany()
+                        .HasForeignKey("CostCenterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_departments_cost_centers_cost_center_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.EmployeesInfo.EmployeeInfo", "EmployeeInfo")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_departments_employee_info_manager_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.Departments.Department", "ParentDepartment")
+                        .WithMany()
+                        .HasForeignKey("ParentDepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_departments_departments_parent_department_id");
+
+                    b.Navigation("CostCenter");
+
+                    b.Navigation("EmployeeInfo");
+
+                    b.Navigation("ParentDepartment");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.EmployeesInfo.EmployeeInfo", b =>
+                {
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.BankAccountTypes.BankAccountType", "BankAccountType")
+                        .WithMany()
+                        .HasForeignKey("BankAccountTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_employees_info_bank_account_types_bank_account_type_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.Banks.Bank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("BankId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_employees_info_banks_bank_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.Currencies.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_employees_info_currencies_currency_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.Departments.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_employees_info_departments_department_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.EmployeeTypes.EmployeeType", "EmployeeType")
+                        .WithMany()
+                        .HasForeignKey("EmployeeTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_employees_info_employee_type_employee_type_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.PaymentMethodTypes.PaymentMethodType", "PaymentMethodType")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_employees_info_payment_method_type_payment_method_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.Positions.Position", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_employees_info_position_position_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_employees_info_user_user_id");
+
+                    b.Navigation("Bank");
+
+                    b.Navigation("BankAccountType");
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("EmployeeType");
+
+                    b.Navigation("PaymentMethodType");
+
+                    b.Navigation("Position");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.Positions.Position", b =>
+                {
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.Departments.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_positions_departments_department_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.EmployeeTypes.EmployeeType", "EmployeeType")
+                        .WithMany()
+                        .HasForeignKey("EmployeeTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_positions_employee_types_employee_type_id");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("EmployeeType");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.AccountingCharts.AccountingChart", b =>
@@ -3538,7 +4986,7 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpaceAvailabilities.SpaceAvailability", b =>
                 {
                     b.HasOne("NexaSoft.Club.Domain.Masters.Spaces.Space", "Space")
-                        .WithMany()
+                        .WithMany("SpaceAvailabilities")
                         .HasForeignKey("SpaceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
@@ -3550,7 +4998,7 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpacePhotos.SpacePhoto", b =>
                 {
                     b.HasOne("NexaSoft.Club.Domain.Masters.Spaces.Space", "Space")
-                        .WithMany()
+                        .WithMany("SpacePhotos")
                         .HasForeignKey("SpaceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
@@ -3653,6 +5101,11 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("NexaSoft.Club.Domain.Features.AccountingEntries.AccountingEntry", b =>
+                {
+                    b.Navigation("AccountingDetails");
+                });
+
             modelBuilder.Entity("NexaSoft.Club.Domain.Features.Payments.Payment", b =>
                 {
                     b.Navigation("PaymentItems");
@@ -3668,6 +5121,13 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Permissions.Permission", b =>
                 {
                     b.Navigation("_rolePermissions");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Spaces.Space", b =>
+                {
+                    b.Navigation("SpaceAvailabilities");
+
+                    b.Navigation("SpacePhotos");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Users.User", b =>

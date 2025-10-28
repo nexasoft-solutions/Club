@@ -58,7 +58,7 @@ public class InitMemberRegistrationCommandHandler(
             
 
             //activar para envio de correos
-            /*var emailMessage = new EmailMessage
+            var emailMessage = new EmailMessage
             {
                 To = member.Email!,
                 ToName = member.FirstName + " " + member.LastName,
@@ -84,7 +84,7 @@ public class InitMemberRegistrationCommandHandler(
                 //CC = ccList//new List<string> { "aldoroblesarana@gmail.com" }
             };
 
-            await _emailService.SendAsync(emailMessage);*/
+            await _emailService.SendAsync(emailMessage);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

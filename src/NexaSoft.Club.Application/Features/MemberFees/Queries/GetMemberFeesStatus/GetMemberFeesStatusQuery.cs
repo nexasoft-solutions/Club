@@ -6,6 +6,6 @@ namespace NexaSoft.Club.Application.Features.MemberFees.Queries.GetMemberFeesSta
 public record class GetMemberFeesStatusQuery
 (
     long MemberId,
-    long StatusId,
+    IEnumerable<long> StatusIds,
     string OrderBy = "DueDate"
 ): IQuery<List<MemberFeeResponse>>;

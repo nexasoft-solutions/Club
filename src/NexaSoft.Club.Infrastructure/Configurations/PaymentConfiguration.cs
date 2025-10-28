@@ -24,7 +24,7 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
                .HasForeignKey(x => x.MemberId)
                .OnDelete(DeleteBehavior.Restrict);
 
-    
+
         builder.Property(x => x.TotalAmount)
             .IsRequired();
 
@@ -45,8 +45,8 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(x => x.IsPartial)
             .IsRequired();
 
-         builder.Property(x => x.StatusId)
-            .IsRequired();
+        builder.Property(x => x.StatusId)
+           .IsRequired();
 
         builder.Property(x => x.AccountingEntryId)
             .IsRequired(false);
@@ -88,8 +88,8 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasMaxLength(40)
             .IsRequired(false);
 
-         builder.HasIndex(x => x.MemberId)
-            .HasDatabaseName("ix_payment_memberid");
+        builder.HasIndex(x => x.MemberId)
+           .HasDatabaseName("ix_payment_memberid");
 
         builder.HasIndex(x => x.PaymentDate)
             .HasDatabaseName("ix_payment_paymentdate");
@@ -101,12 +101,15 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasDatabaseName("ix_payment_receiptnumber")
             .IsUnique(); // Número de recibo único
 
+        builder.HasIndex(x => x.PaymentDate)
+            .HasDatabaseName("ix_payment_date");
+
         builder.HasIndex(x => x.AccountingEntryId)
             .HasDatabaseName("ix_payment_accountingentryid");
 
         builder.HasIndex(x => new { x.MemberId, x.PaymentDate })
             .HasDatabaseName("idx_payments_member_date");
 
-   
+
     }
 }

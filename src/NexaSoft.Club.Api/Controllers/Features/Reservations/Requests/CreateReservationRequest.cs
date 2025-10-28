@@ -4,7 +4,7 @@ namespace NexaSoft.Club.Api.Controllers.Features.Reservations.Request;
 
 public sealed record CreateReservationRequest(
     long MemberId,
-    long SpaceRateId,
+    long SpaceId,
     long SpaceAvailabilityId,
     DateOnly Date,
     TimeOnly StartTime,

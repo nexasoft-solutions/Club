@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Masters.Users;
+using NexaSoft.Club.Domain.Specifications;
 using BC = BCrypt.Net.BCrypt;
 
 namespace NexaSoft.Club.Application.Features.Members.Commands.SetMemberPassword;
@@ -17,7 +18,12 @@ public class SetMemberPasswordCommandHandler(
         SetMemberPasswordCommand command,
         CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(command.UserId, cancellationToken);
+        var user = await _userRepository.GetEntityWithSpec(
+             new UserByMemberIdSpec(command.MemberId),
+             cancellationToken);
+
+
+        //var user = await _userRepository.GetByIdAsync(command.MemberId, cancellationToken);
 
         if (user == null)
             return Result.Failure<bool>(UserErrores.NoEncontrado);
@@ -43,7 +49,7 @@ public class SetMemberPasswordCommandHandler(
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            _logger.LogInformation("Password configurado para user {UserId}", command.UserId);
+            _logger.LogInformation("Password configurado para user {UserId}", user.Id);
 
             return Result.Success(true);
         }

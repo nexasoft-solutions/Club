@@ -57,7 +57,7 @@ public class MemberPasswordLoginCommandHandler(
                 return Result.Failure<MemberLoginResponse>(MemberErrores.PasswordInvalido);
 
             // 3. Generar QR
-            var qrData = await _qrService.GenerateOrGetMonthlyQr(user.MemberId ?? 0, cancellationToken);
+            var qrData = await _qrService.GenerateOrGetMonthlyQr(user.Id, cancellationToken);
 
             // 4. Generar token
             var tokenResult = await _memberTokenService.GenerateMemberTokenWithPassword(
@@ -81,7 +81,7 @@ public class MemberPasswordLoginCommandHandler(
                 Token: tokenResult.Value.Token,
                 RefreshToken: tokenResult.Value.RefreshToken,
                 ExpiresAt: tokenResult.Value.ExpiresAt,
-                MemberId: user.Id,
+                MemberId: user.MemberId ?? 0,
                 MemberName: $"{user.FullName}",
                 Email: user.Email!,
                 Phone: user.Phone!,
