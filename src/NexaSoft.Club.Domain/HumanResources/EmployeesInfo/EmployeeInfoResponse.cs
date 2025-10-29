@@ -23,6 +23,8 @@ public sealed record EmployeeInfoResponse(
     string? CurrencyCode,
     string? BankAccountNumber,
     string? CciNumber,
+    long? CompanyId,
+    string? CompanyName,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,

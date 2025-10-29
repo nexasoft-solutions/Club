@@ -33,7 +33,8 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
              request.CurrencyId,
              request.BankAccountNumber,
              request.CciNumber,
-    request.CreatedBy
+             request.CompanyId,
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -58,6 +59,7 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
              request.CurrencyId,
              request.BankAccountNumber,
              request.CciNumber,
+             request.CompanyId, 
              request.UpdatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);

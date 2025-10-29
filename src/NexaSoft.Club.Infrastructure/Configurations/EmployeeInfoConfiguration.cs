@@ -96,6 +96,11 @@ public class EmployeeInfoConfiguration : IEntityTypeConfiguration<EmployeeInfo>
                .WithMany()
                .HasForeignKey(x => x.CurrencyId)
                .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(x => x.Company)
+               .WithMany()
+               .HasForeignKey(x => x.CompanyId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.BankAccountNumber)
             .HasMaxLength(50)

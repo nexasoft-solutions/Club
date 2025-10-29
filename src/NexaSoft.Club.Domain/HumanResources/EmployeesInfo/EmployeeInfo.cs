@@ -8,6 +8,7 @@ using NexaSoft.Club.Domain.HumanResources.PaymentMethodTypes;
 using NexaSoft.Club.Domain.HumanResources.Banks;
 using NexaSoft.Club.Domain.HumanResources.BankAccountTypes;
 using NexaSoft.Club.Domain.HumanResources.Currencies;
+using NexaSoft.Club.Domain.HumanResources.Companies;
 
 namespace NexaSoft.Club.Domain.HumanResources.EmployeesInfo;
 
@@ -35,24 +36,27 @@ public class EmployeeInfo : Entity
     public string? BankAccountNumber { get; private set; }
     public string? CciNumber { get; private set; }
     public int StateEmployeeInfo { get; private set; }
+    public long? CompanyId { get; private set; }
+    public Company? Company { get; set; }
 
     private EmployeeInfo() { }
 
     private EmployeeInfo(
-        string? employeeCode, 
-        long? userId, 
-        long? positionId, 
-        long? employeeTypeId, 
-        long? departmentId, 
-        DateOnly hireDate, 
-        decimal baseSalary, 
-        long? paymentMethodId, 
-        long? bankId, 
-        long? bankAccountTypeId, 
-        long? currencyId, 
-        string? bankAccountNumber, 
-        string? cciNumber, 
-        int stateEmployeeInfo, 
+        string? employeeCode,
+        long? userId,
+        long? positionId,
+        long? employeeTypeId,
+        long? departmentId,
+        DateOnly hireDate,
+        decimal baseSalary,
+        long? paymentMethodId,
+        long? bankId,
+        long? bankAccountTypeId,
+        long? currencyId,
+        string? bankAccountNumber,
+        string? cciNumber,
+        long? companyId,
+        int stateEmployeeInfo,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -72,6 +76,7 @@ public class EmployeeInfo : Entity
         CurrencyId = currencyId;
         BankAccountNumber = bankAccountNumber;
         CciNumber = cciNumber;
+        CompanyId = companyId;
         StateEmployeeInfo = stateEmployeeInfo;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
@@ -80,20 +85,21 @@ public class EmployeeInfo : Entity
     }
 
     public static EmployeeInfo Create(
-        string? employeeCode, 
-        long? userId, 
-        long? positionId, 
-        long? employeeTypeId, 
-        long? departmentId, 
-        DateOnly hireDate, 
-        decimal baseSalary, 
-        long? paymentMethodId, 
-        long? bankId, 
-        long? bankAccountTypeId, 
-        long? currencyId, 
-        string? bankAccountNumber, 
-        string? cciNumber, 
-        int stateEmployeeInfo, 
+        string? employeeCode,
+        long? userId,
+        long? positionId,
+        long? employeeTypeId,
+        long? departmentId,
+        DateOnly hireDate,
+        decimal baseSalary,
+        long? paymentMethodId,
+        long? bankId,
+        long? bankAccountTypeId,
+        long? currencyId,
+        string? bankAccountNumber,
+        string? cciNumber,
+        long? companyId,
+        int stateEmployeeInfo,
         DateTime createdAd,
         string? createdBy
     )
@@ -112,6 +118,7 @@ public class EmployeeInfo : Entity
             currencyId,
             bankAccountNumber,
             cciNumber,
+            companyId,
             stateEmployeeInfo,
             createdAd,
             createdBy
@@ -121,19 +128,20 @@ public class EmployeeInfo : Entity
 
     public Result Update(
         long Id,
-        string? employeeCode, 
-        long? userId, 
-        long? positionId, 
-        long? employeeTypeId, 
-        long? departmentId, 
-        DateOnly hireDate, 
-        decimal baseSalary, 
-        long? paymentMethodId, 
-        long? bankId, 
-        long? bankAccountTypeId, 
-        long? currencyId, 
-        string? bankAccountNumber, 
-        string? cciNumber, 
+        string? employeeCode,
+        long? userId,
+        long? positionId,
+        long? employeeTypeId,
+        long? departmentId,
+        DateOnly hireDate,
+        decimal baseSalary,
+        long? paymentMethodId,
+        long? bankId,
+        long? bankAccountTypeId,
+        long? currencyId,
+        string? bankAccountNumber,
+        string? cciNumber,
+        long? companyId,
         DateTime utcNow,
         string? updatedBy
     )
@@ -151,6 +159,7 @@ public class EmployeeInfo : Entity
         CurrencyId = currencyId;
         BankAccountNumber = bankAccountNumber;
         CciNumber = cciNumber;
+        CompanyId = companyId;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;
 

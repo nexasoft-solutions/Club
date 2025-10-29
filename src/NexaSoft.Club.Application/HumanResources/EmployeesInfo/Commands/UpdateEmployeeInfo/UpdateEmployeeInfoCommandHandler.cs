@@ -15,13 +15,13 @@ public class UpdateEmployeeInfoCommandHandler(
 {
     public async Task<Result<bool>> Handle(UpdateEmployeeInfoCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de actualización de EmployeeInfo con ID {EmployeeInfoId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de actualización de EmployeeInfo con ID {EmployeeInfoId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("EmployeeInfo con ID {EmployeeInfoId} no encontrado", command.Id);
-                return Result.Failure<bool>(EmployeeInfoErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(EmployeeInfoErrores.NoEncontrado);
+        }
 
         entity.Update(
             command.Id,
@@ -38,6 +38,7 @@ public class UpdateEmployeeInfoCommandHandler(
             command.CurrencyId,
             command.BankAccountNumber,
             command.Cci_Number,
+            command.CompanyId,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.UpdatedBy
         );
@@ -55,7 +56,7 @@ public class UpdateEmployeeInfoCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al actualizar EmployeeInfo con ID {EmployeeInfoId}", command.Id);
+            _logger.LogError(ex, "Error al actualizar EmployeeInfo con ID {EmployeeInfoId}", command.Id);
             return Result.Failure<bool>(EmployeeInfoErrores.ErrorEdit);
         }
     }

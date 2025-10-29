@@ -91,6 +91,8 @@ public class EmployeeInfoSpecification : BaseSpecification<EmployeeInfo, Employe
              x.Currency!.Code!,
              x.BankAccountNumber,
              x.CciNumber,
+             x.CompanyId,
+             x.Company!.BusinessName!,
              x.CreatedAt,
              x.UpdatedAt,
              x.CreatedBy,

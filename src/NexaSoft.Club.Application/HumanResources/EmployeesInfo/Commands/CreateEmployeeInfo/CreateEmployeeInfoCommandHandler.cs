@@ -51,6 +51,7 @@ public class CreateEmployeeInfoCommandHandler(
         command.CurrencyId,
         command.BankAccountNumber,
         command.CciNumber,
+        command.CompanyId,
         (int)EstadosEnum.Activo,
         _dateTimeProvider.CurrentTime.ToUniversalTime(),
         command.CreatedBy

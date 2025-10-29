@@ -15,5 +15,6 @@ public sealed record UpdateEmployeeInfoRequest(
     long? CurrencyId,
     string? BankAccountNumber,
     string? CciNumber,
+    long? CompanyId,
     string UpdatedBy
 );

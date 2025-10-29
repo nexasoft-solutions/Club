@@ -16,5 +16,6 @@ public sealed record CreateEmployeeInfoCommand(
     long? CurrencyId,
     string? BankAccountNumber,
     string? CciNumber,
+    long? CompanyId,
     string CreatedBy
 ) : ICommand<long>;

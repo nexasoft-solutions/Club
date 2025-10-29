@@ -17,5 +17,6 @@ public sealed record UpdateEmployeeInfoCommand(
     long? CurrencyId,
     string? BankAccountNumber,
     string? Cci_Number,
+    long? CompanyId, 
     string UpdatedBy
 ) : ICommand<bool>;
