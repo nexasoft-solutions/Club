@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="HumanResources\" />
     <Folder Include="Masters\Contadores\Commands\" />
     <Folder Include="Masters\Roles\Commands\UpdateRole\" />
   </ItemGroup>

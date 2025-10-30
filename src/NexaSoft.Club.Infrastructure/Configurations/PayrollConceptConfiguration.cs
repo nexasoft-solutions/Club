@@ -51,10 +51,10 @@ public class PayrollConceptConfiguration : IEntityTypeConfiguration<PayrollConce
                 .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.FixedValue)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.PorcentajeValue)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.ConceptApplicationTypesId)
             .IsRequired(false);

@@ -61,7 +61,7 @@ public class CostCenterConfiguration : IEntityTypeConfiguration<CostCenter>
             .IsRequired();
 
         builder.Property(x => x.EndDate)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.StateCostCenter)
             .IsRequired();

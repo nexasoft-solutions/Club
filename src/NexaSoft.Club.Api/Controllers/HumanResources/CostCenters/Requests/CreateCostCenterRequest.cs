@@ -9,6 +9,6 @@ public sealed record CreateCostCenterRequest(
     long? ResponsibleId,
     decimal Budget,
     DateOnly StartDate,
-    DateOnly EndDate,
+    DateOnly? EndDate,
     string CreatedBy
 );

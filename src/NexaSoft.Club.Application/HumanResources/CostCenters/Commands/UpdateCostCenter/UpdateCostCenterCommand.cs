@@ -12,6 +12,6 @@ public sealed record UpdateCostCenterCommand(
     long? ResponsibleId,
     decimal Budget,
     DateOnly StartDate,
-    DateOnly EndDate,
+    DateOnly? EndDate,
     string UpdatedBy
 ) : ICommand<bool>;

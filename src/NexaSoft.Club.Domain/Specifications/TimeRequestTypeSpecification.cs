@@ -59,6 +59,8 @@ public class TimeRequestTypeSpecification : BaseSpecification<TimeRequestType, T
              x.Id,
              x.Code,
              x.Name,
+             x.DeductsSalary,
+             x.RequiresApproval,
              x.Description,
              x.CreatedAt,
              x.UpdatedAt,

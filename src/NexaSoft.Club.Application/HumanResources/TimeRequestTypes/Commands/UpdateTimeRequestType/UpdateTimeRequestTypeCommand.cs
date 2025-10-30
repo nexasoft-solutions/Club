@@ -6,6 +6,8 @@ public sealed record UpdateTimeRequestTypeCommand(
     long Id,
     string? Code,
     string? Name,
+    bool DeductsSalary,
+    bool RequiresApproval,
     string? Description,
     string UpdatedBy
 ) : ICommand<bool>;

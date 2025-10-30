@@ -1,6 +1,7 @@
 using NexaSoft.Club.Domain.Abstractions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Domain.Masters.Statuses;
+using NexaSoft.Club.Domain.HumanResources.PayrollPeriodStatuses;
 
 namespace NexaSoft.Club.Domain.HumanResources.PayrollPeriods;
 
@@ -12,7 +13,7 @@ public class PayrollPeriod : Entity
     public decimal TotalAmount { get; private set; }
     public int? TotalEmployees { get; private set; }
     public long? StatusId { get; private set; }
-    public Status? Status { get; private set; }
+    public PayrollPeriodStatus? Status { get; private set; }
     public int StatePayrollPeriod { get; private set; }
 
     private PayrollPeriod() { }

@@ -15,18 +15,20 @@ public class UpdateTimeRequestTypeCommandHandler(
 {
     public async Task<Result<bool>> Handle(UpdateTimeRequestTypeCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de actualización de TimeRequestType con ID {TimeRequestTypeId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de actualización de TimeRequestType con ID {TimeRequestTypeId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("TimeRequestType con ID {TimeRequestTypeId} no encontrado", command.Id);
-                return Result.Failure<bool>(TimeRequestTypeErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(TimeRequestTypeErrores.NoEncontrado);
+        }
 
         entity.Update(
             command.Id,
             command.Code,
             command.Name,
+            command.DeductsSalary,
+            command.RequiresApproval,
             command.Description,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.UpdatedBy
@@ -45,7 +47,7 @@ public class UpdateTimeRequestTypeCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al actualizar TimeRequestType con ID {TimeRequestTypeId}", command.Id);
+            _logger.LogError(ex, "Error al actualizar TimeRequestType con ID {TimeRequestTypeId}", command.Id);
             return Result.Failure<bool>(TimeRequestTypeErrores.ErrorEdit);
         }
     }

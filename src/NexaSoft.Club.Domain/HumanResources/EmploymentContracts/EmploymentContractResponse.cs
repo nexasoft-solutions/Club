@@ -7,7 +7,7 @@ public sealed record EmploymentContractResponse(
     long? ContractTypeId,
     string? ContractTypeName,
     DateOnly StartDate,
-    DateOnly EndDate,
+    DateOnly? EndDate,
     decimal Salary,
     int WorkingHours,
     string? DocumentPath,

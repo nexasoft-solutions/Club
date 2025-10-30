@@ -15,13 +15,13 @@ public class UpdatePayrollConceptCommandHandler(
 {
     public async Task<Result<bool>> Handle(UpdatePayrollConceptCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de actualización de PayrollConcept con ID {PayrollConceptId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de actualización de PayrollConcept con ID {PayrollConceptId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("PayrollConcept con ID {PayrollConceptId} no encontrado", command.Id);
-                return Result.Failure<bool>(PayrollConceptErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(PayrollConceptErrores.NoEncontrado);
+        }
 
         entity.Update(
             command.Id,
@@ -51,7 +51,7 @@ public class UpdatePayrollConceptCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al actualizar PayrollConcept con ID {PayrollConceptId}", command.Id);
+            _logger.LogError(ex, "Error al actualizar PayrollConcept con ID {PayrollConceptId}", command.Id);
             return Result.Failure<bool>(PayrollConceptErrores.ErrorEdit);
         }
     }

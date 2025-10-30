@@ -8,7 +8,7 @@ public sealed record PayrollPeriodResponse(
     decimal TotalAmount,
     int? TotalEmployees,
     long? StatusId,
-    string? StatusName,
+    string? StatusCode,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,

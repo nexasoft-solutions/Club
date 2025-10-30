@@ -19,4 +19,8 @@ public interface IGenericRepository<T> where T : Entity
     Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken);
     Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken);
 
+    Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
+     // ✅ NUEVO MÉTODO PARA ListAsync CON EXPRESIÓN LAMBDA
+    Task<IReadOnlyList<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
+
 }

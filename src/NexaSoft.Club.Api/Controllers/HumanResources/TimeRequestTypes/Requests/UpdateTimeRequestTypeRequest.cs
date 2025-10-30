@@ -4,6 +4,8 @@ public sealed record UpdateTimeRequestTypeRequest(
    long Id,
     string? Code,
     string? Name,
+    bool DeductsSalary,
+    bool RequiresApproval,
     string? Description,
     string UpdatedBy
 );

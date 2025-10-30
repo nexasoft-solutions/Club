@@ -7,8 +7,8 @@ public sealed record UpdatePayrollConceptRequest(
     long? ConceptTypePayrollId,
     long? PayrollFormulaId,
     long? ConceptCalculationTypeId,
-    decimal FixedValue,
-    decimal PorcentajeValue,
+    decimal? FixedValue,
+    decimal? PorcentajeValue,
     long? ConceptApplicationTypesId,
     long? AccountingChartId,
     string UpdatedBy

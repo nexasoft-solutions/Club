@@ -19,17 +19,17 @@ public class CreatePayrollConceptCommandHandler(
 
         _logger.LogInformation("Iniciando proceso de creación de PayrollConcept");
 
-     bool existsCode = await _repository.ExistsAsync(c => c.Code == command.Code, cancellationToken);
-     if (existsCode)
-     {
-       return Result.Failure<long>(PayrollConceptErrores.Duplicado);
-     }
+        bool existsCode = await _repository.ExistsAsync(c => c.Code == command.Code, cancellationToken);
+        if (existsCode)
+        {
+            return Result.Failure<long>(PayrollConceptErrores.Duplicado);
+        }
 
-     bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
-     if (existsName)
-     {
-       return Result.Failure<long>(PayrollConceptErrores.Duplicado);
-     }
+        bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
+        if (existsName)
+        {
+            return Result.Failure<long>(PayrollConceptErrores.Duplicado);
+        }
 
         var entity = PayrollConcept.Create(
             command.Code,

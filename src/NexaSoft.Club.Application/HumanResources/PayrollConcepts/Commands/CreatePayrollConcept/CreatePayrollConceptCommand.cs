@@ -8,8 +8,8 @@ public sealed record CreatePayrollConceptCommand(
     long? ConceptTypePayrollId,
     long? PayrollFormulaId,
     long? ConceptCalculationTypeId,
-    decimal FixedValue,
-    decimal PorcentajeValue,
+    decimal? FixedValue,
+    decimal? PorcentajeValue,
     long? ConceptApplicationTypesId,
     long? AccountingChartId,
     string CreatedBy

@@ -18,7 +18,7 @@ public class CostCenter : Entity
     public EmployeeInfo? EmployeeInfo { get; private set; }
     public decimal Budget { get; private set; }
     public DateOnly StartDate { get; private set; }
-    public DateOnly EndDate { get; private set; }
+    public DateOnly? EndDate { get; private set; }
     public int StateCostCenter { get; private set; }
 
     private CostCenter() { }
@@ -32,7 +32,7 @@ public class CostCenter : Entity
         long? responsibleId, 
         decimal budget, 
         DateOnly startDate, 
-        DateOnly endDate, 
+        DateOnly? endDate, 
         int stateCostCenter, 
         DateTime createdAt,
         string? createdBy,
@@ -65,7 +65,7 @@ public class CostCenter : Entity
         long? responsibleId, 
         decimal budget, 
         DateOnly startDate, 
-        DateOnly endDate, 
+        DateOnly? endDate, 
         int stateCostCenter, 
         DateTime createdAd,
         string? createdBy
@@ -98,7 +98,7 @@ public class CostCenter : Entity
         long? responsibleId, 
         decimal budget, 
         DateOnly startDate, 
-        DateOnly endDate, 
+        DateOnly? endDate, 
         DateTime utcNow,
         string? updatedBy
     )

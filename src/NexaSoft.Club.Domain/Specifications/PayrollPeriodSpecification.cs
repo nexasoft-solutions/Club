@@ -64,7 +64,7 @@ public class PayrollPeriodSpecification : BaseSpecification<PayrollPeriod, Payro
              x.TotalAmount,
              x.TotalEmployees,
              x.StatusId,
-             x.Status!.Name!,
+             x.Status!.Code!,
              x.CreatedAt,
              x.UpdatedAt,
              x.CreatedBy,

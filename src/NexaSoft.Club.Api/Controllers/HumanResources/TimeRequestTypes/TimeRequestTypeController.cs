@@ -17,13 +17,15 @@ public class TimeRequestTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateTimeRequestType(CreateTimeRequestTypeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateTimeRequestType(CreateTimeRequestTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateTimeRequestTypeCommand(
              request.Code,
              request.Name,
+             request.DeductsSalary,
+             request.RequiresApproval,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -31,14 +33,16 @@ public class TimeRequestTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateTimeRequestType(UpdateTimeRequestTypeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateTimeRequestType(UpdateTimeRequestTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateTimeRequestTypeCommand(
            request.Id,
-             request.Code,
-             request.Name,
-             request.Description,
-             request.UpdatedBy
+           request.Code,
+           request.Name,
+           request.DeductsSalary,
+           request.RequiresApproval,
+           request.Description,
+           request.UpdatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -46,7 +50,7 @@ public class TimeRequestTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteTimeRequestType(DeleteTimeRequestTypeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteTimeRequestType(DeleteTimeRequestTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteTimeRequestTypeCommand(
              request.Id,
@@ -70,11 +74,11 @@ public class TimeRequestTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetTimeRequestType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetTimeRequestType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetTimeRequestTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

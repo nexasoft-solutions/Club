@@ -37,7 +37,7 @@ public class EmploymentContractConfiguration : IEntityTypeConfiguration<Employme
             .IsRequired();
 
         builder.Property(x => x.EndDate)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.Salary)
             .IsRequired();

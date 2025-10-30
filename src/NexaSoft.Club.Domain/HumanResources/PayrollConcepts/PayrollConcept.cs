@@ -18,8 +18,8 @@ public class PayrollConcept : Entity
     public PayrollFormula? PayrollFormula { get; private set; }
     public long? ConceptCalculationTypeId { get; private set; }
     public ConceptCalculationType? ConceptCalculationType { get; private set; }
-    public decimal FixedValue { get; private set; }
-    public decimal PorcentajeValue { get; private set; }
+    public decimal? FixedValue { get; private set; }
+    public decimal? PorcentajeValue { get; private set; }
     public long? ConceptApplicationTypesId { get; private set; }
     public ConceptApplicationType? ConceptApplicationType { get; private set; }
     public long? AccountingChartId { get; private set; }
@@ -34,8 +34,8 @@ public class PayrollConcept : Entity
         long? conceptTypePayrollId, 
         long? payrollFormulaId, 
         long? conceptCalculationTypeId, 
-        decimal fixedValue, 
-        decimal porcentajeValue, 
+        decimal? fixedValue, 
+        decimal? porcentajeValue, 
         long? conceptApplicationTypesId, 
         long? accountingChartId, 
         int statePayrollConcept, 
@@ -67,8 +67,8 @@ public class PayrollConcept : Entity
         long? conceptTypePayrollId, 
         long? payrollFormulaId, 
         long? conceptCalculationTypeId, 
-        decimal fixedValue, 
-        decimal porcentajeValue, 
+        decimal? fixedValue, 
+        decimal? porcentajeValue, 
         long? conceptApplicationTypesId, 
         long? accountingChartId, 
         int statePayrollConcept, 
@@ -100,8 +100,8 @@ public class PayrollConcept : Entity
         long? conceptTypePayrollId, 
         long? payrollFormulaId, 
         long? conceptCalculationTypeId, 
-        decimal fixedValue, 
-        decimal porcentajeValue, 
+        decimal? fixedValue, 
+        decimal? porcentajeValue, 
         long? conceptApplicationTypesId, 
         long? accountingChartId, 
         DateTime utcNow,

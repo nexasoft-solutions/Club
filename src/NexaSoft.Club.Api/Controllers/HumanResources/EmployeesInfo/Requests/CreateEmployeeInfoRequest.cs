@@ -15,5 +15,6 @@ public sealed record CreateEmployeeInfoRequest(
     string? BankAccountNumber,
     string? CciNumber,
     long? CompanyId,
+    long? CostCenterId,
     string CreatedBy
 );

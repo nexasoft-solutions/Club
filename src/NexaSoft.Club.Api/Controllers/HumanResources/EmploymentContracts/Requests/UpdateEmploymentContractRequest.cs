@@ -5,7 +5,7 @@ public sealed record UpdateEmploymentContractRequest(
     long? EmployeeId,
     long? ContractTypeId,
     DateOnly StartDate,
-    DateOnly EndDate,
+    DateOnly? EndDate,
     decimal Salary,
     int WorkingHours,
     string? DocumentPath,

@@ -39,6 +39,7 @@ public class UpdateEmployeeInfoCommandHandler(
             command.BankAccountNumber,
             command.Cci_Number,
             command.CompanyId,
+            command.CostCenterId,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.UpdatedBy
         );

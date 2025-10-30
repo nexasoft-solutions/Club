@@ -7,16 +7,21 @@ public class TimeRequestType : Entity
 {
     public string? Code { get; private set; }
     public string? Name { get; private set; }
+
+    public bool DeductsSalary { get; private set; }
+    public bool RequiresApproval { get; private set; }
     public string? Description { get; private set; }
     public int StateTimeRequestType { get; private set; }
 
     private TimeRequestType() { }
 
     private TimeRequestType(
-        string? code, 
-        string? name, 
-        string? description, 
-        int stateTimeRequestType, 
+        string? code,
+        string? name,
+        bool deductsSalary,
+        bool requiresApproval,
+        string? description,
+        int stateTimeRequestType,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -25,6 +30,8 @@ public class TimeRequestType : Entity
     {
         Code = code;
         Name = name;
+        DeductsSalary = deductsSalary;
+        RequiresApproval = requiresApproval;
         Description = description;
         StateTimeRequestType = stateTimeRequestType;
         CreatedAt = createdAt;
@@ -34,10 +41,12 @@ public class TimeRequestType : Entity
     }
 
     public static TimeRequestType Create(
-        string? code, 
-        string? name, 
-        string? description, 
-        int stateTimeRequestType, 
+        string? code,
+        string? name,
+        bool deductsSalary,
+        bool requiresApproval,
+        string? description,
+        int stateTimeRequestType,
         DateTime createdAd,
         string? createdBy
     )
@@ -45,6 +54,8 @@ public class TimeRequestType : Entity
         var entity = new TimeRequestType(
             code,
             name,
+            deductsSalary,
+            requiresApproval,
             description,
             stateTimeRequestType,
             createdAd,
@@ -55,15 +66,19 @@ public class TimeRequestType : Entity
 
     public Result Update(
         long Id,
-        string? code, 
-        string? name, 
-        string? description, 
+        string? code,
+        string? name,
+        bool deductsSalary,
+        bool requiresApproval,
+        string? description,
         DateTime utcNow,
         string? updatedBy
     )
     {
         Code = code;
         Name = name;
+        DeductsSalary = deductsSalary;
+        RequiresApproval = requiresApproval;
         Description = description;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;

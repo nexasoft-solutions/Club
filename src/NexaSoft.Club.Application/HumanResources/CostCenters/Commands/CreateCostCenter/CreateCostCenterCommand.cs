@@ -11,6 +11,6 @@ public sealed record CreateCostCenterCommand(
     long? ResponsibleId,
     decimal Budget,
     DateOnly StartDate,
-    DateOnly EndDate,
+    DateOnly? EndDate,
     string CreatedBy
 ) : ICommand<long>;

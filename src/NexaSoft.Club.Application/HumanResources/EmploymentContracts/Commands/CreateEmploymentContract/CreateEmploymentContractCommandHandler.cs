@@ -19,11 +19,11 @@ public class CreateEmploymentContractCommandHandler(
 
         _logger.LogInformation("Iniciando proceso de creación de EmploymentContract");
 
-     bool existsDocumentPath = await _repository.ExistsAsync(c => c.DocumentPath == command.DocumentPath, cancellationToken);
-     if (existsDocumentPath)
-     {
-       return Result.Failure<long>(EmploymentContractErrores.Duplicado);
-     }
+        bool existsDocumentPath = await _repository.ExistsAsync(c => c.DocumentPath == command.DocumentPath, cancellationToken);
+        if (existsDocumentPath)
+        {
+            return Result.Failure<long>(EmploymentContractErrores.Duplicado);
+        }
 
         var entity = EmploymentContract.Create(
             command.EmployeeId,

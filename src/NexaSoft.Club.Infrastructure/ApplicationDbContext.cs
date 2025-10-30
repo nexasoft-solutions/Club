@@ -83,7 +83,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         // 👉 Aplicar filtro global para FechaEliminacion
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        /*foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             if (typeof(Entity).IsAssignableFrom(entityType.ClrType))
             {
@@ -94,7 +94,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
                 var lambda = Expression.Lambda(condition, parameter);
                 entityType.SetQueryFilter(lambda);
             }
-        }
+        }*/
 
         base.OnModelCreating(modelBuilder);
 

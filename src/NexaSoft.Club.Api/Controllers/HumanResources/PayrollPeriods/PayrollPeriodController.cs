@@ -17,16 +17,13 @@ public class PayrollPeriodController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreatePayrollPeriod(CreatePayrollPeriodRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreatePayrollPeriod(CreatePayrollPeriodRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePayrollPeriodCommand(
              request.PeriodName,
              request.StartDate,
              request.EndDate,
-             request.TotalAmount,
-             request.TotalEmployees,
-             request.StatusId,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -34,7 +31,7 @@ public class PayrollPeriodController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePayrollPeriod(UpdatePayrollPeriodRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdatePayrollPeriod(UpdatePayrollPeriodRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollPeriodCommand(
            request.Id,
@@ -52,7 +49,7 @@ public class PayrollPeriodController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePayrollPeriod(DeletePayrollPeriodRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeletePayrollPeriod(DeletePayrollPeriodRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePayrollPeriodCommand(
              request.Id,
@@ -76,11 +73,11 @@ public class PayrollPeriodController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPayrollPeriod(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetPayrollPeriod(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPayrollPeriodQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

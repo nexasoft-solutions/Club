@@ -9,6 +9,7 @@ using NexaSoft.Club.Domain.HumanResources.Banks;
 using NexaSoft.Club.Domain.HumanResources.BankAccountTypes;
 using NexaSoft.Club.Domain.HumanResources.Currencies;
 using NexaSoft.Club.Domain.HumanResources.Companies;
+using NexaSoft.Club.Domain.HumanResources.CostCenters;
 
 namespace NexaSoft.Club.Domain.HumanResources.EmployeesInfo;
 
@@ -37,7 +38,11 @@ public class EmployeeInfo : Entity
     public string? CciNumber { get; private set; }
     public int StateEmployeeInfo { get; private set; }
     public long? CompanyId { get; private set; }
-    public Company? Company { get; set; }
+    public Company? Company { get; private set; }
+
+    public long? CostCenterId { get; private set; }
+    public CostCenter? CostCenter { get; private set; } 
+
 
     private EmployeeInfo() { }
 
@@ -56,6 +61,7 @@ public class EmployeeInfo : Entity
         string? bankAccountNumber,
         string? cciNumber,
         long? companyId,
+        long? costCenterId,
         int stateEmployeeInfo,
         DateTime createdAt,
         string? createdBy,
@@ -77,6 +83,7 @@ public class EmployeeInfo : Entity
         BankAccountNumber = bankAccountNumber;
         CciNumber = cciNumber;
         CompanyId = companyId;
+        CostCenterId = costCenterId;
         StateEmployeeInfo = stateEmployeeInfo;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
@@ -99,6 +106,7 @@ public class EmployeeInfo : Entity
         string? bankAccountNumber,
         string? cciNumber,
         long? companyId,
+        long? costCenterId,
         int stateEmployeeInfo,
         DateTime createdAd,
         string? createdBy
@@ -119,6 +127,7 @@ public class EmployeeInfo : Entity
             bankAccountNumber,
             cciNumber,
             companyId,
+            costCenterId,
             stateEmployeeInfo,
             createdAd,
             createdBy
@@ -142,6 +151,7 @@ public class EmployeeInfo : Entity
         string? bankAccountNumber,
         string? cciNumber,
         long? companyId,
+        long? costCenterId, 
         DateTime utcNow,
         string? updatedBy
     )
@@ -160,6 +170,7 @@ public class EmployeeInfo : Entity
         BankAccountNumber = bankAccountNumber;
         CciNumber = cciNumber;
         CompanyId = companyId;
+        CostCenterId = costCenterId;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;
 

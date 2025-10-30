@@ -8,7 +8,7 @@ public class PayrollStatusTypeConfiguration : IEntityTypeConfiguration<PayrollSt
 {
     public void Configure(EntityTypeBuilder<PayrollStatusType> builder)
     {
-        builder.ToTable("payrolls_tatus_types");
+        builder.ToTable("payroll_status_types");
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)

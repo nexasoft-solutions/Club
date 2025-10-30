@@ -6,8 +6,16 @@ public sealed record CreatePayrollPeriodCommand(
     string? PeriodName,
     DateOnly? StartDate,
     DateOnly? EndDate,
-    decimal TotalAmount,
+    /*decimal TotalAmount,
     int? TotalEmployees,
-    long? StatusId,
+    long? StatusId,*/
     string CreatedBy
 ) : ICommand<long>;
+
+
+public record PayrollConceptCalculation(
+    long ConceptId,
+    decimal CalculatedValue,
+    decimal Quantity,
+    string Description
+);

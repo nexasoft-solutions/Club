@@ -1,7 +1,7 @@
 namespace NexaSoft.Club.Api.Controllers.HumanResources.CostCenters.Request;
 
 public sealed record UpdateCostCenterRequest(
-   long Id,
+    long Id,
     string? Code,
     string? Name,
     long? ParentCostCenterId,
@@ -10,6 +10,6 @@ public sealed record UpdateCostCenterRequest(
     long? ResponsibleId,
     decimal Budget,
     DateOnly StartDate,
-    DateOnly EndDate,
+    DateOnly? EndDate,
     string UpdatedBy
 );

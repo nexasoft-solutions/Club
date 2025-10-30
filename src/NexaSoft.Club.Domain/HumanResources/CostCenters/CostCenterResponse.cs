@@ -13,7 +13,7 @@ public sealed record CostCenterResponse(
     string? EmployeeCode,
     decimal Budget,
     DateOnly StartDate,
-    DateOnly EndDate,
+    DateOnly? EndDate,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,

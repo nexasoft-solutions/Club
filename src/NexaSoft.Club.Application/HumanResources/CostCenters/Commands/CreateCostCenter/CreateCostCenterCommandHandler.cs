@@ -19,17 +19,17 @@ public class CreateCostCenterCommandHandler(
 
         _logger.LogInformation("Iniciando proceso de creación de CostCenter");
 
-     bool existsCode = await _repository.ExistsAsync(c => c.Code == command.Code, cancellationToken);
-     if (existsCode)
-     {
-       return Result.Failure<long>(CostCenterErrores.Duplicado);
-     }
+        bool existsCode = await _repository.ExistsAsync(c => c.Code == command.Code, cancellationToken);
+        if (existsCode)
+        {
+            return Result.Failure<long>(CostCenterErrores.Duplicado);
+        }
 
-     bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
-     if (existsName)
-     {
-       return Result.Failure<long>(CostCenterErrores.Duplicado);
-     }
+        bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
+        if (existsName)
+        {
+            return Result.Failure<long>(CostCenterErrores.Duplicado);
+        }
 
         var entity = CostCenter.Create(
             command.Code,

@@ -12,7 +12,7 @@ public class EmploymentContract : Entity
     public long? ContractTypeId { get; private set; }
     public ContractType? ContractType { get; private set; }
     public DateOnly StartDate { get; private set; }
-    public DateOnly EndDate { get; private set; }
+    public DateOnly? EndDate { get; private set; }
     public decimal Salary { get; private set; }
     public int WorkingHours { get; private set; }
     public string? DocumentPath { get; private set; }
@@ -24,7 +24,7 @@ public class EmploymentContract : Entity
         long? employeeId, 
         long? contractTypeId, 
         DateOnly startDate, 
-        DateOnly endDate, 
+        DateOnly? endDate, 
         decimal salary, 
         int workingHours, 
         string? documentPath, 
@@ -53,7 +53,7 @@ public class EmploymentContract : Entity
         long? employeeId, 
         long? contractTypeId, 
         DateOnly startDate, 
-        DateOnly endDate, 
+        DateOnly? endDate, 
         decimal salary, 
         int workingHours, 
         string? documentPath, 
@@ -82,7 +82,7 @@ public class EmploymentContract : Entity
         long? employeeId, 
         long? contractTypeId, 
         DateOnly startDate, 
-        DateOnly endDate, 
+        DateOnly? endDate, 
         decimal salary, 
         int workingHours, 
         string? documentPath, 

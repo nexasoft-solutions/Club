@@ -25,6 +25,8 @@ public sealed record EmployeeInfoResponse(
     string? CciNumber,
     long? CompanyId,
     string? CompanyName,
+    long? CostCenterId,
+    string? CostCenterCode,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,

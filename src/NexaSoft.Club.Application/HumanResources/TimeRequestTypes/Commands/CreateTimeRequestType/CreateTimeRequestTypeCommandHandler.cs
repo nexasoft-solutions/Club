@@ -19,21 +19,23 @@ public class CreateTimeRequestTypeCommandHandler(
 
         _logger.LogInformation("Iniciando proceso de creación de TimeRequestType");
 
-     bool existsCode = await _repository.ExistsAsync(c => c.Code == command.Code, cancellationToken);
-     if (existsCode)
-     {
-       return Result.Failure<long>(TimeRequestTypeErrores.Duplicado);
-     }
+        bool existsCode = await _repository.ExistsAsync(c => c.Code == command.Code, cancellationToken);
+        if (existsCode)
+        {
+            return Result.Failure<long>(TimeRequestTypeErrores.Duplicado);
+        }
 
-     bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
-     if (existsName)
-     {
-       return Result.Failure<long>(TimeRequestTypeErrores.Duplicado);
-     }
+        bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
+        if (existsName)
+        {
+            return Result.Failure<long>(TimeRequestTypeErrores.Duplicado);
+        }
 
         var entity = TimeRequestType.Create(
             command.Code,
             command.Name,
+            command.DeductsSalary,
+            command.RequiresApproval,
             command.Description,
             (int)EstadosEnum.Activo,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),

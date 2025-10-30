@@ -14,6 +14,8 @@ using NexaSoft.Club.Application.Features.Payments.Background;
 using NexaSoft.Club.Application.Features.Payments.Services;
 using NexaSoft.Club.Application.Features.Reservations.Background;
 using NexaSoft.Club.Application.Features.Reservations.Services;
+using NexaSoft.Club.Application.HumanResources.LegalParameters;
+using NexaSoft.Club.Application.HumanResources.PayrollPeriods.Services;
 using NexaSoft.Club.Application.Masters.MenuItems;
 using NexaSoft.Club.Application.Masters.Roles;
 using NexaSoft.Club.Application.Masters.Users;
@@ -225,6 +227,10 @@ public static class DependencyInjection
 
         services.AddScoped<IMemberTokenService, MemberTokenService>();
         services.AddScoped<IMemberQrService, UserQrService>();
+
+        services.AddScoped<ILegalParametersRepository, LegalParametersRepository>();
+
+        services.AddScoped<IPayrollCalculationService, PayrollCalculationService>();
 
         // Para QR (Domain Events - No crítico)
         //services.AddScoped<INotificationHandler<MemberQrGenerationRequiredDomainEvent>, MemberQrGenerationEventHandler>();

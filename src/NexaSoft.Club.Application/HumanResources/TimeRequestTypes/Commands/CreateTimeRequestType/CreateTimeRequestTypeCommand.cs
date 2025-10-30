@@ -5,6 +5,8 @@ namespace NexaSoft.Club.Application.HumanResources.TimeRequestTypes.Commands.Cre
 public sealed record CreateTimeRequestTypeCommand(
     string? Code,
     string? Name,
+    bool DeductsSalary,
+    bool RequiresApproval,
     string? Description,
     string CreatedBy
 ) : ICommand<long>;
