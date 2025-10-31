@@ -5,6 +5,7 @@ using NexaSoft.Club.Domain.HumanResources.PayrollFormulas;
 using NexaSoft.Club.Domain.HumanResources.ConceptCalculationTypes;
 using NexaSoft.Club.Domain.HumanResources.ConceptApplicationTypes;
 using NexaSoft.Club.Domain.Masters.AccountingCharts;
+using NexaSoft.Club.Domain.HumanResources.PayrollTypes;
 
 namespace NexaSoft.Club.Domain.HumanResources.PayrollConcepts;
 
@@ -26,19 +27,23 @@ public class PayrollConcept : Entity
     public AccountingChart? AccountingChart { get; private set; }
     public int StatePayrollConcept { get; private set; }
 
+    public long? PayrollTypeId { get; private set; }
+    public PayrollType? PayrollType { get; private set; }   
+
     private PayrollConcept() { }
 
     private PayrollConcept(
-        string? code, 
-        string? name, 
-        long? conceptTypePayrollId, 
-        long? payrollFormulaId, 
-        long? conceptCalculationTypeId, 
-        decimal? fixedValue, 
-        decimal? porcentajeValue, 
-        long? conceptApplicationTypesId, 
-        long? accountingChartId, 
-        int statePayrollConcept, 
+        string? code,
+        string? name,
+        long? conceptTypePayrollId,
+        long? payrollFormulaId,
+        long? conceptCalculationTypeId,
+        decimal? fixedValue,
+        decimal? porcentajeValue,
+        long? conceptApplicationTypesId,
+        long? accountingChartId,
+        long? payrollTypeId,
+        int statePayrollConcept,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -54,6 +59,7 @@ public class PayrollConcept : Entity
         PorcentajeValue = porcentajeValue;
         ConceptApplicationTypesId = conceptApplicationTypesId;
         AccountingChartId = accountingChartId;
+        PayrollTypeId = payrollTypeId;
         StatePayrollConcept = statePayrollConcept;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
@@ -62,16 +68,17 @@ public class PayrollConcept : Entity
     }
 
     public static PayrollConcept Create(
-        string? code, 
-        string? name, 
-        long? conceptTypePayrollId, 
-        long? payrollFormulaId, 
-        long? conceptCalculationTypeId, 
-        decimal? fixedValue, 
-        decimal? porcentajeValue, 
-        long? conceptApplicationTypesId, 
-        long? accountingChartId, 
-        int statePayrollConcept, 
+        string? code,
+        string? name,
+        long? conceptTypePayrollId,
+        long? payrollFormulaId,
+        long? conceptCalculationTypeId,
+        decimal? fixedValue,
+        decimal? porcentajeValue,
+        long? conceptApplicationTypesId,
+        long? accountingChartId,
+        long? payrollTypeId,
+        int statePayrollConcept,
         DateTime createdAd,
         string? createdBy
     )
@@ -86,6 +93,7 @@ public class PayrollConcept : Entity
             porcentajeValue,
             conceptApplicationTypesId,
             accountingChartId,
+            payrollTypeId,
             statePayrollConcept,
             createdAd,
             createdBy
@@ -95,15 +103,16 @@ public class PayrollConcept : Entity
 
     public Result Update(
         long Id,
-        string? code, 
-        string? name, 
-        long? conceptTypePayrollId, 
-        long? payrollFormulaId, 
-        long? conceptCalculationTypeId, 
-        decimal? fixedValue, 
-        decimal? porcentajeValue, 
-        long? conceptApplicationTypesId, 
-        long? accountingChartId, 
+        string? code,
+        string? name,
+        long? conceptTypePayrollId,
+        long? payrollFormulaId,
+        long? conceptCalculationTypeId,
+        decimal? fixedValue,
+        decimal? porcentajeValue,
+        long? conceptApplicationTypesId,
+        long? accountingChartId,
+        long? payrollTypeId,
         DateTime utcNow,
         string? updatedBy
     )
@@ -117,6 +126,7 @@ public class PayrollConcept : Entity
         PorcentajeValue = porcentajeValue;
         ConceptApplicationTypesId = conceptApplicationTypesId;
         AccountingChartId = accountingChartId;
+        PayrollTypeId = payrollTypeId;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;
 

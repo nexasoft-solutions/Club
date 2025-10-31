@@ -11,5 +11,6 @@ public sealed record UpdatePayrollConceptRequest(
     decimal? PorcentajeValue,
     long? ConceptApplicationTypesId,
     long? AccountingChartId,
+    long? PayrollTypeId,
     string UpdatedBy
 );

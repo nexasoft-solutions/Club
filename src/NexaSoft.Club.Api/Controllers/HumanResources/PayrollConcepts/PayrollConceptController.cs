@@ -29,7 +29,8 @@ public class PayrollConceptController(ISender _sender) : ControllerBase
              request.PorcentajeValue,
              request.ConceptApplicationTypesId,
              request.AccountingChartId,
-    request.CreatedBy
+             request.PayrollTypeId,
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -40,7 +41,7 @@ public class PayrollConceptController(ISender _sender) : ControllerBase
    public async Task<IActionResult> UpdatePayrollConcept(UpdatePayrollConceptRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollConceptCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.ConceptTypePayrollId,
@@ -50,6 +51,7 @@ public class PayrollConceptController(ISender _sender) : ControllerBase
              request.PorcentajeValue,
              request.ConceptApplicationTypesId,
              request.AccountingChartId,
+             request.PayrollTypeId,
              request.UpdatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);

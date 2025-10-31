@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Abstractions.Time;
+using NexaSoft.Club.Application.HumanResources.LegalParameters;
 using NexaSoft.Club.Application.HumanResources.PayrollPeriods.Services;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.HumanResources.AttendanceRecords;
@@ -8,7 +9,7 @@ using NexaSoft.Club.Domain.HumanResources.EmployeesInfo;
 using NexaSoft.Club.Domain.HumanResources.PayrollConcepts;
 using NexaSoft.Club.Domain.HumanResources.PayrollPeriods;
 using NexaSoft.Club.Domain.HumanResources.PayrollPeriodStatuses;
-using NexaSoft.Club.Domain.Masters.Statuses;
+using NexaSoft.Club.Domain.HumanResources.PayrollTypes;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Application.HumanResources.PayrollPeriods.Commands.CreatePayrollPeriod;
@@ -21,6 +22,8 @@ public class CreatePayrollPeriodCommandHandler(
     IGenericRepository<AttendanceRecord> _attendanceRepository,
     IGenericRepository<PayrollConcept> _conceptRepository,
     IGenericRepository<PayrollPeriodStatus> _statusRepository,
+    IGenericRepository<PayrollType> _payrollTypeRepository,
+    ILegalParametersRepository _legalParameters,
     IPayrollCalculationService _payrollCalculationService,
     IUnitOfWork _unitOfWork,
     IDateTimeProvider _dateTimeProvider,
@@ -31,6 +34,8 @@ public class CreatePayrollPeriodCommandHandler(
     {
         _logger.LogInformation("🚀 Iniciando proceso de creación de Planilla para período: {PeriodName}", command.PeriodName);
 
+        // 3. INICIAR TRANSACCIÓN
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
             // 1. VALIDACIONES
@@ -38,15 +43,20 @@ public class CreatePayrollPeriodCommandHandler(
             if (validationResult.IsFailure)
                 return Result.Failure<long>(validationResult.Error);
 
-            // 2. INICIAR TRANSACCIÓN
-            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            // 2. VALIDAR INTEGRIDAD DE DATOS
+            /*var dataIntegrityResult = await ValidateDataIntegrity(command, cancellationToken);
+            if (dataIntegrityResult.IsFailure)
+                return Result.Failure<long>(dataIntegrityResult.Error);*/
+
+            //return Result.Success<long>(0); // Temporalmente para evitar la ejecución completa
+
 
             // 3. CREAR PERÍODO DE PLANILLA
             var payrollPeriod = await CreatePayrollPeriod(command, cancellationToken);
             _logger.LogInformation("📅 Período de planilla creado: {PeriodId}", payrollPeriod.Id);
 
             // 4. OBTENER CONCEPTOS ACTIVOS
-            var activeConcepts = await GetActiveConceptsWithFormulas(cancellationToken);
+            var activeConcepts = await GetActiveConceptsByPayrollType(command.PayrollTypeId ?? 1, cancellationToken);
             _logger.LogInformation("📋 Conceptos activos cargados: {ConceptsCount}", activeConcepts.Count);
 
             // 5. OBTENER EMPLEADOS ACTIVOS
@@ -99,11 +109,53 @@ public class CreatePayrollPeriodCommandHandler(
         }
     }
 
+    private async Task<Result> ValidateDataIntegrity(CreatePayrollPeriodCommand command, CancellationToken cancellationToken)
+    {
+        // Validar que exista el tipo de planilla
+        var payrollTypeExists = await _payrollTypeRepository.ExistsAsync(
+            pt => pt.Id == command.PayrollTypeId,
+            cancellationToken);
+
+        if (!payrollTypeExists)
+        {
+            _logger.LogWarning("⚠️ Tipo de planilla no encontrado: {PayrollTypeId}", command.PayrollTypeId);
+            return Result.Failure(PayrollPeriodErrores.TipoPlanillaNoEncontrado);
+        }
+
+        // Validar que existan conceptos para este tipo de planilla
+        var conceptsCount = await _conceptRepository.CountAsync(
+            pc => pc.PayrollTypeId == command.PayrollTypeId && pc.StatePayrollConcept == 1,
+            cancellationToken);
+
+        if (conceptsCount == 0)
+        {
+            _logger.LogWarning("⚠️ No hay conceptos configurados para el tipo de planilla: {PayrollTypeId}", command.PayrollTypeId);
+            return Result.Failure(PayrollPeriodErrores.ConceptosNoConfigurados);
+        }
+
+
+        // Validar parámetros legales esenciales
+        var essentialParams = new[] { "UIT_2025", "TOPE_AFP_QUINCENAL_2025", "HORAS_MENSUALES", "RMV_2025" };
+        foreach (var param in essentialParams)
+        {
+            var paramValue = await _legalParameters.GetCurrentParameterValue(param);
+            if (paramValue == 0)
+            {
+                _logger.LogWarning("⚠️ Parámetro legal no configurado: {Parametro}", param);
+                return Result.Failure(PayrollPeriodErrores.ParametroLegalNoConfigurado);
+            }
+        }
+        _logger.LogDebug("✅ Integridad de datos validada correctamente");
+
+        return Result.Success();
+    }
+
     private async Task<Result> ValidatePayrollPeriod(CreatePayrollPeriodCommand command, CancellationToken cancellationToken)
     {
         // Validar período duplicado
         bool existsPeriod = await _payrollPeriodRepository.ExistsAsync(
-            p => p.PeriodName == command.PeriodName && p.StatePayrollPeriod == (int)EstadosEnum.Activo,
+            p => p.PeriodName == command.PeriodName && p.PayrollTypeId == command.PayrollTypeId 
+            && p.StatePayrollPeriod == (int)EstadosEnum.Activo,
             cancellationToken);
 
         if (existsPeriod)
@@ -143,6 +195,7 @@ public class CreatePayrollPeriodCommandHandler(
 
         var payrollPeriod = PayrollPeriod.Create(
             command.PeriodName,
+            command.PayrollTypeId,
             command.StartDate,
             command.EndDate,
             0, // TotalAmount se actualizará después
@@ -160,13 +213,34 @@ public class CreatePayrollPeriodCommandHandler(
         return payrollPeriod;
     }
 
-    private async Task<List<PayrollConcept>> GetActiveConceptsWithFormulas(CancellationToken cancellationToken)
+
+
+    private async Task<List<PayrollConcept>> GetActiveConceptsByPayrollType(long payrollTypeId, CancellationToken cancellationToken)
     {
+        // Filtrar conceptos por tipo de planilla y estado activo, incluyendo las fórmulas
         var concepts = await _conceptRepository.ListAsync(
-            pc => pc.StatePayrollConcept == (int)EstadosEnum.Activo,
+            pc => pc.StatePayrollConcept == (int)EstadosEnum.Activo
+               && pc.PayrollTypeId == payrollTypeId,
+            new[] { "PayrollFormula" }, // Incluir la fórmula relacionada
             cancellationToken);
 
-        _logger.LogDebug("📋 {ConceptsCount} conceptos activos encontrados", concepts.Count);
+        _logger.LogDebug("📋 {ConceptsCount} conceptos activos encontrados para tipo planilla {PayrollTypeId}", concepts.Count, payrollTypeId);
+
+        // Log para verificar qué conceptos tienen fórmulas
+        foreach (var concept in concepts)
+        {
+            if (concept.PayrollFormula != null)
+            {
+                _logger.LogDebug("📝 Concepto {ConceptCode} tiene fórmula: {FormulaName} ({FormulaExpression})",
+                    concept.Code, concept.PayrollFormula.Name, concept.PayrollFormula.FormulaExpression);
+            }
+            else
+            {
+                _logger.LogDebug("📝 Concepto {ConceptCode} no tiene fórmula (Tipo cálculo: {CalculationType})",
+                    concept.Code, concept.ConceptCalculationTypeId);
+            }
+        }
+
         return concepts.ToList();
     }
 
@@ -182,12 +256,12 @@ public class CreatePayrollPeriodCommandHandler(
     }
 
     private async Task<PayrollDetail> ProcessEmployeePayroll(
-        long payrollPeriodId,
-        EmployeeInfo employee,
-        DateOnly? startDate,
-        DateOnly? endDate,
-        List<PayrollConcept> concepts,
-        CancellationToken cancellationToken)
+      long payrollPeriodId,
+      EmployeeInfo employee,
+      DateOnly? startDate,
+      DateOnly? endDate,
+      List<PayrollConcept> concepts,
+      CancellationToken cancellationToken)
     {
         try
         {
@@ -204,9 +278,14 @@ public class CreatePayrollPeriodCommandHandler(
                 return await CreateEmptyPayrollDetail(payrollPeriodId, employee, cancellationToken);
             }
 
+            // OBTENER EL AÑO DEL PERÍODO
+            var year = startDate?.Year ?? DateTime.Now.Year;
+
             // 2. CALCULAR INGRESOS Y DESCUENTOS TOTALES
-            var totalIncome = await _payrollCalculationService.CalculateTotalIncome(employee, attendanceRecords, cancellationToken);
-            var totalDeductions = await _payrollCalculationService.CalculateTotalDeductions(employee, attendanceRecords, cancellationToken);
+            var totalIncome = await _payrollCalculationService.CalculateTotalIncome(
+                employee, attendanceRecords, year, cancellationToken);
+            var totalDeductions = await _payrollCalculationService.CalculateTotalDeductions(
+                employee, attendanceRecords, year, cancellationToken);
             var netPay = totalIncome - totalDeductions;
 
             _logger.LogDebug("💰 Cálculos para {EmployeeCode}: Ingresos: S/ {Income}, Descuentos: S/ {Deductions}, Neto: S/ {NetPay}",
@@ -230,8 +309,9 @@ public class CreatePayrollPeriodCommandHandler(
             await _payrollDetailRepository.AddAsync(payrollDetail, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            // 4. CALCULAR Y CREAR DETALLES DE CONCEPTOS
-            await CalculateAndCreatePayrollDetailConcepts(payrollDetail.Id, concepts, employee, attendanceRecords, cancellationToken);
+            // 4. CALCULAR Y CREAR DETALLES DE CONCEPTOS - PASAR EL AÑO
+            await CalculateAndCreatePayrollDetailConcepts(
+                payrollDetail.Id, concepts, employee, attendanceRecords, year, cancellationToken);
 
             _logger.LogInformation("✅ Planilla procesada para {EmployeeCode}: Neto S/ {NetPay}",
                 employee.EmployeeCode, netPay);
@@ -245,33 +325,41 @@ public class CreatePayrollPeriodCommandHandler(
         }
     }
 
-    private async Task<PayrollDetail> CreateEmptyPayrollDetail(long payrollPeriodId, EmployeeInfo employee, CancellationToken cancellationToken)
-    {
-        // Crear un detalle vacío para empleados sin asistencia
-        var payrollDetail = PayrollDetail.Create(
-            payrollPeriodId,
-            employee.Id,
-            employee.CostCenterId,
-            employee.BaseSalary / 2,
-            0, // Sin ingresos
-            0, // Sin descuentos
-            0, // Neto cero
-            await GetStatusId("BORRADOR", cancellationToken),
-            (int)EstadosEnum.Activo,
-            _dateTimeProvider.CurrentTime.ToUniversalTime(),
-            "system"
-        );
+   private async Task<PayrollDetail> CreateEmptyPayrollDetail(long payrollPeriodId, EmployeeInfo employee, CancellationToken cancellationToken)
+{
+    // Obtener el año actual para consistencia
+    var year = DateTime.Now.Year;
+    
+    // Crear un detalle vacío para empleados sin asistencia
+    var payrollDetail = PayrollDetail.Create(
+        payrollPeriodId,
+        employee.Id,
+        employee.CostCenterId,
+        employee.BaseSalary / 2,
+        0, // Sin ingresos
+        0, // Sin descuentos
+        0, // Neto cero
+        await GetStatusId("BORRADOR", cancellationToken),
+        (int)EstadosEnum.Activo,
+        _dateTimeProvider.CurrentTime.ToUniversalTime(),
+        "system"
+    );
 
-        await _payrollDetailRepository.AddAsync(payrollDetail, cancellationToken);
-        return payrollDetail;
-    }
+    await _payrollDetailRepository.AddAsync(payrollDetail, cancellationToken);
+    
+    _logger.LogDebug("📄 Detalle vacío creado para empleado {EmployeeCode} año {Year}", 
+        employee.EmployeeCode, year);
+        
+    return payrollDetail;
+}
 
     private async Task CalculateAndCreatePayrollDetailConcepts(
-        long payrollDetailId,
-        List<PayrollConcept> concepts,
-        EmployeeInfo employee,
-        List<AttendanceRecord> attendance,
-        CancellationToken cancellationToken)
+     long payrollDetailId,
+     List<PayrollConcept> concepts,
+     EmployeeInfo employee,
+     List<AttendanceRecord> attendance,
+     int year, // AGREGAR ESTE PARÁMETRO
+     CancellationToken cancellationToken)
     {
         var createdConcepts = new List<PayrollDetailConcept>();
 
@@ -279,8 +367,9 @@ public class CreatePayrollPeriodCommandHandler(
         {
             try
             {
+                // PASAR EL PARÁMETRO YEAR AL SERVICIO
                 var calculatedValue = await _payrollCalculationService.CalculateConceptValue(
-                    concept, employee, attendance, cancellationToken);
+                    concept, employee, attendance, year, cancellationToken);
 
                 if (calculatedValue > 0)
                 {
@@ -299,21 +388,20 @@ public class CreatePayrollPeriodCommandHandler(
                     await _payrollDetailConceptRepository.AddAsync(detailConcept, cancellationToken);
                     createdConcepts.Add(detailConcept);
 
-                    _logger.LogDebug("📝 Concepto {ConceptCode} calculado: S/ {Value} para empleado {EmployeeCode}",
-                        concept.Code, calculatedValue, employee.EmployeeCode);
+                    _logger.LogDebug("📝 Concepto {ConceptCode} calculado: S/ {Value} para empleado {EmployeeCode} año {Year}",
+                        concept.Code, calculatedValue, employee.EmployeeCode, year);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Error al calcular concepto {ConceptCode} para empleado {EmployeeCode}",
-                    concept.Code, employee.EmployeeCode);
+                _logger.LogError(ex, "❌ Error al calcular concepto {ConceptCode} para empleado {EmployeeCode} año {Year}",
+                    concept.Code, employee.EmployeeCode, year);
             }
         }
 
-        _logger.LogDebug("📊 {ConceptsCount} conceptos creados para empleado {EmployeeCode}",
-            createdConcepts.Count, employee.EmployeeCode);
+        _logger.LogDebug("📊 {ConceptsCount} conceptos creados para empleado {EmployeeCode} año {Year}",
+            createdConcepts.Count, employee.EmployeeCode, year);
     }
-
     private async Task<List<AttendanceRecord>> GetEmployeeAttendance(
         long employeeId,
         DateOnly? startDate,
@@ -341,6 +429,7 @@ public class CreatePayrollPeriodCommandHandler(
             payrollPeriod.Update(
                 payrollPeriodId,
                 payrollPeriod.PeriodName,
+                payrollPeriod.PayrollTypeId,
                 payrollPeriod.StartDate,
                 payrollPeriod.EndDate,
                 totalAmount,

@@ -27,28 +27,28 @@ public class PayrollConceptConfiguration : IEntityTypeConfiguration<PayrollConce
             .IsRequired(false);
 
 
-         builder.HasOne(x => x.ConceptTypePayroll)
-                .WithMany()
-                .HasForeignKey(x => x.ConceptTypePayrollId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.ConceptTypePayroll)
+               .WithMany()
+               .HasForeignKey(x => x.ConceptTypePayrollId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.PayrollFormulaId)
             .IsRequired(false);
 
 
-         builder.HasOne(x => x.PayrollFormula)
-                .WithMany()
-                .HasForeignKey(x => x.PayrollFormulaId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.PayrollFormula)
+               .WithMany()
+               .HasForeignKey(x => x.PayrollFormulaId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.ConceptCalculationTypeId)
             .IsRequired(false);
 
 
-         builder.HasOne(x => x.ConceptCalculationType)
-                .WithMany()
-                .HasForeignKey(x => x.ConceptCalculationTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.ConceptCalculationType)
+               .WithMany()
+               .HasForeignKey(x => x.ConceptCalculationTypeId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.FixedValue)
             .IsRequired(false);
@@ -60,18 +60,26 @@ public class PayrollConceptConfiguration : IEntityTypeConfiguration<PayrollConce
             .IsRequired(false);
 
 
-         builder.HasOne(x => x.ConceptApplicationType)
-                .WithMany()
-                .HasForeignKey(x => x.ConceptApplicationTypesId)
-                .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.ConceptApplicationType)
+               .WithMany()
+               .HasForeignKey(x => x.ConceptApplicationTypesId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.AccountingChartId)
             .IsRequired(false);
 
 
-         builder.HasOne(x => x.AccountingChart)
+        builder.HasOne(x => x.AccountingChart)
+               .WithMany()
+               .HasForeignKey(x => x.AccountingChartId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.PayrollTypeId)
+            .IsRequired(false);
+
+        builder.HasOne(x => x.PayrollType)
                 .WithMany()
-                .HasForeignKey(x => x.AccountingChartId)
+                .HasForeignKey(x => x.PayrollTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.StatePayrollConcept)
@@ -103,6 +111,12 @@ public class PayrollConceptConfiguration : IEntityTypeConfiguration<PayrollConce
 
         builder.HasIndex(x => x.ConceptCalculationTypeId)
             .HasDatabaseName("ix_payrollconcept_conceptcalculationtypeid");
+
+        builder.HasIndex(x => x.AccountingChartId)
+            .HasDatabaseName("ix_payrollconcept_accountingchartid");
+
+        builder.HasIndex(x => x.PayrollTypeId)
+            .HasDatabaseName("ix_payrollconcept_payrolltypeid");
 
         builder.HasIndex(x => x.ConceptApplicationTypesId)
             .HasDatabaseName("ix_payrollconcept_conceptapplicationtypesid");

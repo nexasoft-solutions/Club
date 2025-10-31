@@ -21,6 +21,7 @@ public class PayrollPeriodController(ISender _sender) : ControllerBase
     {
         var command = new CreatePayrollPeriodCommand(
              request.PeriodName,
+             request.PayrollTypeId,
              request.StartDate,
              request.EndDate,
              request.CreatedBy
@@ -34,8 +35,9 @@ public class PayrollPeriodController(ISender _sender) : ControllerBase
     public async Task<IActionResult> UpdatePayrollPeriod(UpdatePayrollPeriodRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollPeriodCommand(
-           request.Id,
+             request.Id,
              request.PeriodName,
+             request.PayrollTypeId,
              request.StartDate,
              request.EndDate,
              request.TotalAmount,

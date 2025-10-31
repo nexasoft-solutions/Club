@@ -4,6 +4,7 @@ namespace NexaSoft.Club.Application.HumanResources.PayrollPeriods.Commands.Creat
 
 public sealed record CreatePayrollPeriodCommand(
     string? PeriodName,
+    long? PayrollTypeId,
     DateOnly? StartDate,
     DateOnly? EndDate,
     /*decimal TotalAmount,

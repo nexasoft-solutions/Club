@@ -34,6 +34,7 @@ public class UpdatePayrollConceptCommandHandler(
             command.PorcentajeValue,
             command.ConceptApplicationTypesId,
             command.AccountingChartId,
+            command.PayrollTypeId,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.UpdatedBy
         );

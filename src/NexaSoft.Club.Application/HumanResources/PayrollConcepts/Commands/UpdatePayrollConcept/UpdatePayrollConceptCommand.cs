@@ -13,5 +13,6 @@ public sealed record UpdatePayrollConceptCommand(
     decimal? PorcentajeValue,
     long? ConceptApplicationTypesId,
     long? AccountingChartId,
+    long? PayrollTypeId,
     string UpdatedBy
 ) : ICommand<bool>;

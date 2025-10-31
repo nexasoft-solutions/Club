@@ -5,6 +5,7 @@ namespace NexaSoft.Club.Application.HumanResources.PayrollPeriods.Commands.Updat
 public sealed record UpdatePayrollPeriodCommand(
     long Id,
     string? PeriodName,
+    long? PayrollTypeId,    
     DateOnly? StartDate,
     DateOnly? EndDate,
     decimal TotalAmount,

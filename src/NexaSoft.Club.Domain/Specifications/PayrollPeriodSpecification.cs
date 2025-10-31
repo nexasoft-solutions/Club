@@ -59,6 +59,8 @@ public class PayrollPeriodSpecification : BaseSpecification<PayrollPeriod, Payro
       AddSelect(x => new PayrollPeriodResponse(
              x.Id,
              x.PeriodName,
+             x.PayrollTypeId,
+             x.PayrollType!.Code!,
              x.StartDate,
              x.EndDate,
              x.TotalAmount,

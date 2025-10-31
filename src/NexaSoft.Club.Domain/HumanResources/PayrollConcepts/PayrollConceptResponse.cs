@@ -16,6 +16,8 @@ public sealed record PayrollConceptResponse(
     string? ConceptApplicationTypeCode,
     long? AccountingChartId,
     string? AccountName,
+    long? PayrollTypeId,
+    string? PayrollTypeCode,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,

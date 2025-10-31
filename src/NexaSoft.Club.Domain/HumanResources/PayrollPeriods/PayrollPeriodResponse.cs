@@ -3,6 +3,8 @@ namespace NexaSoft.Club.Domain.HumanResources.PayrollPeriods;
 public sealed record PayrollPeriodResponse(
     long Id,
     string? PeriodName,
+    long? PayrollTypeId,
+    string? PayrollTypeCode,
     DateOnly? StartDate,
     DateOnly? EndDate,
     decimal TotalAmount,

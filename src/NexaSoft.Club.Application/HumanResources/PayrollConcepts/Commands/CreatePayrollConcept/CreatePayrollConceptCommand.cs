@@ -12,5 +12,6 @@ public sealed record CreatePayrollConceptCommand(
     decimal? PorcentajeValue,
     long? ConceptApplicationTypesId,
     long? AccountingChartId,
+    long? PayrollTypeId,
     string CreatedBy
 ) : ICommand<long>;

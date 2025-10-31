@@ -3360,6 +3360,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("payroll_formula_id");
 
+                    b.Property<long?>("PayrollTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("payroll_type_id");
+
                     b.Property<decimal?>("PorcentajeValue")
                         .HasColumnType("numeric")
                         .HasColumnName("porcentaje_value");
@@ -3381,7 +3385,7 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasName("pk_payroll_concepts");
 
                     b.HasIndex("AccountingChartId")
-                        .HasDatabaseName("ix_payroll_concepts_accounting_chart_id");
+                        .HasDatabaseName("ix_payrollconcept_accountingchartid");
 
                     b.HasIndex("Code")
                         .HasDatabaseName("ix_payrollconcept_code");
@@ -3400,6 +3404,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
                     b.HasIndex("PayrollFormulaId")
                         .HasDatabaseName("ix_payrollconcept_payrollformulaid");
+
+                    b.HasIndex("PayrollTypeId")
+                        .HasDatabaseName("ix_payrollconcept_payrolltypeid");
 
                     b.ToTable("payroll_concepts", (string)null);
                 });
@@ -3949,6 +3956,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("date")
                         .HasColumnName("end_date");
 
+                    b.Property<long?>("PayrollTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("payroll_type_id");
+
                     b.Property<string>("PeriodName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -3985,6 +3996,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_payroll_periods");
+
+                    b.HasIndex("PayrollTypeId")
+                        .HasDatabaseName("ix_payrollperiod_payrolltypeid");
 
                     b.HasIndex("PeriodName")
                         .HasDatabaseName("ix_payrollperiod_periodname");
@@ -4060,6 +4074,73 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasDatabaseName("ix_payrollstatustype_name");
 
                     b.ToTable("payroll_status_types", (string)null);
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.PayrollTypes.PayrollType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("StatePayrollType")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_payroll_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_payroll_types");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_payrolltype_code");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_payrolltype_name");
+
+                    b.ToTable("payroll_types", (string)null);
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.Positions.Position", b =>
@@ -7055,6 +7136,12 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_payroll_concepts_payroll_formula_payroll_formula_id");
 
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.PayrollTypes.PayrollType", "PayrollType")
+                        .WithMany()
+                        .HasForeignKey("PayrollTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_payroll_concepts_payroll_type_payroll_type_id");
+
                     b.Navigation("AccountingChart");
 
                     b.Navigation("ConceptApplicationType");
@@ -7064,6 +7151,8 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.Navigation("ConceptTypePayroll");
 
                     b.Navigation("PayrollFormula");
+
+                    b.Navigation("PayrollType");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.PayrollConfigs.PayrollConfig", b =>
@@ -7199,11 +7288,19 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Club.Domain.HumanResources.PayrollPeriods.PayrollPeriod", b =>
                 {
+                    b.HasOne("NexaSoft.Club.Domain.HumanResources.PayrollTypes.PayrollType", "PayrollType")
+                        .WithMany()
+                        .HasForeignKey("PayrollTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_payroll_periods_payroll_type_payroll_type_id");
+
                     b.HasOne("NexaSoft.Club.Domain.HumanResources.PayrollPeriodStatuses.PayrollPeriodStatus", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_payroll_periods_payroll_period_status_status_id");
+
+                    b.Navigation("PayrollType");
 
                     b.Navigation("Status");
                 });

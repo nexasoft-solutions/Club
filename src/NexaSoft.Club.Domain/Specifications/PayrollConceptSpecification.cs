@@ -71,6 +71,8 @@ public class PayrollConceptSpecification : BaseSpecification<PayrollConcept, Pay
              x.ConceptApplicationType!.Code!,
              x.AccountingChartId,
              x.AccountingChart!.AccountName!,
+             x.PayrollTypeId,
+             x.PayrollType!.Code!,
              x.CreatedAt,
              x.UpdatedAt,
              x.CreatedBy,

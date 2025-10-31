@@ -26,6 +26,7 @@ public class UpdatePayrollPeriodCommandHandler(
         entity.Update(
             command.Id,
             command.PeriodName,
+            command.PayrollTypeId,
             command.StartDate,
             command.EndDate,
             command.TotalAmount,

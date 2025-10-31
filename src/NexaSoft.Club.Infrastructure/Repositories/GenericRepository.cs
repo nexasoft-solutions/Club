@@ -1,4 +1,3 @@
-// GenericRepository.cs - VERSIÓN CORREGIDA
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NexaSoft.Club.Domain.Abstractions;
@@ -23,6 +22,26 @@ public class GenericRepository<T>(ApplicationDbContext _dbContext) : IGenericRep
         var query = ApplyGlobalFilter(_dbContext.Set<T>());
         return await query.ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<T>> ListAsync(
+    Expression<Func<T, bool>> predicate,
+    string[]? includes,
+    CancellationToken cancellationToken)
+    {
+        IQueryable<T> query = ApplyGlobalFilter(_dbContext.Set<T>());
+
+        // Aplicar includes si existen
+        if (includes is not null)
+        {
+            foreach (var include in includes)
+                query = query.Include(include);
+        }
+
+        query = query.Where(predicate);
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
 
     public async Task<T?> GetEntityWithSpec(ISpecification<T> spec, CancellationToken cancellationToken)
     {
@@ -84,6 +103,13 @@ public class GenericRepository<T>(ApplicationDbContext _dbContext) : IGenericRep
         query = spec.ApplyCriteria(query);
         return await query.CountAsync(cancellationToken);
     }
+
+    public async Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
+    {
+        var query = ApplyGlobalFilter(_dbContext.Set<T>());
+        return await query.CountAsync(predicate, cancellationToken);
+    }
+
 
     public async Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
     {

@@ -34,8 +34,15 @@ public class PayrollPeriodConfiguration : IEntityTypeConfiguration<PayrollPeriod
         builder.Property(x => x.StatusId)
             .IsRequired(false);
 
+        builder.Property(x => x.PayrollTypeId)
+            .IsRequired(false);    
 
-         builder.HasOne(x => x.Status)
+        builder.HasOne(x => x.PayrollType)
+               .WithMany()
+               .HasForeignKey(x => x.PayrollTypeId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Status)
                 .WithMany()
                 .HasForeignKey(x => x.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -57,6 +64,9 @@ public class PayrollPeriodConfiguration : IEntityTypeConfiguration<PayrollPeriod
 
         builder.HasIndex(x => x.PeriodName)
             .HasDatabaseName("ix_payrollperiod_periodname");
+            
+        builder.HasIndex(x => x.PayrollTypeId)
+            .HasDatabaseName("ix_payrollperiod_payrolltypeid");
 
         builder.HasIndex(x => x.StatusId)
             .HasDatabaseName("ix_payrollperiod_statusid");

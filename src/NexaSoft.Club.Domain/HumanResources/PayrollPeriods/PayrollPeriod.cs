@@ -2,6 +2,7 @@ using NexaSoft.Club.Domain.Abstractions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Domain.Masters.Statuses;
 using NexaSoft.Club.Domain.HumanResources.PayrollPeriodStatuses;
+using NexaSoft.Club.Domain.HumanResources.PayrollTypes;
 
 namespace NexaSoft.Club.Domain.HumanResources.PayrollPeriods;
 
@@ -14,18 +15,22 @@ public class PayrollPeriod : Entity
     public int? TotalEmployees { get; private set; }
     public long? StatusId { get; private set; }
     public PayrollPeriodStatus? Status { get; private set; }
+    public long? PayrollTypeId { get; private set; }
+    public PayrollType? PayrollType { get; private set; }   
     public int StatePayrollPeriod { get; private set; }
 
+    
     private PayrollPeriod() { }
 
     private PayrollPeriod(
-        string? periodName, 
-        DateOnly? startDate, 
-        DateOnly? endDate, 
-        decimal totalAmount, 
-        int? totalEmployees, 
-        long? statusId, 
-        int statePayrollPeriod, 
+        string? periodName,
+        long? payrollTypeId,
+        DateOnly? startDate,
+        DateOnly? endDate,
+        decimal totalAmount,
+        int? totalEmployees,
+        long? statusId,
+        int statePayrollPeriod,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -33,6 +38,7 @@ public class PayrollPeriod : Entity
     ) : base(createdAt, createdBy, updatedBy, deletedBy)
     {
         PeriodName = periodName;
+        PayrollTypeId = payrollTypeId;
         StartDate = startDate;
         EndDate = endDate;
         TotalAmount = totalAmount;
@@ -46,19 +52,21 @@ public class PayrollPeriod : Entity
     }
 
     public static PayrollPeriod Create(
-        string? periodName, 
-        DateOnly? startDate, 
-        DateOnly? endDate, 
-        decimal totalAmount, 
-        int? totalEmployees, 
-        long? statusId, 
-        int statePayrollPeriod, 
+        string? periodName,
+        long? payrollTypeId,
+        DateOnly? startDate,
+        DateOnly? endDate,
+        decimal totalAmount,
+        int? totalEmployees,
+        long? statusId,
+        int statePayrollPeriod,
         DateTime createdAd,
         string? createdBy
     )
     {
         var entity = new PayrollPeriod(
             periodName,
+            payrollTypeId,
             startDate,
             endDate,
             totalAmount,
@@ -73,17 +81,19 @@ public class PayrollPeriod : Entity
 
     public Result Update(
         long Id,
-        string? periodName, 
-        DateOnly? startDate, 
-        DateOnly? endDate, 
-        decimal totalAmount, 
-        int? totalEmployees, 
-        long? statusId, 
+        string? periodName,
+        long? payrollTypeId,
+        DateOnly? startDate,
+        DateOnly? endDate,
+        decimal totalAmount,
+        int? totalEmployees,
+        long? statusId,
         DateTime utcNow,
         string? updatedBy
     )
     {
         PeriodName = periodName;
+        PayrollTypeId = payrollTypeId;
         StartDate = startDate;
         EndDate = endDate;
         TotalAmount = totalAmount;
