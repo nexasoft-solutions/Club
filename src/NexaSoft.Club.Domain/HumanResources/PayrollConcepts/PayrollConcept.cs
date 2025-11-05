@@ -27,8 +27,8 @@ public class PayrollConcept : Entity
     public AccountingChart? AccountingChart { get; private set; }
     public int StatePayrollConcept { get; private set; }
 
-    public long? PayrollTypeId { get; private set; }
-    public PayrollType? PayrollType { get; private set; }   
+    /*public long? PayrollTypeId { get; private set; }
+    public PayrollType? PayrollType { get; private set; }   */
 
     private PayrollConcept() { }
 
@@ -42,7 +42,7 @@ public class PayrollConcept : Entity
         decimal? porcentajeValue,
         long? conceptApplicationTypesId,
         long? accountingChartId,
-        long? payrollTypeId,
+        //long? payrollTypeId,
         int statePayrollConcept,
         DateTime createdAt,
         string? createdBy,
@@ -59,7 +59,7 @@ public class PayrollConcept : Entity
         PorcentajeValue = porcentajeValue;
         ConceptApplicationTypesId = conceptApplicationTypesId;
         AccountingChartId = accountingChartId;
-        PayrollTypeId = payrollTypeId;
+        //PayrollTypeId = payrollTypeId;
         StatePayrollConcept = statePayrollConcept;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
@@ -77,7 +77,7 @@ public class PayrollConcept : Entity
         decimal? porcentajeValue,
         long? conceptApplicationTypesId,
         long? accountingChartId,
-        long? payrollTypeId,
+        //long? payrollTypeId,
         int statePayrollConcept,
         DateTime createdAd,
         string? createdBy
@@ -93,7 +93,7 @@ public class PayrollConcept : Entity
             porcentajeValue,
             conceptApplicationTypesId,
             accountingChartId,
-            payrollTypeId,
+            //payrollTypeId,
             statePayrollConcept,
             createdAd,
             createdBy
@@ -112,7 +112,7 @@ public class PayrollConcept : Entity
         decimal? porcentajeValue,
         long? conceptApplicationTypesId,
         long? accountingChartId,
-        long? payrollTypeId,
+        //long? payrollTypeId,
         DateTime utcNow,
         string? updatedBy
     )
@@ -126,7 +126,7 @@ public class PayrollConcept : Entity
         PorcentajeValue = porcentajeValue;
         ConceptApplicationTypesId = conceptApplicationTypesId;
         AccountingChartId = accountingChartId;
-        PayrollTypeId = payrollTypeId;
+        //PayrollTypeId = payrollTypeId;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;
 

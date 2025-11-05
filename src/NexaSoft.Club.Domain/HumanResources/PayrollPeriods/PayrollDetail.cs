@@ -2,11 +2,11 @@ using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.HumanResources.CostCenters;
 using NexaSoft.Club.Domain.HumanResources.EmployeesInfo;
 using NexaSoft.Club.Domain.Masters.Statuses;
-using static NexaSoft.Club.Domain.Shareds.Enums;
+
 
 namespace NexaSoft.Club.Domain.HumanResources.PayrollPeriods;
 
-public class PayrollDetail: Entity
+public class PayrollDetail : Entity
 {
     public long PayrollPeriodId { get; private set; }
     public long EmployeeId { get; private set; }
@@ -28,6 +28,9 @@ public class PayrollDetail: Entity
 
     public int StatePayrollDetail { get; private set; }
 
+    public virtual ICollection<PayrollDetailConcept> PayrollDetailConcepts { get; private set; } 
+    = new List<PayrollDetailConcept>();
+
     private PayrollDetail() { }
 
     private PayrollDetail(
@@ -41,7 +44,7 @@ public class PayrollDetail: Entity
         long? statusId,
         int statePayrollDetail,
         DateTime createdAt,
-        string? createdBy     
+        string? createdBy
     ) : base(createdAt, createdBy)
     {
         PayrollPeriodId = payrollPeriodId;
@@ -51,7 +54,7 @@ public class PayrollDetail: Entity
         TotalIncome = totalIncome;
         TotalDeductions = totalDeductions;
         NetPay = netPay;
-        StatusId = statusId;        
+        StatusId = statusId;
         StatePayrollDetail = statePayrollDetail;
     }
 
@@ -82,6 +85,22 @@ public class PayrollDetail: Entity
             createdAt,
             createdBy
         );
+    }
+
+
+
+    public void UpdateTotals(decimal totalIncome, decimal totalDeductions, decimal netPay)
+    {
+        this.TotalIncome = totalIncome;
+        this.TotalDeductions = totalDeductions;
+        this.NetPay = netPay;
+    }
+
+    public void MarkAsProcessed()
+    {
+        // Lógica para marcar como procesado
+        this.StatusId = 2; // PROCESADO
+        this.UpdatedAt = DateTime.UtcNow;
     }
 
     /*public Result Update(

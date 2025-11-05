@@ -3,7 +3,6 @@ using NexaSoft.Club.Application.Abstractions.Messaging;
 namespace NexaSoft.Club.Application.HumanResources.EmployeesInfo.Commands.CreateEmployeeInfo;
 
 public sealed record CreateEmployeeInfoCommand(
-    string? EmployeeCode,
     long? UserId,
     long? PositionId,
     long? EmployeeTypeId,
@@ -18,5 +17,6 @@ public sealed record CreateEmployeeInfoCommand(
     string? CciNumber,
     long? CompanyId,
     long? CostCenterId,
+    bool? IsFamilyAllowance,
     string CreatedBy
 ) : ICommand<long>;

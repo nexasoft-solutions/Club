@@ -7,6 +7,7 @@ public sealed record CreatePayrollFormulaCommand(
     string? Name,
     string? FormulaExpression,
     string? Description,
+    string? RequiredVariables,
     string? Variables,
     string CreatedBy
 ) : ICommand<long>;

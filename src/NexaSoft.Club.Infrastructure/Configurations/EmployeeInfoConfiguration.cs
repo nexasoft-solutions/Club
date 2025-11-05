@@ -121,6 +121,11 @@ public class EmployeeInfoConfiguration : IEntityTypeConfiguration<EmployeeInfo>
         builder.Property(x => x.StateEmployeeInfo)
             .IsRequired();
 
+        builder.Property(x => x.IsFamilyAllowance)
+            .IsRequired(false);
+
+       
+
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(40)
             .IsRequired(false);

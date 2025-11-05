@@ -17,15 +17,16 @@ public class PayrollFormulaController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreatePayrollFormula(CreatePayrollFormulaRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreatePayrollFormula(CreatePayrollFormulaRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePayrollFormulaCommand(
              request.Code,
              request.Name,
              request.FormulaExpression,
              request.Description,
+             request.RequiredVariables,
              request.Variables,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -33,14 +34,15 @@ public class PayrollFormulaController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePayrollFormula(UpdatePayrollFormulaRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdatePayrollFormula(UpdatePayrollFormulaRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollFormulaCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.FormulaExpression,
              request.Description,
+             request.RequiredVariables,
              request.Variables,
              request.UpdatedBy
         );
@@ -50,7 +52,7 @@ public class PayrollFormulaController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePayrollFormula(DeletePayrollFormulaRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeletePayrollFormula(DeletePayrollFormulaRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePayrollFormulaCommand(
              request.Id,
@@ -74,11 +76,11 @@ public class PayrollFormulaController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPayrollFormula(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetPayrollFormula(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPayrollFormulaQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

@@ -15,13 +15,13 @@ public class UpdateEmploymentContractCommandHandler(
 {
     public async Task<Result<bool>> Handle(UpdateEmploymentContractCommand command, CancellationToken cancellationToken)
     {
-            _logger.LogInformation("Iniciando proceso de actualización de EmploymentContract con ID {EmploymentContractId}", command.Id);
+        _logger.LogInformation("Iniciando proceso de actualización de EmploymentContract con ID {EmploymentContractId}", command.Id);
         var entity = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            if (entity is null)
-            {
+        if (entity is null)
+        {
             _logger.LogWarning("EmploymentContract con ID {EmploymentContractId} no encontrado", command.Id);
-                return Result.Failure<bool>(EmploymentContractErrores.NoEncontrado);
-            }
+            return Result.Failure<bool>(EmploymentContractErrores.NoEncontrado);
+        }
 
         entity.Update(
             command.Id,
@@ -31,6 +31,7 @@ public class UpdateEmploymentContractCommandHandler(
             command.EndDate,
             command.Salary,
             command.WorkingHours,
+            command.IsActive,
             command.DocumentPath,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.UpdatedBy
@@ -49,7 +50,7 @@ public class UpdateEmploymentContractCommandHandler(
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            _logger.LogError(ex,"Error al actualizar EmploymentContract con ID {EmploymentContractId}", command.Id);
+            _logger.LogError(ex, "Error al actualizar EmploymentContract con ID {EmploymentContractId}", command.Id);
             return Result.Failure<bool>(EmploymentContractErrores.ErrorEdit);
         }
     }

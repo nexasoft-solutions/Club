@@ -8,19 +8,23 @@ public class PayrollFormula : Entity
     public string? Code { get; private set; }
     public string? Name { get; private set; }
     public string? FormulaExpression { get; private set; }
-    public string? Description { get; private set; }
+    public string? Description { get; private set; }    
+    public string? RequiredVariables { get; private set; }
     public string? Variables { get; private set; }
     public int StatePayrollFormula { get; private set; }
+    
+
 
     private PayrollFormula() { }
 
     private PayrollFormula(
-        string? code, 
-        string? name, 
-        string? formulaExpression, 
-        string? description, 
-        string? variables, 
-        int statePayrollFormula, 
+        string? code,
+        string? name,
+        string? formulaExpression,
+        string? description,
+        string? variables,
+        string? requiredVariables,  
+        int statePayrollFormula,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -31,6 +35,7 @@ public class PayrollFormula : Entity
         Name = name;
         FormulaExpression = formulaExpression;
         Description = description;
+        RequiredVariables = requiredVariables;
         Variables = variables;
         StatePayrollFormula = statePayrollFormula;
         CreatedAt = createdAt;
@@ -40,12 +45,13 @@ public class PayrollFormula : Entity
     }
 
     public static PayrollFormula Create(
-        string? code, 
-        string? name, 
-        string? formulaExpression, 
-        string? description, 
-        string? variables, 
-        int statePayrollFormula, 
+        string? code,
+        string? name,
+        string? formulaExpression,
+        string? description,
+        string? requiredVariables,
+        string? variables,
+        int statePayrollFormula,
         DateTime createdAd,
         string? createdBy
     )
@@ -55,6 +61,7 @@ public class PayrollFormula : Entity
             name,
             formulaExpression,
             description,
+            requiredVariables,
             variables,
             statePayrollFormula,
             createdAd,
@@ -65,11 +72,12 @@ public class PayrollFormula : Entity
 
     public Result Update(
         long Id,
-        string? code, 
-        string? name, 
-        string? formulaExpression, 
-        string? description, 
-        string? variables, 
+        string? code,
+        string? name,
+        string? formulaExpression,
+        string? description,
+        string? requiredVariables,
+        string? variables,
         DateTime utcNow,
         string? updatedBy
     )
@@ -78,6 +86,7 @@ public class PayrollFormula : Entity
         Name = name;
         FormulaExpression = formulaExpression;
         Description = description;
+        RequiredVariables = requiredVariables;
         Variables = variables;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;

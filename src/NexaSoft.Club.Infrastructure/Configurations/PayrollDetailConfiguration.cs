@@ -51,7 +51,7 @@ public class PayrollDetailConfiguration: IEntityTypeConfiguration<PayrollDetail>
 
         // Relaciones
         builder.HasOne(x => x.PayrollPeriod)
-            .WithMany()
+            .WithMany(d => d.PayrollDetails)
             .HasForeignKey(x => x.PayrollPeriodId)
             .OnDelete(DeleteBehavior.Restrict);
 

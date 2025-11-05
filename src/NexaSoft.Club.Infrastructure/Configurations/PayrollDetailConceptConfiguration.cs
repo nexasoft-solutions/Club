@@ -39,7 +39,7 @@ public class PayrollDetailConceptConfiguration: IEntityTypeConfiguration<Payroll
 
         // Relaciones
         builder.HasOne(x => x.PayrollDetail)
-            .WithMany()
+            .WithMany(x => x.PayrollDetailConcepts)
             .HasForeignKey(x => x.PayrollDetailId)
             .OnDelete(DeleteBehavior.Cascade);
 

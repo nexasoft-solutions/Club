@@ -11,6 +11,7 @@ public sealed record EmploymentContractResponse(
     decimal Salary,
     int WorkingHours,
     string? DocumentPath,
+    bool? IsActive,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,

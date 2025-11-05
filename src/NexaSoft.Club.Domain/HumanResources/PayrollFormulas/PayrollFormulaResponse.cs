@@ -6,6 +6,7 @@ public sealed record PayrollFormulaResponse(
     string? Name,
     string? FormulaExpression,
     string? Description,
+    string? RequiredVariables,
     string? Variables,
     DateTime CreatedAt,
     DateTime? UpdatedAt,

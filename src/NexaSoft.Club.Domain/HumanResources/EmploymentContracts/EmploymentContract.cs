@@ -16,19 +16,22 @@ public class EmploymentContract : Entity
     public decimal Salary { get; private set; }
     public int WorkingHours { get; private set; }
     public string? DocumentPath { get; private set; }
+
+    public bool? IsActive { get; private set; }  
     public int StateEmploymentContract { get; private set; }
 
     private EmploymentContract() { }
 
     private EmploymentContract(
-        long? employeeId, 
-        long? contractTypeId, 
-        DateOnly startDate, 
-        DateOnly? endDate, 
-        decimal salary, 
-        int workingHours, 
-        string? documentPath, 
-        int stateEmploymentContract, 
+        long? employeeId,
+        long? contractTypeId,
+        DateOnly startDate,
+        DateOnly? endDate,
+        decimal salary,
+        int workingHours,
+        string? documentPath,
+        bool? isActive,
+        int stateEmploymentContract,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -42,6 +45,7 @@ public class EmploymentContract : Entity
         Salary = salary;
         WorkingHours = workingHours;
         DocumentPath = documentPath;
+        IsActive = isActive;
         StateEmploymentContract = stateEmploymentContract;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
@@ -50,14 +54,15 @@ public class EmploymentContract : Entity
     }
 
     public static EmploymentContract Create(
-        long? employeeId, 
-        long? contractTypeId, 
-        DateOnly startDate, 
-        DateOnly? endDate, 
-        decimal salary, 
-        int workingHours, 
-        string? documentPath, 
-        int stateEmploymentContract, 
+        long? employeeId,
+        long? contractTypeId,
+        DateOnly startDate,
+        DateOnly? endDate,
+        decimal salary,
+        int workingHours,
+        string? documentPath,
+        bool? isActive,
+        int stateEmploymentContract,
         DateTime createdAd,
         string? createdBy
     )
@@ -70,6 +75,7 @@ public class EmploymentContract : Entity
             salary,
             workingHours,
             documentPath,
+            isActive,
             stateEmploymentContract,
             createdAd,
             createdBy
@@ -79,13 +85,14 @@ public class EmploymentContract : Entity
 
     public Result Update(
         long Id,
-        long? employeeId, 
-        long? contractTypeId, 
-        DateOnly startDate, 
-        DateOnly? endDate, 
-        decimal salary, 
-        int workingHours, 
-        string? documentPath, 
+        long? employeeId,
+        long? contractTypeId,
+        DateOnly startDate,
+        DateOnly? endDate,
+        decimal salary,
+        int workingHours,
+        bool? isActive,
+        string? documentPath,
         DateTime utcNow,
         string? updatedBy
     )
@@ -97,6 +104,7 @@ public class EmploymentContract : Entity
         Salary = salary;
         WorkingHours = workingHours;
         DocumentPath = documentPath;
+        IsActive = isActive;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;
 

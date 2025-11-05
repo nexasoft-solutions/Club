@@ -6,6 +6,7 @@ public sealed record UpdatePayrollFormulaRequest(
     string? Name,
     string? FormulaExpression,
     string? Description,
+    string? RequiredVariables,
     string? Variables,
     string UpdatedBy
 );

@@ -8,6 +8,7 @@ public sealed record UpdatePayrollFormulaCommand(
     string? Name,
     string? FormulaExpression,
     string? Description,
+    string? RequiredVariables,
     string? Variables,
     string UpdatedBy
 ) : ICommand<bool>;

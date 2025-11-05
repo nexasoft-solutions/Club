@@ -19,23 +19,24 @@ public class CreatePayrollFormulaCommandHandler(
 
         _logger.LogInformation("Iniciando proceso de creación de PayrollFormula");
 
-     bool existsCode = await _repository.ExistsAsync(c => c.Code == command.Code, cancellationToken);
-     if (existsCode)
-     {
-       return Result.Failure<long>(PayrollFormulaErrores.Duplicado);
-     }
+        bool existsCode = await _repository.ExistsAsync(c => c.Code == command.Code, cancellationToken);
+        if (existsCode)
+        {
+            return Result.Failure<long>(PayrollFormulaErrores.Duplicado);
+        }
 
-     bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
-     if (existsName)
-     {
-       return Result.Failure<long>(PayrollFormulaErrores.Duplicado);
-     }
+        bool existsName = await _repository.ExistsAsync(c => c.Name == command.Name, cancellationToken);
+        if (existsName)
+        {
+            return Result.Failure<long>(PayrollFormulaErrores.Duplicado);
+        }
 
         var entity = PayrollFormula.Create(
             command.Code,
             command.Name,
             command.FormulaExpression,
             command.Description,
+            command.RequiredVariables,
             command.Variables,
             (int)EstadosEnum.Activo,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),

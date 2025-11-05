@@ -10,5 +10,6 @@ public sealed record CreateEmploymentContractCommand(
     decimal Salary,
     int WorkingHours,
     string? DocumentPath,
+    bool? IsActive,
     string CreatedBy
 ) : ICommand<long>;

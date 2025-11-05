@@ -27,7 +27,8 @@ public class EmploymentContractController(ISender _sender) : ControllerBase
              request.Salary,
              request.WorkingHours,
              request.DocumentPath,
-    request.CreatedBy
+             request.IsActive,
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -38,7 +39,7 @@ public class EmploymentContractController(ISender _sender) : ControllerBase
    public async Task<IActionResult> UpdateEmploymentContract(UpdateEmploymentContractRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateEmploymentContractCommand(
-           request.Id,
+             request.Id,
              request.EmployeeId,
              request.ContractTypeId,
              request.StartDate,
@@ -46,6 +47,7 @@ public class EmploymentContractController(ISender _sender) : ControllerBase
              request.Salary,
              request.WorkingHours,
              request.DocumentPath,
+             request.IsActive,
              request.UpdatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);

@@ -74,13 +74,13 @@ public class PayrollConceptConfiguration : IEntityTypeConfiguration<PayrollConce
                .HasForeignKey(x => x.AccountingChartId)
                .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(x => x.PayrollTypeId)
+        /*builder.Property(x => x.PayrollTypeId)
             .IsRequired(false);
 
         builder.HasOne(x => x.PayrollType)
                 .WithMany()
                 .HasForeignKey(x => x.PayrollTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);*/
 
         builder.Property(x => x.StatePayrollConcept)
             .IsRequired();
@@ -115,8 +115,8 @@ public class PayrollConceptConfiguration : IEntityTypeConfiguration<PayrollConce
         builder.HasIndex(x => x.AccountingChartId)
             .HasDatabaseName("ix_payrollconcept_accountingchartid");
 
-        builder.HasIndex(x => x.PayrollTypeId)
-            .HasDatabaseName("ix_payrollconcept_payrolltypeid");
+        /*builder.HasIndex(x => x.PayrollTypeId)
+            .HasDatabaseName("ix_payrollconcept_payrolltypeid");*/
 
         builder.HasIndex(x => x.ConceptApplicationTypesId)
             .HasDatabaseName("ix_payrollconcept_conceptapplicationtypesid");

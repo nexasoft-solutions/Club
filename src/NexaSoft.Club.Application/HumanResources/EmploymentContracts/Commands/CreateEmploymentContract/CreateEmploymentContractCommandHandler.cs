@@ -33,6 +33,7 @@ public class CreateEmploymentContractCommandHandler(
             command.Salary,
             command.WorkingHours,
             command.DocumentPath,
+            command.IsActive,
             (int)EstadosEnum.Activo,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.CreatedBy

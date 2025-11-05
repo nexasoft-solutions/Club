@@ -31,7 +31,9 @@ public class PayrollPeriodErrores
 
 
 
-
+    public static readonly Error ErrorPreview = new(
+        "PayrollPeriod.ErrorPreview",
+        "Error al generar la previsualización del período de planilla");
 
 
     public static readonly Error ErrorSave = new(

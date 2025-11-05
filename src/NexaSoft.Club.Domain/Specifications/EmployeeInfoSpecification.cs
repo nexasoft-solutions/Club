@@ -56,11 +56,11 @@ public class EmployeeInfoSpecification : BaseSpecification<EmployeeInfo, Employe
             // Aplicar ordenamiento
             switch (specParams.Sort)
             {
-                case "employeecodeasc":
-                    AddOrderBy(x => x.EmployeeCode!);
+                case "employeeNameasc":
+                    AddOrderBy(x => x.User!.FullName!);
                     break;
-                case "employeecodedesc":
-                    AddOrderByDescending(x => x.EmployeeCode!);
+                case "employeeNamedesc":
+                    AddOrderByDescending(x => x.User!.FullName!);
                     break;
                 default:
                     AddOrderBy(x => x.EmployeeCode!);
@@ -72,7 +72,8 @@ public class EmployeeInfoSpecification : BaseSpecification<EmployeeInfo, Employe
                x.Id,
                x.EmployeeCode,
                x.UserId,
-               x.User!.UserName!,
+               x.User!.FullName,
+               x.User!.Dni,
                x.PositionId,
                x.Position!.Code!,
                x.EmployeeTypeId,
@@ -95,6 +96,9 @@ public class EmployeeInfoSpecification : BaseSpecification<EmployeeInfo, Employe
                x.Company!.BusinessName!,
                x.CostCenterId,
                x.CostCenter!.Code!,
+               x.IsFamilyAllowance,
+               x.Contracts!.Where(c => c.IsActive ?? false).FirstOrDefault()!.ContractTypeId!,
+               x.Contracts!.Where(c => c.IsActive ?? false).FirstOrDefault()!.ContractType!.Code!,
                x.CreatedAt,
                x.UpdatedAt,
                x.CreatedBy,

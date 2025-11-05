@@ -10,6 +10,6 @@ public sealed record CreatePayrollConceptRequest(
     decimal? PorcentajeValue,
     long? ConceptApplicationTypesId,
     long? AccountingChartId,
-    long? PayrollTypeId,
+    //long? PayrollTypeId,
     string CreatedBy
 );

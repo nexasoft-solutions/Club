@@ -8,5 +8,6 @@ public sealed record CreateEmploymentContractRequest(
     decimal Salary,
     int WorkingHours,
     string? DocumentPath,
+    bool? IsActive,
     string CreatedBy
 );

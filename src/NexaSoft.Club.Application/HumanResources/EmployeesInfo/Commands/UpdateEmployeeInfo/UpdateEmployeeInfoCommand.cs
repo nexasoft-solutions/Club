@@ -19,5 +19,6 @@ public sealed record UpdateEmployeeInfoCommand(
     string? Cci_Number,
     long? CompanyId,
     long? CostCenterId,
+    bool? IsFamilyAllowance,
     string UpdatedBy
 ) : ICommand<bool>;

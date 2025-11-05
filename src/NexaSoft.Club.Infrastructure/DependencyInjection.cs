@@ -15,6 +15,7 @@ using NexaSoft.Club.Application.Features.Payments.Services;
 using NexaSoft.Club.Application.Features.Reservations.Background;
 using NexaSoft.Club.Application.Features.Reservations.Services;
 using NexaSoft.Club.Application.HumanResources.LegalParameters;
+using NexaSoft.Club.Application.HumanResources.PayrollPeriods.Background;
 using NexaSoft.Club.Application.HumanResources.PayrollPeriods.Services;
 using NexaSoft.Club.Application.Masters.MenuItems;
 using NexaSoft.Club.Application.Masters.Roles;
@@ -204,10 +205,11 @@ public static class DependencyInjection
         services.AddScoped<IUserRoleRepository, UserRoleRepository>();
         services.AddScoped<IMenuItemRepository, MenuItemRepository>();
         services.AddScoped<IAuthService, AuthService>();
-        //services.AddScoped(typeof(IPdfReportGenerator<>), typeof(PdfReportGenerator<>));
+       
         //services.AddScoped<IStudyTreePdfReportGenerator, StudyTreePdfReportGenerator>();
         services.AddScoped<IReceiptThermalService, ReceiptThermalService>();
         services.AddScoped<IReceiptGenericService, ReceiptGenericService>();
+        services.AddScoped<IPayrollReceiptService, PayrollReceiptService>();
 
         services.AddSingleton<IFileStorageService, MinioStorageService>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -221,6 +223,8 @@ public static class DependencyInjection
         services.AddSingleton<IMemberBackgroundTaskService, MemberBackgroundTaskService>();
         services.AddScoped<IMemberFeesBackgroundGenerator, MemberFeesBackgroundGenerator>();
         services.AddScoped<IMemberUserBackgroundGenerator, MemberUserBackgroundGenerator>();
+        services.AddScoped<IPayrollBackgroundProcessor, PayrollBackgroundProcessor>();
+        services.AddScoped<IPayrollBackgroundTaskService, PayrollBackgroundTaskService>();
 
         services.AddScoped<IReservationBackgroundTaskService, ReservationBackgroundTaskService>();
         services.AddScoped<IReservationBackgroundProcessor, ReservationBackgroundProcessor>();

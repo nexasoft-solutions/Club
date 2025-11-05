@@ -70,7 +70,16 @@ public class PayrollPeriodSpecification : BaseSpecification<PayrollPeriod, Payro
              x.CreatedAt,
              x.UpdatedAt,
              x.CreatedBy,
-             x.UpdatedBy
+             x.UpdatedBy,
+             x.PayrollDetails.Select(d => new PayrollDetailItemResponse(
+                    d.Id,
+                    d.EmployeeId,
+                    d.Employee!.EmployeeCode,
+                    d.BaseSalary ?? 0,
+                    d.TotalIncome ?? 0,
+                    d.TotalDeductions ?? 0,
+                    d.NetPay ?? 0
+            )).ToList()            
        ));
    }
 }

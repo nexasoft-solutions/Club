@@ -15,7 +15,7 @@ public class GetEmployeesInfoQueryHandler(
         try
         {
             var spec = new EmployeeInfoSpecification(query.SpecParams);
-            var responses = await _repository.ListAsync<EmployeeInfoResponse>(spec,cancellationToken);
+            var responses = await _repository.ListAsync(spec,cancellationToken);
             var totalItems = await _repository.CountAsync(spec, cancellationToken);
 
             var pagination = new Pagination<EmployeeInfoResponse>(

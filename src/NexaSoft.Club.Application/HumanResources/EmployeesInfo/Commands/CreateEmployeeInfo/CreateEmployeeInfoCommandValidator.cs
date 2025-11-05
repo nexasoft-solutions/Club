@@ -6,8 +6,7 @@ public class CreateEmployeeInfoCommandValidator : AbstractValidator<CreateEmploy
 {
     public CreateEmployeeInfoCommandValidator()
     {
-        RuleFor(x => x.EmployeeCode)
-            .NotEmpty().WithMessage("El campo EmployeeCode no puede estar vacío.");
+        
         RuleFor(x => x.UserId)
             .GreaterThan(0).WithMessage("Este UserId debe ser mayor a cero.");
         // Validación personalizada para User de tipo User

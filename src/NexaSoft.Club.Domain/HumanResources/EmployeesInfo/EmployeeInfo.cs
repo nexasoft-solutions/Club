@@ -10,6 +10,7 @@ using NexaSoft.Club.Domain.HumanResources.BankAccountTypes;
 using NexaSoft.Club.Domain.HumanResources.Currencies;
 using NexaSoft.Club.Domain.HumanResources.Companies;
 using NexaSoft.Club.Domain.HumanResources.CostCenters;
+using NexaSoft.Club.Domain.HumanResources.EmploymentContracts;
 
 namespace NexaSoft.Club.Domain.HumanResources.EmployeesInfo;
 
@@ -39,10 +40,12 @@ public class EmployeeInfo : Entity
     public int StateEmployeeInfo { get; private set; }
     public long? CompanyId { get; private set; }
     public Company? Company { get; private set; }
-
     public long? CostCenterId { get; private set; }
     public CostCenter? CostCenter { get; private set; } 
 
+    public bool? IsFamilyAllowance { get; private set; }
+
+    public virtual ICollection<EmploymentContract> Contracts { get; private set; } = new List<EmploymentContract>();
 
     private EmployeeInfo() { }
 
@@ -62,6 +65,7 @@ public class EmployeeInfo : Entity
         string? cciNumber,
         long? companyId,
         long? costCenterId,
+        bool? isFamilyAllowance,
         int stateEmployeeInfo,
         DateTime createdAt,
         string? createdBy,
@@ -84,6 +88,7 @@ public class EmployeeInfo : Entity
         CciNumber = cciNumber;
         CompanyId = companyId;
         CostCenterId = costCenterId;
+        IsFamilyAllowance = isFamilyAllowance;
         StateEmployeeInfo = stateEmployeeInfo;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
@@ -107,6 +112,7 @@ public class EmployeeInfo : Entity
         string? cciNumber,
         long? companyId,
         long? costCenterId,
+        bool? isFamilyAllowance,
         int stateEmployeeInfo,
         DateTime createdAd,
         string? createdBy
@@ -128,6 +134,7 @@ public class EmployeeInfo : Entity
             cciNumber,
             companyId,
             costCenterId,
+            isFamilyAllowance,
             stateEmployeeInfo,
             createdAd,
             createdBy
@@ -151,7 +158,8 @@ public class EmployeeInfo : Entity
         string? bankAccountNumber,
         string? cciNumber,
         long? companyId,
-        long? costCenterId, 
+        long? costCenterId,
+        bool? isFamilyAllowance,
         DateTime utcNow,
         string? updatedBy
     )
@@ -171,6 +179,7 @@ public class EmployeeInfo : Entity
         CciNumber = cciNumber;
         CompanyId = companyId;
         CostCenterId = costCenterId;
+        IsFamilyAllowance = isFamilyAllowance;
         UpdatedAt = utcNow;
         UpdatedBy = updatedBy;
 

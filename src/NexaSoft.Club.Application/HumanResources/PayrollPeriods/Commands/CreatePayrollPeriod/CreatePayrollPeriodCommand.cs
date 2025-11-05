@@ -3,7 +3,7 @@ using NexaSoft.Club.Application.Abstractions.Messaging;
 namespace NexaSoft.Club.Application.HumanResources.PayrollPeriods.Commands.CreatePayrollPeriod;
 
 public sealed record CreatePayrollPeriodCommand(
-    string? PeriodName,
+    //string? PeriodName,
     long? PayrollTypeId,
     DateOnly? StartDate,
     DateOnly? EndDate,

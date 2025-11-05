@@ -1,7 +1,6 @@
 namespace NexaSoft.Club.Api.Controllers.HumanResources.EmployeesInfo.Request;
 
 public sealed record CreateEmployeeInfoRequest(
-    string? EmployeeCode,
     long? UserId,
     long? PositionId,
     long? EmployeeTypeId,
@@ -16,5 +15,6 @@ public sealed record CreateEmployeeInfoRequest(
     string? CciNumber,
     long? CompanyId,
     long? CostCenterId,
+    bool? IsFamilyAllowance,
     string CreatedBy
 );

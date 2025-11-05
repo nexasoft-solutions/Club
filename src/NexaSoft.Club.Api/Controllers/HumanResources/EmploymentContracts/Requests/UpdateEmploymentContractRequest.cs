@@ -9,5 +9,6 @@ public sealed record UpdateEmploymentContractRequest(
     decimal Salary,
     int WorkingHours,
     string? DocumentPath,
+    bool? IsActive,
     string UpdatedBy
 );

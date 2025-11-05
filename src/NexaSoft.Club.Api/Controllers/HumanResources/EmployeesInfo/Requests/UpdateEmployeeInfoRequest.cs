@@ -17,5 +17,6 @@ public sealed record UpdateEmployeeInfoRequest(
     string? CciNumber,
     long? CompanyId,
     long? CostCenterId,
+    bool? IsFamilyAllowance,
     string UpdatedBy
 );

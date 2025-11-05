@@ -11,6 +11,7 @@ using NexaSoft.Club.Domain.HumanResources.PayrollConceptEmployees;
 using NexaSoft.Club.Domain.HumanResources.PayrollConceptEmployeeTypes;
 using NexaSoft.Club.Domain.HumanResources.PayrollConcepts;
 using NexaSoft.Club.Domain.HumanResources.PayrollFormulas;
+using static NexaSoft.Club.Domain.Shareds.Enums;
 
 namespace NexaSoft.Club.Infrastructure.Services;
 
@@ -23,18 +24,26 @@ public class PayrollCalculationService(
     IGenericRepository<PayrollConceptEmployee> _conceptEmployeeRepository
 ) : IPayrollCalculationService
 {
-    public async Task<decimal> CalculateConceptValue(PayrollConcept concept, EmployeeInfo employee,
-         List<AttendanceRecord> attendance, int year, CancellationToken cancellationToken)
+    public async Task<decimal> CalculateConceptValue(
+        PayrollConcept concept,
+        EmployeeInfoResponse employee,
+        List<AttendanceRecord> attendance,
+        int year,
+        //PayrollPeriod? payrollPeriod,
+        long? payrollTypeId,
+        CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogDebug("Calculando concepto {ConceptCode} para empleado {EmployeeId} año {Year}",
-                concept.Code, employee.Id, year);
+            _logger.LogDebug("Calculando concepto {ConceptCode} para empleado {EmployeeId} año {Year}", concept.Code, employee.Id, year);
 
-            // OBTENER VARIABLES DE CÁLCULO
-            var variables = await GetCalculationVariables(employee, attendance, year, cancellationToken);
+            // Obtener fórmula asociada si existe
+            var formula = concept.PayrollFormula;
 
-            // VERIFICAR SI EL CONCEPTO APLICA
+            // Obtener variables dinámicamente según la fórmula y el concepto
+            var variables = await GetDynamicVariablesAsync(concept, formula, employee, attendance, year, payrollTypeId, cancellationToken);
+
+            // Verificar si el concepto aplica
             if (!await ConceptAppliesToEmployee(concept, employee, variables, cancellationToken))
             {
                 _logger.LogDebug("Concepto {ConceptCode} no aplica al empleado {EmployeeId}", concept.Code, employee.Id);
@@ -43,7 +52,7 @@ public class PayrollCalculationService(
 
             decimal calculatedValue = 0;
 
-            // CÁLCULO SEGÚN TIPO
+            // Cálculo según tipo
             switch (concept.ConceptCalculationTypeId)
             {
                 case 1: // FIJO
@@ -52,17 +61,17 @@ public class PayrollCalculationService(
                     break;
 
                 case 2: // PORCENTAJE
-                    var baseAmount = CalculatePercentageBase(concept, variables);
+                    // Si la fórmula define la base, úsala, si no, usa base_salary_quincenal
+                    var baseAmount = variables.ContainsKey("base_amount") ? (decimal)variables["base_amount"] : (decimal)variables.GetValueOrDefault("base_salary_quincenal", 0m);
                     var porcentaje = concept.PorcentajeValue ?? 0;
                     calculatedValue = baseAmount * (porcentaje / 100m);
-                    _logger.LogDebug("Concepto {ConceptCode} calculado como PORCENTAJE: {Value} (base: {Base}, %: {Percentage})",
-                        concept.Code, calculatedValue, baseAmount, porcentaje);
+                    _logger.LogDebug("Concepto {ConceptCode} calculado como PORCENTAJE: {Value} (base: {Base}, %: {Percentage})", concept.Code, calculatedValue, baseAmount, porcentaje);
                     break;
 
                 case 3: // FORMULA
-                    if (concept.PayrollFormula != null)
+                    if (formula != null)
                     {
-                        calculatedValue = await CalculateByFormula(concept.PayrollFormula, variables, cancellationToken);
+                        calculatedValue = await CalculateByFormula(formula, variables, cancellationToken);
                         _logger.LogDebug("Concepto {ConceptCode} calculado por FÓRMULA: {Value}", concept.Code, calculatedValue);
                     }
                     else
@@ -72,7 +81,16 @@ public class PayrollCalculationService(
                     break;
 
                 case 4: // VARIABLE
-                    calculatedValue = CalculateVariableConcept(concept, variables);
+                    // Si la variable existe, úsala, si no, fallback a 0
+                    var varKey = concept.Code?.ToLower() ?? string.Empty;
+                    if (!string.IsNullOrEmpty(varKey) && variables.TryGetValue(varKey, out var varValue) && varValue != null)
+                    {
+                        calculatedValue = Convert.ToDecimal(varValue);
+                    }
+                    else
+                    {
+                        calculatedValue = 0m;
+                    }
                     _logger.LogDebug("Concepto {ConceptCode} calculado como VARIABLE: {Value}", concept.Code, calculatedValue);
                     break;
 
@@ -81,153 +99,49 @@ public class PayrollCalculationService(
                     break;
             }
 
-            // APLICAR LÍMITES CONFIGURABLES
+            // Aplicar límites configurables
             calculatedValue = ApplyConceptLimits(concept, calculatedValue, variables);
 
-            _logger.LogInformation("Concepto {ConceptCode} calculado: {Value} para empleado {EmployeeId}",
-                concept.Code, calculatedValue, employee.Id);
+            _logger.LogInformation("Concepto {ConceptCode} calculado: {Value} para empleado {EmployeeId}", concept.Code, calculatedValue, employee.Id);
 
             return Math.Max(0, calculatedValue);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error crítico al calcular concepto {ConceptCode} para empleado {EmployeeId} año {Year}",
-                concept.Code, employee.Id, year);
+            _logger.LogError(ex, "Error crítico al calcular concepto {ConceptCode} para empleado {EmployeeId} año {Year}", concept.Code, employee.Id, year);
             return 0;
         }
     }
 
-    public async Task<Dictionary<string, object>> GetCalculationVariables(EmployeeInfo employee,
+
+    // Implementación original para compatibilidad con la interfaz
+    public async Task<Dictionary<string, object>> GetCalculationVariables(EmployeeInfoResponse employee,
         List<AttendanceRecord> attendance, int year, CancellationToken cancellationToken)
     {
-        var variables = new Dictionary<string, object>();
-        var calculationDate = DateOnly.FromDateTime(_dateTimeProvider.CurrentTime.Date);
-
-        try
-        {
-            // OBTENER PARÁMETROS LEGALES CONFIGURABLES
-            var uit = await GetParameterByYear("UIT", year, 4950.00m);
-            var topeAfpQuincenal = await GetParameterByYear("TOPE_AFP_QUINCENAL", year, 4477.50m);
-            var horasMensuales = await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES");
-            var rmv = await GetParameterByYear("RMV", year, 1025.00m);
-            var topeAfpMensual = await GetParameterByYear("TOPE_AFP_MENSUAL", year, 8955.00m);
-
-            // OBTENER TASAS CONFIGURABLES
-            var tasasHoras = await _legalParameters.GetParametersByCategory("HORAS_ESPECIALES", calculationDate);
-            var horaExtraRate = tasasHoras.GetValueOrDefault("HORA_EXTRA_RATE", 150.00m);
-            var domingoRate = tasasHoras.GetValueOrDefault("DOMINGO_RATE", 200.00m);
-            var feriadoRate = tasasHoras.GetValueOrDefault("FERIADO_RATE", 250.00m);
-            var nocturnoRate = tasasHoras.GetValueOrDefault("NOCTURNO_RATE", 125.00m);
-
-            // OBTENER TASAS DE DESCUENTOS CONFIGURABLES
-            var tasasDescuentos = await _legalParameters.GetParametersByCategory("DESCUENTOS", calculationDate);
-            var afpRate = tasasDescuentos.GetValueOrDefault("AFP_TRABAJADOR", 10.00m);
-            var saludRate = tasasDescuentos.GetValueOrDefault("SALUD_TRABAJADOR", 5.00m);
-            var maxDeductionRate = tasasDescuentos.GetValueOrDefault("DESCUENTO_MAX_PORCENTAJE", 50.00m);
-            var adelantoMaxRate = tasasDescuentos.GetValueOrDefault("ADELANTO_MAX_PORCENTAJE", 30.00m);
-
-            // ✅ VERIFICACIÓN CRÍTICA DEL SALARIO
-            _logger.LogInformation("💰 SALARIO BASE VERIFICACIÓN - Empleado: {EmployeeCode}, Base Salary: {BaseSalary}",
-                employee.EmployeeCode, employee.BaseSalary);
-
-            // INFORMACIÓN BÁSICA DEL EMPLEADO
-            variables["employee_id"] = employee.Id;
-            variables["base_salary"] = employee.BaseSalary;
-            variables["base_salary_quincenal"] = employee.BaseSalary / 2;
-            variables["base_salary_diario"] = employee.BaseSalary / 30;
-            variables["hourly_rate"] = employee.BaseSalary / horasMensuales;
-            variables["antiguedad_meses"] = CalculateAntiquity(employee.HireDate);
-            variables["antiguedad_anios"] = CalculateAntiquityYears(employee.HireDate);
-
-            // ASISTENCIA Y TIEMPOS
-            variables["total_attendance_days"] = attendance.Count(a => a.AttendanceStatusTypeId == 1);
-            variables["absent_days"] = attendance.Count(a => a.AttendanceStatusTypeId == 2);
-            variables["license_days"] = attendance.Count(a => a.AttendanceStatusTypeId == 5);
-            variables["vacation_days"] = attendance.Count(a => a.AttendanceStatusTypeId == 4);
-            variables["tardiness_days"] = attendance.Count(a => a.LateMinutes > 0);
-
-            // HORAS POR TIPO
-            variables["overtime_hours"] = attendance.Sum(a => a.OvertimeHours) ?? 0;
-            variables["sunday_hours"] = attendance.Sum(a => a.SundayHours) ?? 0;
-            variables["holiday_hours"] = attendance.Sum(a => a.HolidayHours) ?? 0;
-            variables["night_hours"] = attendance.Sum(a => a.NightHours) ?? 0;
-            variables["regular_hours"] = attendance.Sum(a => a.RegularHours) ?? 0;
-            variables["total_hours"] = attendance.Sum(a => a.TotalHours) ?? 0;
-
-            // INCIDENCIAS
-            variables["late_minutes"] = attendance.Sum(a => a.LateMinutes) ?? 0;
-            variables["late_hours"] = attendance.Sum(a => a.LateMinutes) / 60m ?? 0;
-            variables["early_departure_minutes"] = attendance.Sum(a => a.EarlyDepartureMinutes) ?? 0;
-            variables["attendance_rate"] = CalculateAttendanceRate(attendance);
-
-            // CÁLCULOS DE INGRESOS CON TASAS CONFIGURABLES
-            variables["overtime_amount"] = CalculateSpecialHoursAmount(
-                employee.BaseSalary, (decimal)variables["overtime_hours"], horaExtraRate, horasMensuales);
-            variables["sunday_amount"] = CalculateSpecialHoursAmount(
-                employee.BaseSalary, (decimal)variables["sunday_hours"], domingoRate, horasMensuales);
-            variables["holiday_amount"] = CalculateSpecialHoursAmount(
-                employee.BaseSalary, (decimal)variables["holiday_hours"], feriadoRate, horasMensuales);
-            variables["night_amount"] = CalculateSpecialHoursAmount(
-                employee.BaseSalary, (decimal)variables["night_hours"], nocturnoRate, horasMensuales);
-
-            // ✅ CORREGIDO: total_income = Sueldo básico + Ingresos adicionales
-            var ingresosAdicionales = CalculateIngresosAdicionales(employee, variables);
-            variables["total_income"] = (decimal)variables["base_salary_quincenal"] + ingresosAdicionales;
-            variables["total_income_before_deductions"] = variables["total_income"];
-
-            // CÁLCULOS ACUMULADOS
-            variables["accumulated_income"] = CalculateAccumulatedIncome(employee);
-            variables["accumulated_afp"] = await CalculateAccumulatedAFP(employee, year, cancellationToken);
-            variables["accumulated_renta"] = await CalculateAccumulatedRenta(employee, year, cancellationToken);
-
-            // VARIABLES LEGALES CONFIGURABLES
-            variables["uit"] = uit;
-            variables["remuneracion_minima"] = rmv;
-            variables["topes_afp"] = topeAfpMensual;
-            variables["topes_afp_quincenal"] = topeAfpQuincenal;
-            variables["uit_x_5"] = uit * 5;
-            variables["horas_mensuales"] = horasMensuales;
-            variables["year"] = year;
-
-            // TASAS CONFIGURABLES
-            variables["afp_rate"] = afpRate;
-            variables["salud_rate"] = saludRate;
-            variables["max_deduction_rate"] = maxDeductionRate;
-            variables["adelanto_max_rate"] = adelantoMaxRate;
-
-            // ✅ LOG DETALLADO DE CÁLCULOS
-            _logger.LogInformation("💰 CÁLCULOS FINALES - Empleado: {EmployeeCode}", employee.EmployeeCode);
-            _logger.LogInformation("   - Sueldo base: {BaseSalary}", employee.BaseSalary);
-            _logger.LogInformation("   - Sueldo quincenal: {Quincenal}", variables["base_salary_quincenal"]);
-            _logger.LogInformation("   - Ingresos adicionales: {Adicionales}", ingresosAdicionales);
-            _logger.LogInformation("   - Total income: {TotalIncome}", variables["total_income"]);
-
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al calcular variables para empleado {EmployeeId} año {Year}", employee.Id, year);
-
-            // Valores por defecto
-            var defaultValues = GetDefaultParametersByYear(year);
-            foreach (var kvp in defaultValues)
-            {
-                variables[kvp.Key] = kvp.Value;
-            }
-
-            // GARANTIZAR QUE total_income EXISTA INCLUSO EN ERROR
-            if (!variables.ContainsKey("total_income"))
-            {
-                variables["total_income"] = employee.BaseSalary / 2;
-            }
-        }
-
-        return variables;
+        // Llama a la sobrecarga dinámica con concept y formula en null
+        return await GetCalculationVariables(employee, attendance, year, cancellationToken, null, null);
     }
 
-    
+    // Nueva sobrecarga dinámica
+    public async Task<Dictionary<string, object>> GetCalculationVariables(EmployeeInfoResponse employee,
+        List<AttendanceRecord> attendance, int year, CancellationToken cancellationToken,
+        PayrollConcept? concept, PayrollFormula? formula)
+    {
+        return await GetDynamicVariablesAsync(
+            concept,
+            formula,
+            employee,
+            attendance,
+            year,
+            null,
+            cancellationToken
+        );
+    }
+
+
 
     // ✅ CORREGIDO: Solo calcular ingresos adicionales (NO incluir sueldo básico)
-    private decimal CalculateIngresosAdicionales(EmployeeInfo employee, Dictionary<string, object> variables)
+    private decimal CalculateIngresosAdicionales(EmployeeInfoResponse employee, Dictionary<string, object> variables)
     {
         try
         {
@@ -252,7 +166,7 @@ public class PayrollCalculationService(
     }
 
     // ✅ MANTENER ESTE MÉTODO PARA COMPATIBILIDAD (pero ya no se usa para total_income)
-    private decimal CalculateTotalIncomeForFormulas(EmployeeInfo employee, Dictionary<string, object> variables)
+    private decimal CalculateTotalIncomeForFormulas(EmployeeInfoResponse employee, Dictionary<string, object> variables)
     {
         return CalculateIngresosAdicionales(employee, variables);
     }
@@ -284,52 +198,114 @@ public class PayrollCalculationService(
         }
     }
 
-    private Dictionary<string, object> GetDefaultParametersByYear(int year)
+    // Obtiene variables dinámicamente según la lista de variables requeridas por la fórmula del concepto
+    private async Task<Dictionary<string, object>> GetDynamicVariablesAsync(
+        PayrollConcept? concept,
+        PayrollFormula? formula,
+        EmployeeInfoResponse employee,
+        List<AttendanceRecord> attendance,
+        int year,
+        long? payrollTypeId,
+        CancellationToken cancellationToken)
     {
-        var defaults = new Dictionary<string, object>();
+        var variables = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-        switch (year)
+        var calculationDate = DateOnly.FromDateTime(_dateTimeProvider.CurrentTime.Date);
+
+        // Detectar tipo de planilla (quincenal/mensual) usando PayrollPeriod
+        //var payrollTypeCode = payrollPeriod?.PayrollTypeId ?? 2;
+
+        // Resolutor de sueldo base según tipo de planilla
+        Func<decimal> sueldoBaseResolver = () =>
         {
-            case 2024:
-                defaults["uit"] = 4950.00m;
-                defaults["remuneracion_minima"] = 1025.00m;
-                defaults["topes_afp_quincenal"] = 4477.50m;
-                defaults["topes_afp"] = 8955.00m;
-                break;
-            case 2025:
-                defaults["uit"] = 5050.00m;
-                defaults["remuneracion_minima"] = 1100.00m;
-                defaults["topes_afp_quincenal"] = 4600.00m;
-                defaults["topes_afp"] = 9200.00m;
-                break;
-            default:
-                defaults["uit"] = 5000.00m;
-                defaults["remuneracion_minima"] = 1050.00m;
-                defaults["topes_afp_quincenal"] = 4500.00m;
-                defaults["topes_afp"] = 9000.00m;
-                break;
+            if (payrollTypeId == (int)PayRollTypesEnum.Quincenal)
+                return employee.BaseSalary / 2;
+            return employee.BaseSalary;
+        };
+
+        // Diccionario de resolutores genéricos
+        var resolvers = new Dictionary<string, Func<Task<object>>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["employee_id"] = () => Task.FromResult<object>(employee.Id),
+            ["base_salary"] = () => Task.FromResult<object>(employee.BaseSalary),
+            ["base_salary_quincenal"] = () => Task.FromResult<object>(sueldoBaseResolver()),
+            ["base_salary_diario"] = () => Task.FromResult<object>(employee.BaseSalary / 30),
+            // ...otros resolutores...
+            // Resolutores especiales para conceptos tipo VARIABLE sin fórmula:
+            ["sueldo_base"] = () => Task.FromResult<object>(sueldoBaseResolver()),
+            ["sueldo_basico"] = () => Task.FromResult<object>(sueldoBaseResolver()),
+            ["basico"] = () => Task.FromResult<object>(sueldoBaseResolver()),
+            ["tardanza"] = async () =>
+            {
+                var minutosTardanza = attendance.Sum(a => a.LateMinutes) ?? 0;
+                var horasMensuales = await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES");
+                var valorMinuto = (employee.BaseSalary / (decimal)horasMensuales) / 60m;
+                return Math.Round(minutosTardanza * valorMinuto, 2);
+            },
+            ["late_hours"] = () => Task.FromResult<object>(attendance.Sum(a => a.LateMinutes) / 60m ?? 0),
+            ["early_departure_minutes"] = () => Task.FromResult<object>(attendance.Sum(a => a.EarlyDepartureMinutes) ?? 0),
+            ["attendance_rate"] = () => Task.FromResult<object>(CalculateAttendanceRate(attendance)),
+            ["uit"] = async () => await GetParameterByYear("UIT", year, 4950.00m),
+            ["remuneracion_minima"] = async () => await GetParameterByYear("RMV", year, 1025.00m),
+            ["topes_afp_quincenal"] = async () => await GetParameterByYear("TOPE_AFP_QUINCENAL", year, 4477.50m),
+            ["topes_afp"] = async () => await GetParameterByYear("TOPE_AFP_MENSUAL", year, 8955.00m),
+            ["monthly_hours"] = async () => await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"),
+            ["uit_x_5"] = async () => (decimal)await GetParameterByYear("UIT", year, 4950.00m) * 5,
+            ["year"] = () => Task.FromResult<object>(year),
+            ["afp_rate"] = async () => (await _legalParameters.GetParametersByCategory("DESCUENTOS", calculationDate)).GetValueOrDefault("AFP_TRABAJADOR", 10.00m),
+            ["salud_rate"] = async () => (await _legalParameters.GetParametersByCategory("DESCUENTOS", calculationDate)).GetValueOrDefault("SALUD_TRABAJADOR", 5.00m),
+            ["max_deduction_rate"] = async () => (await _legalParameters.GetParametersByCategory("DESCUENTOS", calculationDate)).GetValueOrDefault("DESCUENTO_MAX_PORCENTAJE", 50.00m),
+            ["adelanto_max_rate"] = async () => (await _legalParameters.GetParametersByCategory("DESCUENTOS", calculationDate)).GetValueOrDefault("ADELANTO_MAX_PORCENTAJE", 30.00m),
+            ["hourly_rate"] = async () => employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES")),
+            ["overtime_amount"] = async () => ((decimal)(attendance.Sum(a => a.OvertimeHours) ?? 0)) * (employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"))) * 1.5m,
+            ["sunday_amount"] = async () => ((decimal)(attendance.Sum(a => a.SundayHours) ?? 0)) * (employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"))) * 2.0m,
+            ["holiday_amount"] = async () => ((decimal)(attendance.Sum(a => a.HolidayHours) ?? 0)) * (employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"))) * 2.5m,
+            ["night_amount"] = async () => ((decimal)(attendance.Sum(a => a.NightHours) ?? 0)) * (employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"))) * 1.25m,
+            ["total_income"] = async () => sueldoBaseResolver()
+                + ((decimal)(attendance.Sum(a => a.OvertimeHours) ?? 0)) * (employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"))) * 1.5m
+                + ((decimal)(attendance.Sum(a => a.SundayHours) ?? 0)) * (employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"))) * 2.0m
+                + ((decimal)(attendance.Sum(a => a.HolidayHours) ?? 0)) * (employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"))) * 2.5m
+                + ((decimal)(attendance.Sum(a => a.NightHours) ?? 0)) * (employee.BaseSalary / (decimal)(await _legalParameters.GetCurrentParameterValue("HORAS_MENSUALES"))) * 1.25m,
+            ["accumulated_income"] = () => Task.FromResult<object>(CalculateAccumulatedIncome(employee)),
+            ["accumulated_afp"] = async () => await CalculateAccumulatedAFP(employee, year, cancellationToken),
+            ["accumulated_renta"] = async () => await CalculateAccumulatedRenta(employee, year, cancellationToken),
+        };
+
+        // 1. Leer variables requeridas desde el campo JSON de la fórmula
+        var requiredVariables = new List<string>();
+        if (formula?.RequiredVariables != null)
+        {
+            requiredVariables = System.Text.Json.JsonSerializer.Deserialize<List<string>>(formula.RequiredVariables) ?? new List<string>();
         }
 
-        defaults["horas_mensuales"] = 240.00m;
-        defaults["uit_x_5"] = (decimal)defaults["uit"] * 5;
-        defaults["afp_rate"] = 10.00m;
-        defaults["salud_rate"] = 5.00m;
-        defaults["max_deduction_rate"] = 50.00m;
-        defaults["adelanto_max_rate"] = 30.00m;
-        defaults["year"] = year;
-        defaults["total_income"] = 2500.00m;
+        // 2. Si el concepto no tiene fórmula, agregar la variable con el mismo nombre que el código (en minúsculas)
+        if (formula == null && concept != null && !string.IsNullOrEmpty(concept.Code))
+        {
+            var varKey = concept.Code.ToLower();
+            if (!requiredVariables.Contains(varKey))
+                requiredVariables.Add(varKey);
+        }
 
-        return defaults;
+        // 3. Resolver solo las variables requeridas
+        foreach (var varName in requiredVariables)
+        {
+            if (resolvers.TryGetValue(varName, out var resolver))
+                variables[varName] = await resolver();
+            else
+                variables[varName] = 0; // o log de advertencia si la variable no está implementada
+        }
+
+        return variables;
     }
 
-    public async Task<decimal> CalculateTotalIncome(EmployeeInfo employee, List<AttendanceRecord> attendance,
+    public async Task<decimal> CalculateTotalIncome(EmployeeInfoResponse employee, List<AttendanceRecord> attendance,
         int year, CancellationToken cancellationToken)
     {
         var variables = await GetCalculationVariables(employee, attendance, year, cancellationToken);
         return (decimal)variables["total_income_before_deductions"];
     }
 
-    public async Task<bool> ConceptAppliesToEmployee(PayrollConcept concept, EmployeeInfo employee,
+    public async Task<bool> ConceptAppliesToEmployee(PayrollConcept concept, EmployeeInfoResponse employee,
         Dictionary<string, object> variables, CancellationToken cancellationToken)
     {
         try
@@ -392,7 +368,7 @@ public class PayrollCalculationService(
             cancellationToken);
     }
 
-    public async Task<decimal> CalculateTotalDeductions(EmployeeInfo employee, List<AttendanceRecord> attendance,
+    public async Task<decimal> CalculateTotalDeductions(EmployeeInfoResponse employee, List<AttendanceRecord> attendance,
         int year, CancellationToken cancellationToken)
     {
         try
@@ -887,13 +863,13 @@ public class PayrollCalculationService(
         return totalDays > 0 ? (decimal)presentDays / totalDays : 1m;
     }
 
-    private decimal CalculateAccumulatedIncome(EmployeeInfo employee)
+    private decimal CalculateAccumulatedIncome(EmployeeInfoResponse employee)
     {
         var months = CalculateAntiquity(employee.HireDate);
         return employee.BaseSalary * Math.Min(months, 12);
     }
 
-    private async Task<decimal> CalculateAccumulatedAFP(EmployeeInfo employee, int year, CancellationToken cancellationToken)
+    private async Task<decimal> CalculateAccumulatedAFP(EmployeeInfoResponse employee, int year, CancellationToken cancellationToken)
     {
         var accumulatedIncome = CalculateAccumulatedIncome(employee);
         var topeAfpMensual = await GetParameterByYear("TOPE_AFP_MENSUAL", year, 8955.00m) * 12;
@@ -905,7 +881,7 @@ public class PayrollCalculationService(
         return afpBase * (afpRate / 100m);
     }
 
-    private async Task<decimal> CalculateAccumulatedRenta(EmployeeInfo employee, int year, CancellationToken cancellationToken)
+    private async Task<decimal> CalculateAccumulatedRenta(EmployeeInfoResponse employee, int year, CancellationToken cancellationToken)
     {
         var accumulatedIncome = CalculateAccumulatedIncome(employee);
         var uit = await GetParameterByYear("UIT", year, 4950.00m);

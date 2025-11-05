@@ -35,6 +35,10 @@ public class PayrollFormulaConfiguration : IEntityTypeConfiguration<PayrollFormu
             .HasColumnType("jsonb")
             .IsRequired(false);
 
+        builder.Property(x => x.RequiredVariables)
+            .HasColumnType("jsonb")
+            .IsRequired(false);
+
         builder.Property(x => x.StatePayrollFormula)
             .IsRequired();
 

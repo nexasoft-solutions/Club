@@ -20,7 +20,7 @@ public class ContractTypeConfiguration : IEntityTypeConfiguration<ContractType>
             .IsRequired(false);
 
         builder.Property(x => x.Name)
-            .HasMaxLength(60)
+            .HasMaxLength(100)
             .IsRequired(false);
 
         builder.Property(x => x.Description)

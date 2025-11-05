@@ -11,5 +11,6 @@ public sealed record UpdateEmploymentContractCommand(
     decimal Salary,
     int WorkingHours,
     string? DocumentPath,
+    bool? IsActive,
     string UpdatedBy
 ) : ICommand<bool>;

@@ -44,6 +44,22 @@ public static class Enums
 
     }
 
+    public enum PayRollTypesEnum
+    {
+        [Description("Quincenal")]
+        Quincenal = 1,
+
+        [Description("Mensual")]
+        Mensual = 2,
+
+
+        [Description("Cts")]
+        Cts = 3,
+
+        [Description("Gratificación")]
+        Gratificacion = 4
+    }
+
 
     public enum UbigeosEnum
     {
@@ -181,10 +197,16 @@ public static class Enums
         [Description("Reservaciones")]
         Reservaciones = 2,
 
+        [Description("Membresías")]
+        Membresias = 4,
+
+        [Description("Planillas")]
+        Planillas = 3,
+
         [Description("Ninguno")]
         Ninguno = 99
     }
-    
+
     public enum TipoCuentaContable
     {
         Activo = 1,
@@ -192,6 +214,17 @@ public static class Enums
         Patrimonio = 3,
         Ingreso = 4,
         Gasto = 5
+    }
+
+    public enum CurrencyEnum
+    {
+        [Description("Sol Peruano")]
+        SolPeruano = 1,
+
+        [Description("Dólar Americano")]
+        DolarEstadounidense = 2,
+
+
     }
 
 }

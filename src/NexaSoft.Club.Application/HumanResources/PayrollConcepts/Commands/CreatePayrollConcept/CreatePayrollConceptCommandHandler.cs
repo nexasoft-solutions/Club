@@ -41,7 +41,7 @@ public class CreatePayrollConceptCommandHandler(
             command.PorcentajeValue,
             command.ConceptApplicationTypesId,
             command.AccountingChartId,
-            command.PayrollTypeId,
+            //command.PayrollTypeId,
             (int)EstadosEnum.Activo,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.CreatedBy

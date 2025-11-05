@@ -20,7 +20,6 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
     public async Task<IActionResult> CreateEmployeeInfo(CreateEmployeeInfoRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateEmployeeInfoCommand(
-             request.EmployeeCode,
              request.UserId,
              request.PositionId,
              request.EmployeeTypeId,
@@ -35,6 +34,7 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
              request.CciNumber,
              request.CompanyId,
              request.CostCenterId,
+             request.IsFamilyAllowance,
              request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
@@ -46,7 +46,7 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
     public async Task<IActionResult> UpdateEmployeeInfo(UpdateEmployeeInfoRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateEmployeeInfoCommand(
-           request.Id,
+             request.Id,
              request.EmployeeCode,
              request.UserId,
              request.PositionId,
@@ -62,6 +62,7 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
              request.CciNumber,
              request.CompanyId,
              request.CostCenterId,
+             request.IsFamilyAllowance,
              request.UpdatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);

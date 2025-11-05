@@ -61,6 +61,7 @@ public class PayrollFormulaSpecification : BaseSpecification<PayrollFormula, Pay
              x.Name,
              x.FormulaExpression,
              x.Description,
+             x.RequiredVariables,
              x.Variables,
              x.CreatedAt,
              x.UpdatedAt,

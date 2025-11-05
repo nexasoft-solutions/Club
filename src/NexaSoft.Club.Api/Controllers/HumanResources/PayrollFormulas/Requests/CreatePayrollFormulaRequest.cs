@@ -5,6 +5,7 @@ public sealed record CreatePayrollFormulaRequest(
     string? Name,
     string? FormulaExpression,
     string? Description,
+    string? RequiredVariables,
     string? Variables,
     string CreatedBy
 );

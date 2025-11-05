@@ -40,6 +40,7 @@ public class UpdateEmployeeInfoCommandHandler(
             command.Cci_Number,
             command.CompanyId,
             command.CostCenterId,
+            command.IsFamilyAllowance,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
             command.UpdatedBy
         );

@@ -64,6 +64,9 @@ public class EmploymentContractConfiguration : IEntityTypeConfiguration<Employme
             .HasMaxLength(40)
             .IsRequired(false);
 
+        builder.Property(x => x.IsActive)
+            .IsRequired(false);
+
         builder.HasIndex(x => x.EmployeeId)
             .HasDatabaseName("ix_employmentcontract_employeeid");
 
