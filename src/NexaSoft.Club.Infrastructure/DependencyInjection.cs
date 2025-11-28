@@ -83,6 +83,14 @@ public static class DependencyInjection
 
         var brevoEmailOptions = vaultService.GetSecretAsObjectAsync<BrevoOptions>($"{environment}/mail").Result!;
 
+        var reniecOptions = vaultService.GetSecretAsObjectAsync<ReniecOptions>($"{environment}/reniec").Result!;
+
+        services.Configure<ReniecOptions>(o =>
+        {
+            o.ApiKey = reniecOptions.ApiKey;
+            o.Url = reniecOptions.Url;
+        });
+
         services.Configure<BrevoOptions>(o =>
         {
             o.ApiKey = brevoEmailOptions.ApiKey;
@@ -235,6 +243,19 @@ public static class DependencyInjection
         services.AddScoped<ILegalParametersRepository, LegalParametersRepository>();
 
         services.AddScoped<IPayrollCalculationService, PayrollCalculationService>();
+
+        services.AddHttpClient<IReniecService, ReniecService>((serviceProvider, client) =>
+        {
+            // Configuración adicional de HttpClient si es necesario
+        });
+
+        services.AddScoped<IReniecService>(serviceProvider =>
+        {
+            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+            var httpClient = httpClientFactory.CreateClient(nameof(ReniecService));
+            var options = serviceProvider.GetRequiredService<IOptions<ReniecOptions>>().Value;
+            return new ReniecService(httpClient, options);
+        });
 
         // Para QR (Domain Events - No crítico)
         //services.AddScoped<INotificationHandler<MemberQrGenerationRequiredDomainEvent>, MemberQrGenerationEventHandler>();

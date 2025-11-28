@@ -17,7 +17,7 @@ public class PaymentTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreatePaymentType(CreatePaymentTypeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreatePaymentType(CreatePaymentTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePaymentTypeCommand(
              request.Name,
@@ -30,7 +30,7 @@ public class PaymentTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePaymentType(UpdatePaymentTypeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdatePaymentType(UpdatePaymentTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePaymentTypeCommand(
            request.Id,
@@ -44,7 +44,7 @@ public class PaymentTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePaymentType(DeletePaymentTypeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeletePaymentType(DeletePaymentTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePaymentTypeCommand(
              request.Id,
@@ -68,11 +68,11 @@ public class PaymentTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPaymentType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetPaymentType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPaymentTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

@@ -20,7 +20,7 @@ namespace NexaSoft.Club.Api.Controllers.Masters.Roles
             var command = new CreateRoleCommand(
                  request.Name,
                  request.Description,
-                 request.UsuarioCreacion
+                 request.CreatedBy
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
@@ -34,7 +34,7 @@ namespace NexaSoft.Club.Api.Controllers.Masters.Roles
                  request.Id,
                  request.Name,
                  request.Description,
-                 request.UsuarioModificacion
+                 request.UpdatedBy
             );
             var resultado = await _sender.Send(command, cancellationToken);
 

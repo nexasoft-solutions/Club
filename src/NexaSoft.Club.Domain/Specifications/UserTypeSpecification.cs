@@ -24,6 +24,9 @@ public class UserTypeSpecification : BaseSpecification<UserType, UserTypeRespons
                 case "name":
                     AddCriteria(x => x.Name != null && x.Name.ToLower().Contains(specParams.Search.ToLower()));
                     break;
+                case "description":
+                    AddCriteria(x => x.Description != null && x.Description.ToLower().Contains(specParams.Search.ToLower()));
+                    break;
                 default:
                     Criteria = x => true;
                     break;

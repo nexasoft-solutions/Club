@@ -5,5 +5,5 @@ public record class UpdateRoleRequest
     long Id,
     string? Name,
     string? Description,
-    string? UsuarioModificacion
+    string? UpdatedBy
 );

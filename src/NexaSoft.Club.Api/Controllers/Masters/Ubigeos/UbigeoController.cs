@@ -9,6 +9,7 @@ using NexaSoft.Club.Application.Masters.Ubigeos.Queries.GetUbigeos;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
 using NexaSoft.Club.Api.Controllers.Masters.Ubigeos.Requests;
+using NexaSoft.Club.Application.Masters.Ubigeos.Queries.GetTreeUbigeos;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.Ubigeos;
 
@@ -51,7 +52,7 @@ public class UbigeoController(ISender _sender) : ControllerBase
     {
         var command = new DeleteUbigeoCommand(
              request.Id,
-             request.UserDelete!
+             request.DeletedBy
          );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -78,6 +79,15 @@ public class UbigeoController(ISender _sender) : ControllerBase
      )
     {
         var query = new GetUbigeoQuery(id);
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.ToActionResult(this);
+    }
+
+    [HttpGet("tree")]
+    public async Task<IActionResult> GetTreeUbigeos(CancellationToken cancellationToken)
+    {
+        var query = new GetTreeUbigeosQuery();
         var resultado = await _sender.Send(query, cancellationToken);
 
         return resultado.ToActionResult(this);

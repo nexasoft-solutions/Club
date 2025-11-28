@@ -23,7 +23,7 @@ public class DeleteUbigeoCommandHandler(
             return Result.Failure<bool>(UbigeoErrores.NoEncontrado);
         }
 
-        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.UsuarioEliminacion);
+        entity.Delete(_dateTimeProvider.CurrentTime.ToUniversalTime(),command.DeletedBy);
 
         try
         {

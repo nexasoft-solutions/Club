@@ -4,5 +4,5 @@ public sealed record CreateRoleRequest
 (
     string? Name,
     string? Description,
-    string? UsuarioCreacion
+    string? CreatedBy
 );

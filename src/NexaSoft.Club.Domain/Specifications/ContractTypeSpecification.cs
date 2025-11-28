@@ -48,6 +48,18 @@ public class ContractTypeSpecification : BaseSpecification<ContractType, Contrac
                 break;
             case "codedesc":
                 AddOrderByDescending(x => x.Code!);
+                    break;
+            case "nameasc":
+                AddOrderBy(x => x.Name!);
+                break;
+            case "namedesc":
+                AddOrderByDescending(x => x.Name!);
+                    break;
+            case "createdatasc":
+                AddOrderBy(x => x.CreatedAt);
+                break;
+            case "createdatadesc":
+                AddOrderByDescending(x => x.CreatedAt);
                 break;
             default:
                 AddOrderBy(x => x.Code!);

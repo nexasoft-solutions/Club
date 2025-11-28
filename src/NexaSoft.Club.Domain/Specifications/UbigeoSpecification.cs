@@ -81,13 +81,15 @@ public class UbigeoSpecification : BaseSpecification<Ubigeo, UbigeoResponse>
         AddSelect(x => new UbigeoResponse(
                x.Id,
                x.Description,
+               x.Level,
                ((UbigeosEnum)x.Level).ToString(),
                x.ParentId,
                x.Parent!.Description,
                x.CreatedAt,
                x.UpdatedAt,
                x.CreatedBy,
-               x.UpdatedBy
+               x.UpdatedBy,
+               null
          ));
     }
 }
