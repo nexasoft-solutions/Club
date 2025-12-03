@@ -3,8 +3,10 @@ namespace NexaSoft.Club.Domain.Masters.Roles;
 public sealed record RolesPermissionsResponse
 (
     long RoleId,
-    string? NombreRol,
+    string? NameRol,
     long PermissionId,
-    string? NombrePermiso,
-    string? ReferenciaControl
+    string? NamePermission,
+    string? Reference,
+    string? Source,
+    string? Action
 );

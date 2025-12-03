@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NexaSoft.Club.Api.Attributes;
 using NexaSoft.Club.Api.Controllers.Auth.Request;
+using MediatR;
+using NexaSoft.Club.Application.Masters.Roles.Queries.GetPermissionsByRole;
 
 namespace NexaSoft.Club.Api.Middleware;
 
@@ -73,20 +75,73 @@ public class PermissionMiddleware(RequestDelegate _next)
         // ✅ Validación de permisos
         if (permissionAttribute is not null)
         {
-            var userPermissions = user.Claims
-                .Where(c => c.Type == "permission")
-                .Select(c => c.Value)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var requiredPermission = NormalizarPermiso(permissionAttribute.Permission);
 
-            if (!userPermissions.Contains(permissionAttribute.Permission))
+            // Extraer roleActive del claim
+            var roleActiveClaim = user.Claims.FirstOrDefault(c => c.Type == "roleActive")?.Value;
+            if (string.IsNullOrWhiteSpace(roleActiveClaim) || !long.TryParse(roleActiveClaim, out var roleId))
             {
-                await WriteProblemDetailsAsync(context, StatusCodes.Status403Forbidden, "Permiso denegado", $"Se requiere el permiso '{permissionAttribute.Permission}'.");
+                await WriteProblemDetailsAsync(context, StatusCodes.Status403Forbidden,
+                    "Rol activo faltante",
+                    "No se encontró el rol activo en el token.");
+                return;
+            }
+
+            // Crear scope y resolver ISender
+            using var scope = context.RequestServices.CreateScope();
+            var sender = scope.ServiceProvider.GetRequiredService<ISender>();
+            var query = new GetPermissionsByRolQuery(roleId);
+            var result = await sender.Send(query, context.RequestAborted);
+            var userPermissions = result.IsSuccess ? result.Value : new List<string>();
+
+            // Comparación normalizada y case-insensitive
+            if (!userPermissions.Any(p =>
+                string.Equals(NormalizarPermiso(p), requiredPermission, StringComparison.OrdinalIgnoreCase)))
+            {
+                await WriteProblemDetailsAsync(context, StatusCodes.Status403Forbidden,
+                    "Permiso denegado",
+                    $"Se requiere el permiso: {requiredPermission}.");
                 return;
             }
         }
 
         // 🎯 Todo válido → Continuar
         await _next(context);
+    }
+
+    private string NormalizarPermiso(string permiso)
+    {
+        if (string.IsNullOrEmpty(permiso))
+            return permiso;
+
+        // Separar por puntos: {Entidad}.{Accion}{Entidad}
+        var parts = permiso.Split('.');
+        if (parts.Length != 2)
+            return permiso;
+
+        var entidad = parts[0];
+        var accionEntidad = parts[1];
+
+        // Normalizar "Role" a "Rol"
+        if (accionEntidad.EndsWith("Role", StringComparison.OrdinalIgnoreCase))
+        {
+            accionEntidad = accionEntidad.Substring(0, accionEntidad.Length - 4) + "Rol";
+        }
+        // O si termina en "Rol" mantenerlo
+        else if (!accionEntidad.EndsWith("Rol", StringComparison.OrdinalIgnoreCase) &&
+                 accionEntidad.EndsWith("s", StringComparison.OrdinalIgnoreCase))
+        {
+            // Quitar 's' final para singular
+            accionEntidad = accionEntidad.Substring(0, accionEntidad.Length - 1);
+        }
+
+        // También normalizar la entidad si es "Role" a "Rol"
+        if (string.Equals(entidad, "Role", StringComparison.OrdinalIgnoreCase))
+        {
+            entidad = "Rol";
+        }
+
+        return $"{entidad}.{accionEntidad}";
     }
 
     private static async Task WriteProblemDetailsAsync(HttpContext context, int statusCode, string title, string detail)
@@ -96,7 +151,7 @@ public class PermissionMiddleware(RequestDelegate _next)
             Status = statusCode,
             Title = title,
             Detail = detail,
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3" // Para 403 Forbidden
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
         };
 
         context.Response.StatusCode = statusCode;

@@ -8,22 +8,27 @@ using NexaSoft.Club.Application.Masters.UserTypes.Queries.GetUserType;
 using NexaSoft.Club.Application.Masters.UserTypes.Queries.GetUserTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.UserTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UserTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateUserType(CreateUserTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("UserType.CreateUserType")]
+    public async Task<IActionResult> CreateUserType(CreateUserTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateUserTypeCommand(
              request.Name,
              request.Description,
              request.IsAdministrative,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -31,10 +36,12 @@ public class UserTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateUserType(UpdateUserTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("UserType.UpdateUserType")]
+    public async Task<IActionResult> UpdateUserType(UpdateUserTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateUserTypeCommand(
-           request.Id,
+             request.Id,
              request.Name,
              request.Description,
              request.IsAdministrative,
@@ -46,7 +53,9 @@ public class UserTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteUserType(DeleteUserTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("UserType.DeleteUserType")]
+    public async Task<IActionResult> DeleteUserType(DeleteUserTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteUserTypeCommand(
              request.Id,
@@ -58,6 +67,8 @@ public class UserTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("UserType.GetUserType")]
     public async Task<IActionResult> GetUserTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -70,11 +81,13 @@ public class UserTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetUserType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("UserType.GetUserType")]
+    public async Task<IActionResult> GetUserType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetUserTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

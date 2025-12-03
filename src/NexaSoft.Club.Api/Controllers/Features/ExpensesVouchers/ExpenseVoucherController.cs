@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.Features.ExpensesVouchers.Queries.GetExpenseVouc
 using NexaSoft.Club.Application.Features.ExpensesVouchers.Queries.GetExpensesVouchers;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using NexaSoft.Club.Api.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.Features.ExpensesVouchers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ExpenseVoucherController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateExpenseVoucher(CreateExpenseVoucherRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ExpenseVoucher.CreateExpenseVoucher")]
+    public async Task<IActionResult> CreateExpenseVoucher(CreateExpenseVoucherRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateExpenseVoucherCommand(
              request.EntryId,
@@ -35,7 +40,9 @@ public class ExpenseVoucherController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateExpenseVoucher(UpdateExpenseVoucherRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ExpenseVoucher.UpdateExpenseVoucher")]
+    public async Task<IActionResult> UpdateExpenseVoucher(UpdateExpenseVoucherRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateExpenseVoucherCommand(
              request.Id,
@@ -54,7 +61,9 @@ public class ExpenseVoucherController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteExpenseVoucher(DeleteExpenseVoucherRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ExpenseVoucher.DeleteExpenseVoucher")]
+    public async Task<IActionResult> DeleteExpenseVoucher(DeleteExpenseVoucherRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteExpenseVoucherCommand(
              request.Id,
@@ -66,6 +75,8 @@ public class ExpenseVoucherController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("ExpenseVoucher.GetExpenseVoucher")]
     public async Task<IActionResult> GetExpensesVouchers(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -78,11 +89,13 @@ public class ExpenseVoucherController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetExpenseVoucher(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("ExpenseVoucher.GetExpenseVoucher")]
+    public async Task<IActionResult> GetExpenseVoucher(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetExpenseVoucherQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

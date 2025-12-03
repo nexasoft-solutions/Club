@@ -7,12 +7,15 @@ using NexaSoft.Club.Application.Masters.Permissions.Commands.CreatePermision;
 using NexaSoft.Club.Application.Masters.Permissions.Commands.CreatePermission;
 using NexaSoft.Club.Application.Masters.Permissions.Commands.DeletePermission;
 using NexaSoft.Club.Application.Masters.Permissions.Queries.GetPermissions;
+using NexaSoft.Club.Application.Masters.Permissions.Queries.GetPermissionsByReference;
 using NexaSoft.Club.Application.Masters.Permissions.Queries.GetRolesPermissions;
+using NexaSoft.Club.Domain.Specifications;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.Permissions
 {
     [Route("api/[controller]")]
     [ApiController]
+   
     public class PermissionController(ISender _sender) : ControllerBase
     {
         [HttpPost]
@@ -21,8 +24,10 @@ namespace NexaSoft.Club.Api.Controllers.Masters.Permissions
             var command = new CreatePermissionCommand(
                  request.Name,
                  request.Description,
-                 request.ReferenciaControl,
-                 request.UsuarioCreacion
+                 request.Reference,
+                 request.Source,
+                 request.Action,
+                 request.CreatedBy
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
@@ -36,8 +41,10 @@ namespace NexaSoft.Club.Api.Controllers.Masters.Permissions
                  request.Id,
                  request.Name,
                  request.Description,
-                 request.ReferenciaControl,
-                 request.UsuarioModificacion
+                 request.Reference,
+                 request.Source,
+                 request.Action,
+                 request.UpdatedBy
             );
             var resultado = await _sender.Send(command, cancellationToken);
 
@@ -65,21 +72,22 @@ namespace NexaSoft.Club.Api.Controllers.Masters.Permissions
 
         [HttpGet]
         public async Task<IActionResult> GetPermissions(
+            [FromQuery] BaseSpecParams specParams,
             CancellationToken cancellationToken
         )
         {
-            var query = new GetPermissionsQuery();
+            var query = new GetPermissionsQuery(specParams);
             var resultado = await _sender.Send(query, cancellationToken);
 
             return resultado.ToActionResult(this);
         }
-        
-        [HttpGet("roles-permissions")]
-        public async Task<IActionResult> GetRolPermissions(            
+
+        [HttpGet("permissions-by-reference")]
+        public async Task<IActionResult> GetPermissionsByReference(            
             CancellationToken cancellationToken
         )
         {
-            var query = new GetRolesPermissionsQuery();
+            var query = new GetPermissionByReferenceQuery();
             var resultado = await _sender.Send(query, cancellationToken);
 
             return resultado.ToActionResult(this);

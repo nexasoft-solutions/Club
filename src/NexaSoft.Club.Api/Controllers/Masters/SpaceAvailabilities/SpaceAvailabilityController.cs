@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.Masters.SpaceAvailabilities.Queries.GetSpaceAvai
 using NexaSoft.Club.Application.Masters.SpaceAvailabilities.Queries.GetSpaceAvailabilities;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.SpaceAvailabilities;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SpaceAvailabilityController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("SpaceAvailability.CreateSpaceAvailability")]
     public async Task<IActionResult> CreateSpaceAvailability(CreateSpaceAvailabilityRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateSpaceAvailabilityCommand(
@@ -32,6 +37,8 @@ public class SpaceAvailabilityController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("SpaceAvailability.UpdateSpaceAvailability")]
     public async Task<IActionResult> UpdateSpaceAvailability(UpdateSpaceAvailabilityRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateSpaceAvailabilityCommand(
@@ -48,6 +55,8 @@ public class SpaceAvailabilityController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("SpaceAvailability.DeleteSpaceAvailability")]
     public async Task<IActionResult> DeleteSpaceAvailability(DeleteSpaceAvailabilityRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteSpaceAvailabilityCommand(
@@ -60,6 +69,8 @@ public class SpaceAvailabilityController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("SpaceAvailability.GetSpaceAvailability")]
     public async Task<IActionResult> GetSpaceAvailabilities(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -73,6 +84,8 @@ public class SpaceAvailabilityController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("SpaceAvailability.GetSpaceAvailability")]
     public async Task<IActionResult> GetSpaceAvailability(
         long id,
         CancellationToken cancellationToken

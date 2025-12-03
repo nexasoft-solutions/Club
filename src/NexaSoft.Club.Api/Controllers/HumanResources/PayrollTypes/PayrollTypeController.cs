@@ -8,22 +8,27 @@ using NexaSoft.Club.Application.HumanResources.PayrollTypes.Queries.GetPayrollTy
 using NexaSoft.Club.Application.HumanResources.PayrollTypes.Queries.GetPayrollTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.PayrollTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PayrollTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreatePayrollType(CreatePayrollTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollType.CreatePayrollType")]
+    public async Task<IActionResult> CreatePayrollType(CreatePayrollTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePayrollTypeCommand(
              request.Code,
              request.Name,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -31,10 +36,12 @@ public class PayrollTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePayrollType(UpdatePayrollTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollType.UpdatePayrollType")]
+    public async Task<IActionResult> UpdatePayrollType(UpdatePayrollTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollTypeCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.Description,
@@ -46,7 +53,9 @@ public class PayrollTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePayrollType(DeletePayrollTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollType.DeletePayrollType")]
+    public async Task<IActionResult> DeletePayrollType(DeletePayrollTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePayrollTypeCommand(
              request.Id,
@@ -57,7 +66,9 @@ public class PayrollTypeController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
-    [HttpGet]
+    [HttpGet]   
+    [GeneratePermission]
+    [RequirePermission("PayrollType.GetPayrollType")]
     public async Task<IActionResult> GetPayrollTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -70,11 +81,13 @@ public class PayrollTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPayrollType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("PayrollType.GetPayrollType")]
+    public async Task<IActionResult> GetPayrollType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPayrollTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

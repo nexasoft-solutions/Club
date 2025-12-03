@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.TaxRates.Queries.GetTaxRate;
 using NexaSoft.Club.Application.HumanResources.TaxRates.Queries.GetTaxRates;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.TaxRates;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class TaxRateController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateTaxRate(CreateTaxRateRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("TaxRate.CreateTaxRate")]
+    public async Task<IActionResult> CreateTaxRate(CreateTaxRateRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateTaxRateCommand(
              request.Code,
@@ -31,7 +36,7 @@ public class TaxRateController(ISender _sender) : ControllerBase
              request.Category,
              request.Description,
              request.AppliesTo,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -39,10 +44,12 @@ public class TaxRateController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateTaxRate(UpdateTaxRateRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("TaxRate.UpdateTaxRate")]
+    public async Task<IActionResult> UpdateTaxRate(UpdateTaxRateRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateTaxRateCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.RateValue,
@@ -62,7 +69,9 @@ public class TaxRateController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteTaxRate(DeleteTaxRateRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("TaxRate.DeleteTaxRate")]
+    public async Task<IActionResult> DeleteTaxRate(DeleteTaxRateRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteTaxRateCommand(
              request.Id,
@@ -74,6 +83,8 @@ public class TaxRateController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("TaxRate.GetTaxRate")]
     public async Task<IActionResult> GetTaxRates(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -86,11 +97,13 @@ public class TaxRateController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetTaxRate(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("TaxRate.GetTaxRate")]
+    public async Task<IActionResult> GetTaxRate(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetTaxRateQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

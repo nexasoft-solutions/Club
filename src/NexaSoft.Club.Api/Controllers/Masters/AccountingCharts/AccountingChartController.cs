@@ -9,15 +9,20 @@ using NexaSoft.Club.Application.Masters.AccountingCharts.Queries.GetAccountingCh
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
 using NexaSoft.Club.Application.Masters.AccountingCharts.Queries.GetTreeAccountingChart;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.AccountingCharts;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class AccountingChartController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("AccountingChart.CreateAccountingChart")]
     public async Task<IActionResult> CreateAccountingChart(CreateAccountingChartRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateAccountingChartCommand(
@@ -36,6 +41,8 @@ public class AccountingChartController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("AccountingChart.UpdateAccountingChart")]
     public async Task<IActionResult> UpdateAccountingChart(UpdateAccountingChartRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateAccountingChartCommand(
@@ -55,6 +62,8 @@ public class AccountingChartController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("AccountingChart.DeleteAccountingChart")]
     public async Task<IActionResult> DeleteAccountingChart(DeleteAccountingChartRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteAccountingChartCommand(
@@ -67,6 +76,8 @@ public class AccountingChartController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("AccountingChart.GetAccountingChart")]
     public async Task<IActionResult> GetAccountingCharts(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -80,6 +91,8 @@ public class AccountingChartController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("AccountingChart.GetAccountingChart")]
     public async Task<IActionResult> GetAccountingChart(
         long id,
         CancellationToken cancellationToken
@@ -92,6 +105,8 @@ public class AccountingChartController(ISender _sender) : ControllerBase
     }
 
     [HttpGet("tree")]
+    [GeneratePermission]
+    [RequirePermission("AccountingChart.GetAccountingChart")]
     public async Task<IActionResult> GetTreeAccountingChart(
         CancellationToken cancellationToken
      )

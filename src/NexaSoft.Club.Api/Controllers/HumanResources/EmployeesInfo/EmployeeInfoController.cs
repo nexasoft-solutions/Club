@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.HumanResources.EmployeesInfo.Queries.GetEmployee
 using NexaSoft.Club.Application.HumanResources.EmployeesInfo.Queries.GetEmployeesInfo;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.EmployeesInfo;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class EmployeeInfoController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("EmployeeInfo.CreateEmployeeInfo")]
     public async Task<IActionResult> CreateEmployeeInfo(CreateEmployeeInfoRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateEmployeeInfoCommand(
@@ -42,7 +47,9 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
-    [HttpPut]
+    [HttpPut]  
+    [GeneratePermission]
+    [RequirePermission("EmployeeInfo.UpdateEmployeeInfo")]
     public async Task<IActionResult> UpdateEmployeeInfo(UpdateEmployeeInfoRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateEmployeeInfoCommand(
@@ -71,6 +78,8 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("EmployeeInfo.DeleteEmployeeInfo")]
     public async Task<IActionResult> DeleteEmployeeInfo(DeleteEmployeeInfoRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteEmployeeInfoCommand(
@@ -83,6 +92,8 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("EmployeeInfo.GetEmployeeInfo")]
     public async Task<IActionResult> GetEmployeesInfo(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -95,7 +106,9 @@ public class EmployeeInfoController(ISender _sender) : ControllerBase
     }
 
 
-    [HttpGet("{id:long}")]
+    [HttpGet("{id:long}")]  
+    [GeneratePermission]
+    [RequirePermission("EmployeeInfo.GetEmployeeInfo")]
     public async Task<IActionResult> GetEmployeeInfo(
         long id,
         CancellationToken cancellationToken

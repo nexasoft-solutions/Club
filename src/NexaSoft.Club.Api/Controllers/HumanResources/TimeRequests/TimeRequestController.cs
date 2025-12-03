@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.TimeRequests.Queries.GetTimeReque
 using NexaSoft.Club.Application.HumanResources.TimeRequests.Queries.GetTimeRequests;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.TimeRequests;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class TimeRequestController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateTimeRequest(CreateTimeRequestRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("TimeRequest.CreateTimeRequest")]
+    public async Task<IActionResult> CreateTimeRequest(CreateTimeRequestRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateTimeRequestCommand(
              request.EmployeeId,
@@ -27,7 +32,7 @@ public class TimeRequestController(ISender _sender) : ControllerBase
              request.TotalDays,
              request.Reason,
              request.StatusId,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -35,10 +40,12 @@ public class TimeRequestController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateTimeRequest(UpdateTimeRequestRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("TimeRequest.UpdateTimeRequest")]
+    public async Task<IActionResult> UpdateTimeRequest(UpdateTimeRequestRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateTimeRequestCommand(
-           request.Id,
+             request.Id,
              request.EmployeeId,
              request.TimeRequestTypeId,
              request.StartDate,
@@ -54,7 +61,9 @@ public class TimeRequestController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteTimeRequest(DeleteTimeRequestRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("TimeRequest.DeleteTimeRequest")]
+    public async Task<IActionResult> DeleteTimeRequest(DeleteTimeRequestRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteTimeRequestCommand(
              request.Id,
@@ -66,6 +75,8 @@ public class TimeRequestController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("TimeRequest.GetTimeRequest")]
     public async Task<IActionResult> GetTimeRequests(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -78,11 +89,13 @@ public class TimeRequestController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetTimeRequest(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("TimeRequest.GetTimeRequest")]
+    public async Task<IActionResult> GetTimeRequest(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetTimeRequestQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

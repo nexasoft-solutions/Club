@@ -36,9 +36,11 @@ public class CreatePermissionCommandHandler(IGenericRepository<Permission> _repo
         var entity = Permission.Create(
             command.Name,
             command.Description,
-            command.ReferenciaControl,
+            command.Reference,
+            command.Source,
+            command.Action,
             _dateTimeProvider.CurrentTime.ToUniversalTime(),
-            command.UsuarioCreacion
+            command.CreatedBy
         );
 
         try

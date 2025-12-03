@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.Expenses.Queries.GetExpense;
 using NexaSoft.Club.Application.HumanResources.Expenses.Queries.GetExpenses;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.Expenses;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ExpenseController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateExpense(CreateExpenseRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Expense.CreateExpense")]
+    public async Task<IActionResult> CreateExpense(CreateExpenseRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateExpenseCommand(
              request.CostCenterId,
@@ -26,7 +31,7 @@ public class ExpenseController(ISender _sender) : ControllerBase
              request.Amount,
              request.DocumentNumber,
              request.DocumentPath,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -34,10 +39,12 @@ public class ExpenseController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateExpense(UpdateExpenseRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Expense.UpdateExpense")]
+    public async Task<IActionResult> UpdateExpense(UpdateExpenseRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateExpenseCommand(
-           request.Id,
+             request.Id,
              request.CostCenterId,
              request.Description,
              request.ExpenseDate,
@@ -52,7 +59,9 @@ public class ExpenseController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteExpense(DeleteExpenseRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Expense.DeleteExpense")]
+    public async Task<IActionResult> DeleteExpense(DeleteExpenseRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteExpenseCommand(
              request.Id,
@@ -64,6 +73,8 @@ public class ExpenseController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Expense.GetExpense")]
     public async Task<IActionResult> GetExpenses(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -76,11 +87,13 @@ public class ExpenseController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetExpense(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Expense.GetExpense")]
+    public async Task<IActionResult> GetExpense(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetExpenseQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

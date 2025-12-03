@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.CompanyBankAccounts.Queries.GetCo
 using NexaSoft.Club.Application.HumanResources.CompanyBankAccounts.Queries.GetCompanyBankAccounts;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.CompanyBankAccounts;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CompanyBankAccountController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateCompanyBankAccount(CreateCompanyBankAccountRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("CompanyBankAccount.CreateCompanyBankAccount")]
+    public async Task<IActionResult> CreateCompanyBankAccount(CreateCompanyBankAccountRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateCompanyBankAccountCommand(
              request.CompanyId,
@@ -28,7 +33,7 @@ public class CompanyBankAccountController(ISender _sender) : ControllerBase
              request.CurrencyId,
              request.IsPrimary,
              request.IsActive,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -36,7 +41,9 @@ public class CompanyBankAccountController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateCompanyBankAccount(UpdateCompanyBankAccountRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("CompanyBankAccount.UpdateCompanyBankAccount")]
+    public async Task<IActionResult> UpdateCompanyBankAccount(UpdateCompanyBankAccountRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateCompanyBankAccountCommand(
            request.Id,
@@ -56,7 +63,9 @@ public class CompanyBankAccountController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteCompanyBankAccount(DeleteCompanyBankAccountRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("CompanyBankAccount.DeleteCompanyBankAccount")]
+    public async Task<IActionResult> DeleteCompanyBankAccount(DeleteCompanyBankAccountRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteCompanyBankAccountCommand(
              request.Id,
@@ -68,6 +77,8 @@ public class CompanyBankAccountController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("CompanyBankAccount.GetCompanyBankAccount")]
     public async Task<IActionResult> GetCompanyBankAccounts(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -80,11 +91,13 @@ public class CompanyBankAccountController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetCompanyBankAccount(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("CompanyBankAccount.GetCompanyBankAccount")]
+    public async Task<IActionResult> GetCompanyBankAccount(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetCompanyBankAccountQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

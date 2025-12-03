@@ -1,8 +1,11 @@
 
+using DocumentFormat.OpenXml.Office.CustomUI;
 using Microsoft.EntityFrameworkCore;
 using NexaSoft.Club.Application.Masters.MenuItems;
 using NexaSoft.Club.Application.Masters.Users;
 using NexaSoft.Club.Domain.Masters.Menus;
+using NexaSoft.Club.Domain.Masters.Roles;
+using NexaSoft.Club.Domain.Masters.Users;
 
 namespace NexaSoft.Club.Infrastructure.Repositories;
 
@@ -81,6 +84,44 @@ public class MenuItemRepository(ApplicationDbContext _dbContext, IUserRoleReposi
             .ToList();
 
         return rootMenus.Select(menu => MapToDto(menu)).ToList();
+    }
+
+    public async Task<List<long>> GetUserRolesAsync(long MenuId, CancellationToken cancellationToken = default)
+    {
+        var roles = await (
+            from ur in _dbContext.Set<MenuRole>()
+            join r in _dbContext.Set<Role>() on ur.RoleId equals r.Id
+            where ur.MenuItemOptionId == MenuId
+            select r.Id
+        ).ToListAsync(cancellationToken);
+
+        return roles;
+    }
+
+    public async Task<List<MenuItemsResponse>> GetMenuByUserAndRoleAsync(long UserId, long RoleId, CancellationToken cancellationToken = default)
+    {
+        var roles = await (
+            from ur in _dbContext.Set<UserRole>() 
+            join mr in _dbContext.Set<MenuRole>()
+                on ur.RoleId equals mr.RoleId
+            join m in _dbContext.Set<MenuItemOption>() 
+                on mr.MenuItemOptionId equals m.Id
+            where ur.UserId == UserId 
+                && ur.RoleId == RoleId
+                    && m.DeletedAt == null
+            orderby m.Id
+            select new MenuItemsResponse
+            (
+                m.Id,
+                m.Label,
+                m.Icon,
+                m.Route,
+                m.ParentId
+               
+            )
+        ).ToListAsync(cancellationToken);
+
+        return roles;
     }
 
     private MenuItemResponse MapToDto(MenuItemOption menu)

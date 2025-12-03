@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.HumanResources.PayrollFormulas.Queries.GetPayrol
 using NexaSoft.Club.Application.HumanResources.PayrollFormulas.Queries.GetPayrollFormulas;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.PayrollFormulas;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PayrollFormulaController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("PayrollFormula.CreatePayrollFormula")]
     public async Task<IActionResult> CreatePayrollFormula(CreatePayrollFormulaRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePayrollFormulaCommand(
@@ -34,6 +39,8 @@ public class PayrollFormulaController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("PayrollFormula.UpdatePayrollFormula")]
     public async Task<IActionResult> UpdatePayrollFormula(UpdatePayrollFormulaRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollFormulaCommand(
@@ -52,6 +59,8 @@ public class PayrollFormulaController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("PayrollFormula.DeletePayrollFormula")]
     public async Task<IActionResult> DeletePayrollFormula(DeletePayrollFormulaRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePayrollFormulaCommand(
@@ -64,6 +73,8 @@ public class PayrollFormulaController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("PayrollFormula.GetPayrollFormula")]
     public async Task<IActionResult> GetPayrollFormulas(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -77,6 +88,8 @@ public class PayrollFormulaController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("PayrollFormula.GetPayrollFormula")]
     public async Task<IActionResult> GetPayrollFormula(
         long id,
         CancellationToken cancellationToken

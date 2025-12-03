@@ -65,6 +65,8 @@ public class MemberUserBackgroundGenerator : IMemberUserBackgroundGenerator
                     member.BirthDate,
                     memberId,
                     (int)EstadosEnum.Activo,
+                    false,
+                    null,
                     DateTime.UtcNow,
                     createdBy
                 );

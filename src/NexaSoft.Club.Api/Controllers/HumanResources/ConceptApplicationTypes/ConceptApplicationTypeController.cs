@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.ConceptApplicationTypes.Queries.G
 using NexaSoft.Club.Application.HumanResources.ConceptApplicationTypes.Queries.GetConceptApplicationTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.ConceptApplicationTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ConceptApplicationTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateConceptApplicationType(CreateConceptApplicationTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ConceptApplicationType.CreateConceptApplicationType")]
+    public async Task<IActionResult> CreateConceptApplicationType(CreateConceptApplicationTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateConceptApplicationTypeCommand(
              request.Code,
@@ -31,7 +36,9 @@ public class ConceptApplicationTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateConceptApplicationType(UpdateConceptApplicationTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ConceptApplicationType.UpdateConceptApplicationType")]
+    public async Task<IActionResult> UpdateConceptApplicationType(UpdateConceptApplicationTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateConceptApplicationTypeCommand(
            request.Id,
@@ -45,8 +52,10 @@ public class ConceptApplicationTypeController(ISender _sender) : ControllerBase
         return resultado.ToActionResult(this);
     }
 
-    [HttpDelete]
-   public async Task<IActionResult> DeleteConceptApplicationType(DeleteConceptApplicationTypeRequest request, CancellationToken cancellationToken)
+    [HttpDelete]    
+    [GeneratePermission]
+    [RequirePermission("ConceptApplicationType.DeleteConceptApplicationType")]
+    public async Task<IActionResult> DeleteConceptApplicationType(DeleteConceptApplicationTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteConceptApplicationTypeCommand(
              request.Id,
@@ -58,6 +67,8 @@ public class ConceptApplicationTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("ConceptApplicationType.GetConceptApplicationType")]
     public async Task<IActionResult> GetConceptApplicationTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -70,11 +81,13 @@ public class ConceptApplicationTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetConceptApplicationType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("ConceptApplicationType.GetConceptApplicationType")]
+    public async Task<IActionResult> GetConceptApplicationType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetConceptApplicationTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

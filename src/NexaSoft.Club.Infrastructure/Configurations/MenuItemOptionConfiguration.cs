@@ -22,14 +22,19 @@ public class MenuItemOptionConfiguration : IEntityTypeConfiguration<MenuItemOpti
 
         builder.Property(x => x.Icon)
             .HasColumnName("icon")
-            .HasMaxLength(100);
+            .HasMaxLength(300);
 
         builder.Property(x => x.Route)
             .HasColumnName("route")
             .HasMaxLength(200);
 
         builder.Property(x => x.ParentId)
-            .HasColumnName("parent_id");
+            .HasColumnName("parent_id")
+            .IsRequired(false);
+        
+        builder.Property(x => x.StateMenu)
+            .HasColumnName("state_menu")
+            .IsRequired();
 
         builder.HasOne(x => x.Parent)
             .WithMany(x => x.Children)

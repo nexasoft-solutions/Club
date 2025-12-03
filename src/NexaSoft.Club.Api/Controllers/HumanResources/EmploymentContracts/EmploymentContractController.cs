@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.EmploymentContracts.Queries.GetEm
 using NexaSoft.Club.Application.HumanResources.EmploymentContracts.Queries.GetEmploymentContracts;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.EmploymentContracts;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class EmploymentContractController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateEmploymentContract(CreateEmploymentContractRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("EmploymentContract.CreateEmploymentContract")]
+    public async Task<IActionResult> CreateEmploymentContract(CreateEmploymentContractRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateEmploymentContractCommand(
              request.EmployeeId,
@@ -36,7 +41,9 @@ public class EmploymentContractController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateEmploymentContract(UpdateEmploymentContractRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("EmploymentContract.UpdateEmploymentContract")]
+    public async Task<IActionResult> UpdateEmploymentContract(UpdateEmploymentContractRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateEmploymentContractCommand(
              request.Id,
@@ -56,7 +63,9 @@ public class EmploymentContractController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteEmploymentContract(DeleteEmploymentContractRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("EmploymentContract.DeleteEmploymentContract")]
+    public async Task<IActionResult> DeleteEmploymentContract(DeleteEmploymentContractRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteEmploymentContractCommand(
              request.Id,
@@ -68,6 +77,8 @@ public class EmploymentContractController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("EmploymentContract.GetEmploymentContract")]
     public async Task<IActionResult> GetEmploymentContracts(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -80,11 +91,13 @@ public class EmploymentContractController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetEmploymentContract(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("EmploymentContract.GetEmploymentContract")]
+    public async Task<IActionResult> GetEmploymentContract(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetEmploymentContractQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

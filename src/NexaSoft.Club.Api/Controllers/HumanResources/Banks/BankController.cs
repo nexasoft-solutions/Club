@@ -11,28 +11,32 @@ using NexaSoft.Club.Api.Extensions;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.Banks;
 
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
+
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class BankController(ISender _sender) : ControllerBase
 {
-
     [HttpPost]
-   public async Task<IActionResult> CreateBank(CreateBankRequest request, CancellationToken cancellationToken)
+    [RequirePermission("Bank.CreateBank")]
+    public async Task<IActionResult> CreateBank(CreateBankRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateBankCommand(
              request.Code,
              request.Name,
              request.WebSite,
              request.Phone,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
-
         return resultado.ToActionResult(this);
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateBank(UpdateBankRequest request, CancellationToken cancellationToken)
+    [RequirePermission("Bank.UpdateBank")]
+    public async Task<IActionResult> UpdateBank(UpdateBankRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateBankCommand(
            request.Id,
@@ -43,23 +47,23 @@ public class BankController(ISender _sender) : ControllerBase
              request.UpdatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
-
         return resultado.ToActionResult(this);
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteBank(DeleteBankRequest request, CancellationToken cancellationToken)
+    [RequirePermission("Bank.DeleteBank")]
+    public async Task<IActionResult> DeleteBank(DeleteBankRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteBankCommand(
              request.Id,
              request.DeletedBy
          );
         var resultado = await _sender.Send(command, cancellationToken);
-
         return resultado.ToActionResult(this);
     }
 
     [HttpGet]
+    [RequirePermission("Bank.GetBank")]
     public async Task<IActionResult> GetBanks(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -67,13 +71,12 @@ public class BankController(ISender _sender) : ControllerBase
     {
         var query = new GetBanksQuery(specParams);
         var resultado = await _sender.Send(query, cancellationToken);
-
         return resultado.ToActionResult(this);
     }
 
-
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetBank(
+    [HttpGet("{id:long}")]
+    [RequirePermission("Bank.GetBank")]
+    public async Task<IActionResult> GetBank(
        long id,
        CancellationToken cancellationToken
     )

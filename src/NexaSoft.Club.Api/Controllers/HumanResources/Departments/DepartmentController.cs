@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.Departments.Queries.GetDepartment
 using NexaSoft.Club.Application.HumanResources.Departments.Queries.GetDepartments;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.Departments;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class DepartmentController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateDepartment(CreateDepartmentRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Department.CreateDepartment")]
+    public async Task<IActionResult> CreateDepartment(CreateDepartmentRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateDepartmentCommand(
              request.Code,
@@ -28,7 +33,7 @@ public class DepartmentController(ISender _sender) : ControllerBase
              request.CostCenterId,
              request.Location,
              request.PhoneExtension,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -36,10 +41,12 @@ public class DepartmentController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateDepartment(UpdateDepartmentRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Department.UpdateDepartment")]
+    public async Task<IActionResult> UpdateDepartment(UpdateDepartmentRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateDepartmentCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.ParentDepartmentId,
@@ -56,7 +63,9 @@ public class DepartmentController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteDepartment(DeleteDepartmentRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Department.DeleteDepartment")]
+    public async Task<IActionResult> DeleteDepartment(DeleteDepartmentRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteDepartmentCommand(
              request.Id,
@@ -68,6 +77,8 @@ public class DepartmentController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Department.GetDepartment")]
     public async Task<IActionResult> GetDepartments(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -80,11 +91,13 @@ public class DepartmentController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetDepartment(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Department.GetDepartment")]
+    public async Task<IActionResult> GetDepartment(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetDepartmentQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

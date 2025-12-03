@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.Features.EntryItems.Queries.GetEntryItem;
 using NexaSoft.Club.Application.Features.EntryItems.Queries.GetEntryItems;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using NexaSoft.Club.Api.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.Features.EntryItems;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class EntryItemController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateEntryItem(CreateEntryItemRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("EntryItem.CreateEntryItem")]
+    public async Task<IActionResult> CreateEntryItem(CreateEntryItemRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateEntryItemCommand(
              request.EntryId,
@@ -25,7 +30,7 @@ public class EntryItemController(ISender _sender) : ControllerBase
              request.DebitAmount,
              request.CreditAmount,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -33,7 +38,9 @@ public class EntryItemController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateEntryItem(UpdateEntryItemRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("EntryItem.UpdateEntryItem")]
+    public async Task<IActionResult> UpdateEntryItem(UpdateEntryItemRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateEntryItemCommand(
            request.Id,
@@ -50,7 +57,9 @@ public class EntryItemController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteEntryItem(DeleteEntryItemRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("EntryItem.DeleteEntryItem")]
+    public async Task<IActionResult> DeleteEntryItem(DeleteEntryItemRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteEntryItemCommand(
              request.Id,
@@ -62,6 +71,8 @@ public class EntryItemController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("EntryItem.GetEntryItem")]
     public async Task<IActionResult> GetEntryItems(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -74,11 +85,13 @@ public class EntryItemController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetEntryItem(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("EntryItem.GetEntryItem")]
+    public async Task<IActionResult> GetEntryItem(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetEntryItemQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

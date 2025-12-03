@@ -18,7 +18,7 @@ public interface IRolePermissionRepository
     // Consultas
     Task<int> CountPermissionsForRoleAsync(long roleId, CancellationToken cancellationToken = default);
     Task<List<long>> GetPermissionsForRoleAsync(long roleId, CancellationToken cancellationToken = default);
-    Task<List<string?>> GetPermissionNamesForRoleAsync(long roleId, CancellationToken cancellationToken = default);
+    Task<List<PermissionBasicResponse>> GetPermissionNamesForRoleAsync(long roleId, CancellationToken cancellationToken = default);
     Task<bool> RoleHasPermissionAsync(long roleId, string permissionName, CancellationToken cancellationToken = default);
 
     // Consultas avanzadas

@@ -8,11 +8,13 @@ using NexaSoft.Club.Application.HumanResources.PayrollConceptEmployees.Queries.G
 using NexaSoft.Club.Application.HumanResources.PayrollConceptEmployees.Queries.GetPayrollConceptEmployees;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.PayrollConceptEmployees;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PayrollConceptEmployeeController(ISender _sender) : ControllerBase
 {
 

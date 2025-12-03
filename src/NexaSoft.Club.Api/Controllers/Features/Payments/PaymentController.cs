@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.Features.Payments.Queries.GetPayments;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
 using NexaSoft.Club.Application.Features.Payments.Queries.GetReceiptByPayment;
+using NexaSoft.Club.Api.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.Features.Payments;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PaymentController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("Payment.CreatePayment")]
     public async Task<IActionResult> CreatePayment(CreatePaymentRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePaymentCommand(
@@ -43,6 +48,8 @@ public class PaymentController(ISender _sender) : ControllerBase
   
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("Payment.DeletePayment")]
     public async Task<IActionResult> DeletePayment(DeletePaymentRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePaymentCommand(
@@ -55,6 +62,8 @@ public class PaymentController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Payment.GetPayment")]
     public async Task<IActionResult> GetPayments(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -68,6 +77,8 @@ public class PaymentController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Payment.GetPayment")]
     public async Task<IActionResult> GetPayment(
         long id,
         CancellationToken cancellationToken
@@ -81,6 +92,8 @@ public class PaymentController(ISender _sender) : ControllerBase
 
      // NUEVO MÉTODO PARA GENERAR COMPROBANTE
     [HttpGet("{id:long}/receipt")]
+    [GeneratePermission]
+    [RequirePermission("Payment.GetPayment")]
     public async Task<IActionResult> GetPaymentReceipt(
         long id,
         CancellationToken cancellationToken

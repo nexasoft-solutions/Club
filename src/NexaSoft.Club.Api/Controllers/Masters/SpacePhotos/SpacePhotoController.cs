@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.Masters.SpacePhotos.Queries.GetSpacePhoto;
 using NexaSoft.Club.Application.Masters.SpacePhotos.Queries.GetSpacePhotos;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.SpacePhotos;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SpacePhotoController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("SpacePhoto.CreateSpacePhoto")]
     public async Task<IActionResult> CreateSpacePhoto([FromForm] CreateSpacePhotoRequest request, CancellationToken cancellationToken)
     {
         using var stream = request.PhotoFile.OpenReadStream();
@@ -36,6 +41,8 @@ public class SpacePhotoController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("SpacePhoto.UpdateSpacePhoto")]
     public async Task<IActionResult> UpdateSpacePhoto(UpdateSpacePhotoRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateSpacePhotoCommand(
@@ -52,6 +59,8 @@ public class SpacePhotoController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("SpacePhoto.DeleteSpacePhoto")]
     public async Task<IActionResult> DeleteSpacePhoto(DeleteSpacePhotoRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteSpacePhotoCommand(
@@ -64,6 +73,8 @@ public class SpacePhotoController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("SpacePhoto.GetSpacePhoto")]
     public async Task<IActionResult> GetSpacePhotos(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -77,6 +88,8 @@ public class SpacePhotoController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("SpacePhoto.GetSpacePhoto")]
     public async Task<IActionResult> GetSpacePhoto(
         long id,
         CancellationToken cancellationToken

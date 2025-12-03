@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.Masters.Spaces.Queries.GetSpace;
 using NexaSoft.Club.Application.Masters.Spaces.Queries.GetSpaces;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.Spaces;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SpaceController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("Space.CreateSpace")]
     public async Task<IActionResult> CreateSpace(CreateSpaceRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateSpaceCommand(
@@ -36,6 +41,8 @@ public class SpaceController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("Space.UpdateSpace")]
     public async Task<IActionResult> UpdateSpace(UpdateSpaceRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateSpaceCommand(
@@ -56,6 +63,8 @@ public class SpaceController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("Space.DeleteSpace")]
     public async Task<IActionResult> DeleteSpace(DeleteSpaceRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteSpaceCommand(
@@ -68,6 +77,8 @@ public class SpaceController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Space.GetSpaces")]
     public async Task<IActionResult> GetSpaces(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -81,6 +92,8 @@ public class SpaceController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Space.GetSpace")]
     public async Task<IActionResult> GetSpace(
         long id,
         CancellationToken cancellationToken

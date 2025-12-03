@@ -6,5 +6,5 @@ public sealed record UpdateMenuRequest
     string? Label,
     string? Icon,
     string? Route,
-    string? UsuarioModificacion
+    string? UpdatedBy
 );

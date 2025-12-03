@@ -5374,13 +5374,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("deleted_by");
 
-                    b.Property<int>("EstadoMenu")
-                        .HasColumnType("integer")
-                        .HasColumnName("estado_menu");
-
                     b.Property<string>("Icon")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
                         .HasColumnName("icon");
 
                     b.Property<string>("Label")
@@ -5397,6 +5393,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("route");
+
+                    b.Property<int>("StateMenu")
+                        .HasColumnType("integer")
+                        .HasColumnName("state_menu");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -5434,6 +5434,9 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
                     b.HasIndex("RoleId")
                         .HasDatabaseName("ix_menu_roles_role_id");
+
+                    b.HasIndex("MenuItemOptionId", "RoleId")
+                        .HasDatabaseName("ix_menu_roles_menu_role");
 
                     b.ToTable("menu_roles", (string)null);
                 });
@@ -5565,6 +5568,12 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("action");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -5594,11 +5603,17 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
-                    b.Property<string>("ReferenciaControl")
+                    b.Property<string>("Reference")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("referencia_control");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("reference");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("source");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -5616,8 +5631,15 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_permission_name");
 
-                    b.HasIndex("ReferenciaControl")
-                        .HasDatabaseName("ix_permission_referenciacontrol");
+                    b.HasIndex("Reference")
+                        .HasDatabaseName("ix_permission_reference");
+
+                    b.HasIndex("Source")
+                        .HasDatabaseName("ix_permission_source");
+
+                    b.HasIndex("Source", "Action")
+                        .IsUnique()
+                        .HasDatabaseName("ix_permission_source_action");
 
                     b.ToTable("permissions", (string)null);
                 });
@@ -6298,7 +6320,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                         .HasName("pk_role_permissions");
 
                     b.HasIndex("PermissionId")
-                        .HasDatabaseName("ix_rolepermissions_permissionid");
+                        .HasDatabaseName("ix_role_permissions_permission_id");
+
+                    b.HasIndex("RoleId", "PermissionId")
+                        .HasDatabaseName("ix_rolepermissions_role_permission");
 
                     b.ToTable("role_permissions", (string)null);
                 });
@@ -6378,6 +6403,10 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
                     b.Property<long?>("MemberId")
                         .HasColumnType("bigint")
                         .HasColumnName("member_id");
+
+                    b.Property<bool?>("MustResetPassword")
+                        .HasColumnType("boolean")
+                        .HasColumnName("must_reset_password");
 
                     b.Property<string>("Password")
                         .HasMaxLength(220)
@@ -7536,12 +7565,23 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Menus.MenuRole", b =>
                 {
-                    b.HasOne("NexaSoft.Club.Domain.Masters.Menus.MenuItemOption", null)
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Menus.MenuItemOption", "MenuItemOption")
                         .WithMany("Roles")
                         .HasForeignKey("MenuItemOptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_menu_roles_menu_item_options_menu_item_option_id");
+
+                    b.HasOne("NexaSoft.Club.Domain.Masters.Roles.Role", "Role")
+                        .WithMany("MenuRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_menu_roles_role_role_id");
+
+                    b.Navigation("MenuItemOption");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.SpaceAvailabilities.SpaceAvailability", b =>
@@ -7697,6 +7737,11 @@ namespace NexaSoft.Club.Infrastructure.Data.Migrations
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Permissions.Permission", b =>
                 {
                     b.Navigation("_rolePermissions");
+                });
+
+            modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Roles.Role", b =>
+                {
+                    b.Navigation("MenuRoles");
                 });
 
             modelBuilder.Entity("NexaSoft.Club.Domain.Masters.Spaces.Space", b =>

@@ -8,23 +8,28 @@ using NexaSoft.Club.Application.HumanResources.EmployeeTypes.Queries.GetEmployee
 using NexaSoft.Club.Application.HumanResources.EmployeeTypes.Queries.GetEmployeeTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.EmployeeTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class EmployeeTypeController(ISender _sender) : ControllerBase
 {
 
-    [HttpPost]
-   public async Task<IActionResult> CreateEmployeeType(CreateEmployeeTypeRequest request, CancellationToken cancellationToken)
+    [HttpPost] 
+    [GeneratePermission]
+    [RequirePermission("EmployeeType.CreateEmployeeType")]
+    public async Task<IActionResult> CreateEmployeeType(CreateEmployeeTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateEmployeeTypeCommand(
              request.Code,
              request.Name,
              request.Description,
              request.BaseSalary,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -32,10 +37,12 @@ public class EmployeeTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateEmployeeType(UpdateEmployeeTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("EmployeeType.UpdateEmployeeType")]
+    public async Task<IActionResult> UpdateEmployeeType(UpdateEmployeeTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateEmployeeTypeCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.Description,
@@ -48,7 +55,9 @@ public class EmployeeTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteEmployeeType(DeleteEmployeeTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("EmployeeType.DeleteEmployeeType")]
+    public async Task<IActionResult> DeleteEmployeeType(DeleteEmployeeTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteEmployeeTypeCommand(
              request.Id,
@@ -60,6 +69,8 @@ public class EmployeeTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("EmployeeType.GetEmployeeType")]
     public async Task<IActionResult> GetEmployeeTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -72,11 +83,13 @@ public class EmployeeTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetEmployeeType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("EmployeeType.GetEmployeeType")]
+    public async Task<IActionResult> GetEmployeeType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetEmployeeTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

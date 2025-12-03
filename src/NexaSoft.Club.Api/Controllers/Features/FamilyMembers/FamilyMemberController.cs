@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.Features.FamilyMembers.Queries.GetFamilyMember;
 using NexaSoft.Club.Application.Features.FamilyMembers.Queries.GetFamilyMembers;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using NexaSoft.Club.Api.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.Features.FamilyMembers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class FamilyMemberController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("FamilyMember.CreateFamilyMember")]
     public async Task<IActionResult> CreateFamilyMember(CreateFamilyMemberRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateFamilyMemberCommand(
@@ -35,6 +40,8 @@ public class FamilyMemberController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("FamilyMember.UpdateFamilyMember")]
     public async Task<IActionResult> UpdateFamilyMember(UpdateFamilyMemberRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateFamilyMemberCommand(
@@ -54,6 +61,8 @@ public class FamilyMemberController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("FamilyMember.DeleteFamilyMember")]
     public async Task<IActionResult> DeleteFamilyMember(DeleteFamilyMemberRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteFamilyMemberCommand(
@@ -66,6 +75,8 @@ public class FamilyMemberController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("FamilyMember.GetFamilyMember")]
     public async Task<IActionResult> GetFamilyMembers(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -79,6 +90,8 @@ public class FamilyMemberController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("FamilyMember.GetFamilyMember")]
     public async Task<IActionResult> GetFamilyMember(
         long id,
         CancellationToken cancellationToken

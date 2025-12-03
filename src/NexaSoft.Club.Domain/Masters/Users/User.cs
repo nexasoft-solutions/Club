@@ -33,7 +33,10 @@ public class User : Entity
     public Member? Member { get; private set; }
 
     public long UserTypeId { get; private set; }
-    public UserType? UserType { get; set; }
+    public UserType? UserType { get; private set; }
+
+    public bool? MustResetPassword { get; private set; }
+    
     private readonly List<UserQrHistory> _qrHistory = new();
     public IReadOnlyCollection<UserQrHistory> QrHistory => _qrHistory.AsReadOnly();
 
@@ -51,6 +54,8 @@ public class User : Entity
         DateOnly? birthDate,
         long? memberId,
         int userStatus,
+        bool? mustResetPassword,
+        string? password,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -68,6 +73,8 @@ public class User : Entity
         BirthDate = birthDate;
         UserStatus = userStatus;
         MemberId = memberId;
+        MustResetPassword = mustResetPassword;
+        Password = password;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
         UpdatedBy = updatedBy;
@@ -84,6 +91,8 @@ public class User : Entity
         DateOnly? birthDate,
         long? memberId,
         int userStatus,
+        bool? mustResetPassword,
+        string? password,
         DateTime createdAt,
         string? createdBy
     )
@@ -100,8 +109,10 @@ public class User : Entity
             phone,
             userTypeId,
             birthDate,
-            memberId,
+            memberId,            
             userStatus,
+            mustResetPassword,
+            password,
             createdAt,
             createdBy
         );
@@ -117,7 +128,7 @@ public class User : Entity
         string? phone,
         long userTypeId,
         DateOnly? birthDate,
-        long? memberId,
+        long? memberId,        
         DateTime utcNow,
         string? updatedBy
     )
@@ -153,6 +164,14 @@ public class User : Entity
     {
         Password = password;
         HasSetPassword = true;
+        PasswordSetDate = DateTime.UtcNow;
+    }
+
+     public void ChangePassword(string password)
+    {
+        Password = password;
+        HasSetPassword = true;
+        MustResetPassword = false;
         PasswordSetDate = DateTime.UtcNow;
     }
 

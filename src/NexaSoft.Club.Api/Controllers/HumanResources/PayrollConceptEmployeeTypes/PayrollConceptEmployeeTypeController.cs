@@ -8,21 +8,26 @@ using NexaSoft.Club.Application.HumanResources.PayrollConceptEmployeeTypes.Queri
 using NexaSoft.Club.Application.HumanResources.PayrollConceptEmployeeTypes.Queries.GetPayrollConceptEmployeeTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.PayrollConceptEmployeeTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PayrollConceptEmployeeTypeController(ISender _sender) : ControllerBase
 {
 
-    [HttpPost]
-   public async Task<IActionResult> CreatePayrollConceptEmployeeType(CreatePayrollConceptEmployeeTypeRequest request, CancellationToken cancellationToken)
+    [HttpPost] 
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptEmployeeType.CreatePayrollConceptEmployeeType")]
+    public async Task<IActionResult> CreatePayrollConceptEmployeeType(CreatePayrollConceptEmployeeTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePayrollConceptEmployeeTypeCommand(
              request.PayrollConceptId,
              request.EmployeeTypeId,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -30,10 +35,12 @@ public class PayrollConceptEmployeeTypeController(ISender _sender) : ControllerB
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePayrollConceptEmployeeType(UpdatePayrollConceptEmployeeTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptEmployeeType.UpdatePayrollConceptEmployeeType")]
+    public async Task<IActionResult> UpdatePayrollConceptEmployeeType(UpdatePayrollConceptEmployeeTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollConceptEmployeeTypeCommand(
-           request.Id,
+             request.Id,
              request.PayrollConceptId,
              request.EmployeeTypeId,
              request.UpdatedBy
@@ -44,7 +51,9 @@ public class PayrollConceptEmployeeTypeController(ISender _sender) : ControllerB
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePayrollConceptEmployeeType(DeletePayrollConceptEmployeeTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptEmployeeType.DeletePayrollConceptEmployeeType")]
+    public async Task<IActionResult> DeletePayrollConceptEmployeeType(DeletePayrollConceptEmployeeTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePayrollConceptEmployeeTypeCommand(
              request.Id,
@@ -56,6 +65,8 @@ public class PayrollConceptEmployeeTypeController(ISender _sender) : ControllerB
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptEmployeeType.GetPayrollConceptEmployeeType")]
     public async Task<IActionResult> GetPayrollConceptEmployeeTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -68,11 +79,13 @@ public class PayrollConceptEmployeeTypeController(ISender _sender) : ControllerB
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPayrollConceptEmployeeType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptEmployeeType.GetPayrollConceptEmployeeType")]
+    public async Task<IActionResult> GetPayrollConceptEmployeeType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPayrollConceptEmployeeTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

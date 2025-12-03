@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.SpecialRates.Queries.GetSpecialRa
 using NexaSoft.Club.Application.HumanResources.SpecialRates.Queries.GetSpecialRates;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.SpecialRates;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SpecialRateController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateSpecialRate(CreateSpecialRateRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("SpecialRate.CreateSpecialRate")]
+    public async Task<IActionResult> CreateSpecialRate(CreateSpecialRateRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateSpecialRateCommand(
              request.RateTypeId,
@@ -25,7 +30,7 @@ public class SpecialRateController(ISender _sender) : ControllerBase
              request.Multiplier,
              request.StartTime,
              request.EndTime,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -33,10 +38,12 @@ public class SpecialRateController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateSpecialRate(UpdateSpecialRateRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("SpecialRate.UpdateSpecialRate")]
+    public async Task<IActionResult> UpdateSpecialRate(UpdateSpecialRateRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateSpecialRateCommand(
-           request.Id,
+             request.Id,
              request.RateTypeId,
              request.Name,
              request.Multiplier,
@@ -50,7 +57,9 @@ public class SpecialRateController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteSpecialRate(DeleteSpecialRateRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("SpecialRate.DeleteSpecialRate")]
+    public async Task<IActionResult> DeleteSpecialRate(DeleteSpecialRateRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteSpecialRateCommand(
              request.Id,
@@ -62,6 +71,8 @@ public class SpecialRateController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("SpecialRate.GetSpecialRate")]
     public async Task<IActionResult> GetSpecialRates(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -74,11 +85,13 @@ public class SpecialRateController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetSpecialRate(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("SpecialRate.GetSpecialRate")]
+    public async Task<IActionResult> GetSpecialRate(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetSpecialRateQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

@@ -10,15 +10,20 @@ using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
 using NexaSoft.Club.Api.Controllers.Features.MemberFees.Requests;
 using NexaSoft.Club.Application.Features.MemberFees.Queries.GetMemberFeesStatus;
+using NexaSoft.Club.Api.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.Features.MemberFees;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class MemberFeeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("MemberFee.CreateMemberFee")]
     public async Task<IActionResult> CreateMemberFee(CreateMemberFeeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateMemberFeeCommand(
@@ -36,10 +41,12 @@ public class MemberFeeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("MemberFee.UpdateMemberFee")]
     public async Task<IActionResult> UpdateMemberFee(UpdateMemberFeeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateMemberFeeCommand(
-           request.Id,
+             request.Id,
              request.MemberId,
              request.ConfigId,
              request.Period,
@@ -54,6 +61,8 @@ public class MemberFeeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("MemberFee.DeleteMemberFee")]
     public async Task<IActionResult> DeleteMemberFee(DeleteMemberFeeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteMemberFeeCommand(
@@ -66,6 +75,8 @@ public class MemberFeeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("MemberFee.GetMemberFee")]
     public async Task<IActionResult> GetMemberFees(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -79,6 +90,8 @@ public class MemberFeeController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("MemberFee.GetMemberFee")]
     public async Task<IActionResult> GetMemberFee(
         long id,
         CancellationToken cancellationToken
@@ -91,6 +104,8 @@ public class MemberFeeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet("status")]
+    [GeneratePermission]
+    [RequirePermission("MemberFee.GetMemberFeesStatus")]
     public async Task<IActionResult> GetMemberFeesStatus(
         [FromQuery] GetMemberFeesStatusRequest request,
         CancellationToken cancellationToken

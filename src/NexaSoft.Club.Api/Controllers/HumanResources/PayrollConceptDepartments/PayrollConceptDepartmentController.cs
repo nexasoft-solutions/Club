@@ -8,21 +8,26 @@ using NexaSoft.Club.Application.HumanResources.PayrollConceptDepartments.Queries
 using NexaSoft.Club.Application.HumanResources.PayrollConceptDepartments.Queries.GetPayrollConceptDepartments;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.PayrollConceptDepartments;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PayrollConceptDepartmentController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreatePayrollConceptDepartment(CreatePayrollConceptDepartmentRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptDepartment.CreatePayrollConceptDepartment")]
+    public async Task<IActionResult> CreatePayrollConceptDepartment(CreatePayrollConceptDepartmentRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePayrollConceptDepartmentCommand(
              request.PayrollConceptId,
              request.DepartmentId,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -30,10 +35,12 @@ public class PayrollConceptDepartmentController(ISender _sender) : ControllerBas
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePayrollConceptDepartment(UpdatePayrollConceptDepartmentRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptDepartment.UpdatePayrollConceptDepartment")]
+    public async Task<IActionResult> UpdatePayrollConceptDepartment(UpdatePayrollConceptDepartmentRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollConceptDepartmentCommand(
-           request.Id,
+             request.Id,
              request.PayrollConceptId,
              request.DepartmentId,
              request.UpdatedBy
@@ -44,7 +51,9 @@ public class PayrollConceptDepartmentController(ISender _sender) : ControllerBas
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePayrollConceptDepartment(DeletePayrollConceptDepartmentRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptDepartment.DeletePayrollConceptDepartment")]
+    public async Task<IActionResult> DeletePayrollConceptDepartment(DeletePayrollConceptDepartmentRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePayrollConceptDepartmentCommand(
              request.Id,
@@ -56,6 +65,8 @@ public class PayrollConceptDepartmentController(ISender _sender) : ControllerBas
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptDepartment.GetPayrollConceptDepartment")]
     public async Task<IActionResult> GetPayrollConceptDepartments(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -68,11 +79,13 @@ public class PayrollConceptDepartmentController(ISender _sender) : ControllerBas
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPayrollConceptDepartment(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("PayrollConceptDepartment.GetPayrollConceptDepartment")]
+    public async Task<IActionResult> GetPayrollConceptDepartment(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPayrollConceptDepartmentQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

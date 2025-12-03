@@ -8,22 +8,27 @@ using NexaSoft.Club.Application.HumanResources.PayrollPeriodStatuses.Queries.Get
 using NexaSoft.Club.Application.HumanResources.PayrollPeriodStatuses.Queries.GetPayrollPeriodStatuses;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.PayrollPeriodStatuses;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PayrollPeriodStatusController(ISender _sender) : ControllerBase
 {
 
-    [HttpPost]
-   public async Task<IActionResult> CreatePayrollPeriodStatus(CreatePayrollPeriodStatusRequest request, CancellationToken cancellationToken)
+    [HttpPost] 
+    [GeneratePermission]
+    [RequirePermission("PayrollPeriodStatus.CreatePayrollPeriodStatus")]
+    public async Task<IActionResult> CreatePayrollPeriodStatus(CreatePayrollPeriodStatusRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePayrollPeriodStatusCommand(
              request.Code,
              request.Name,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -31,10 +36,12 @@ public class PayrollPeriodStatusController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePayrollPeriodStatus(UpdatePayrollPeriodStatusRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollPeriodStatus.UpdatePayrollPeriodStatus")]
+    public async Task<IActionResult> UpdatePayrollPeriodStatus(UpdatePayrollPeriodStatusRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollPeriodStatusCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.Description,
@@ -46,7 +53,9 @@ public class PayrollPeriodStatusController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePayrollPeriodStatus(DeletePayrollPeriodStatusRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollPeriodStatus.DeletePayrollPeriodStatus")]
+    public async Task<IActionResult> DeletePayrollPeriodStatus(DeletePayrollPeriodStatusRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePayrollPeriodStatusCommand(
              request.Id,
@@ -58,6 +67,8 @@ public class PayrollPeriodStatusController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("PayrollPeriodStatus.GetPayrollPeriodStatus")]
     public async Task<IActionResult> GetPayrollPeriodStatuses(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -70,11 +81,13 @@ public class PayrollPeriodStatusController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPayrollPeriodStatus(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("PayrollPeriodStatus.GetPayrollPeriodStatus")]
+    public async Task<IActionResult> GetPayrollPeriodStatus(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPayrollPeriodStatusQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

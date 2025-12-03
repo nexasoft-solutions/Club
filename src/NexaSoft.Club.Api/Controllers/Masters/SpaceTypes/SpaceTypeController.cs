@@ -8,21 +8,26 @@ using NexaSoft.Club.Application.Masters.SpaceTypes.Queries.GetSpaceType;
 using NexaSoft.Club.Application.Masters.SpaceTypes.Queries.GetSpaceTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.SpaceTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SpaceTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateSpaceType(CreateSpaceTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("SpaceType.CreateSpaceType")]
+    public async Task<IActionResult> CreateSpaceType(CreateSpaceTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateSpaceTypeCommand(
              request.Name,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -30,10 +35,12 @@ public class SpaceTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateSpaceType(UpdateSpaceTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("SpaceType.UpdateSpaceType")]
+    public async Task<IActionResult> UpdateSpaceType(UpdateSpaceTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateSpaceTypeCommand(
-           request.Id,
+             request.Id,
              request.Name,
              request.Description,
              request.UpdatedBy
@@ -44,7 +51,9 @@ public class SpaceTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteSpaceType(DeleteSpaceTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("SpaceType.DeleteSpaceType")]
+    public async Task<IActionResult> DeleteSpaceType(DeleteSpaceTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteSpaceTypeCommand(
              request.Id,
@@ -56,6 +65,8 @@ public class SpaceTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("SpaceType.GetSpaceTypes")]
     public async Task<IActionResult> GetSpaceTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -68,11 +79,13 @@ public class SpaceTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetSpaceType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("SpaceType.GetSpaceType")]
+    public async Task<IActionResult> GetSpaceType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetSpaceTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

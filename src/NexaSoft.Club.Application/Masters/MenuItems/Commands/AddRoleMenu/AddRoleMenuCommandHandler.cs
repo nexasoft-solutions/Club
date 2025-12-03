@@ -3,11 +3,12 @@ using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Masters.Menus;
 using NexaSoft.Club.Domain.Masters.Roles;
+using NexaSoft.Club.Domain.Specifications;
 
 namespace NexaSoft.Club.Application.Masters.MenuItems.Commands.AddRoleMenu;
 
 public class AddRoleMenuCommandHandler(
-    IGenericRepository<MenuItemOption> _repository ,
+    IGenericRepository<MenuItemOption> _repository,
     IGenericRepository<Role> _roleRepository,
     IUnitOfWork _unitOfWork,
     ILogger<AddRoleMenuCommandHandler> _logger
@@ -17,43 +18,48 @@ public class AddRoleMenuCommandHandler(
     {
         _logger.LogInformation("Asignando roles al menú {MenuId}", command.MenuId);
 
-        // 1. Verificar si el menú existe
-        var menu = await _repository.GetByIdAsync(command.MenuId, cancellationToken);
+        var spec = new MenuWithRolesSpec(command.MenuId);
+        var menu = await _repository.GetEntityWithSpec(spec, cancellationToken);
+
         if (menu is null)
         {
             _logger.LogWarning("Menú no encontrado: {MenuId}", command.MenuId);
             return Result.Failure<bool>(MenuItemErrores.NoEncontrado);
         }
 
-        // 2. Limpiar roles actuales (si se quiere sobrescribir)
-        menu.Roles.Clear();
-
-        int totalAgregados = 0;
-
-        foreach (var roleId in command.RoleIds.Distinct())
-        {
-            // 3. Validar existencia del rol antes de agregar
-            var exists = await _roleRepository.ExistsAsync(roleId, cancellationToken);
-            if (!exists)
-            {
-                _logger.LogWarning("Rol inválido: {RoleId}", roleId);
-                continue;
-            }
-
-            menu.AddRole(roleId); // ← Aquí usás tu método encapsulado
-            totalAgregados++;
-        }
-
-        if (totalAgregados == 0)
-        {
-            _logger.LogWarning("No se agregaron roles válidos.");
-            return Result.Failure<bool>(MenuItemErrores.ErrorRolesNoAsignados);
-        }
-
-        // 4. Persistir cambios
+        // 2. Iniciar transacción antes de cualquier persistencia
         try
         {
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+            // Eliminar explícitamente los roles existentes en la base de datos
+            menu.Roles.Clear();
+            await _unitOfWork.SaveChangesAsync(cancellationToken); // Persistir la eliminación antes de agregar nuevos
+
+            int totalAgregados = 0;
+            foreach (var roleId in command.RoleIds.Distinct())
+            {
+                // Validar existencia del rol antes de agregar
+                var exists = await _roleRepository.ExistsAsync(roleId, cancellationToken);
+                if (!exists)
+                {
+                    _logger.LogWarning("Rol inválido: {RoleId}", roleId);
+                    continue;
+                }
+
+                menu.AddRole(roleId);
+                totalAgregados++;
+            }
+
+            if (totalAgregados == 0)
+            {
+                _logger.LogWarning("No se agregaron roles válidos.");
+                await _unitOfWork.RollbackAsync(cancellationToken);
+                return Result.Failure<bool>(MenuItemErrores.ErrorRolesNoAsignados);
+            }
+
+            // Persistir cambios finales
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 

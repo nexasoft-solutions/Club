@@ -8,22 +8,27 @@ using NexaSoft.Club.Application.HumanResources.ConceptCalculationTypes.Queries.G
 using NexaSoft.Club.Application.HumanResources.ConceptCalculationTypes.Queries.GetConceptCalculationTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.ConceptCalculationTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ConceptCalculationTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateConceptCalculationType(CreateConceptCalculationTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ConceptCalculationType.CreateConceptCalculationType")]
+    public async Task<IActionResult> CreateConceptCalculationType(CreateConceptCalculationTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateConceptCalculationTypeCommand(
              request.Code,
              request.Name,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -31,7 +36,9 @@ public class ConceptCalculationTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateConceptCalculationType(UpdateConceptCalculationTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ConceptCalculationType.UpdateConceptCalculationType")]
+    public async Task<IActionResult> UpdateConceptCalculationType(UpdateConceptCalculationTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateConceptCalculationTypeCommand(
            request.Id,
@@ -46,7 +53,9 @@ public class ConceptCalculationTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteConceptCalculationType(DeleteConceptCalculationTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ConceptCalculationType.DeleteConceptCalculationType")]
+    public async Task<IActionResult> DeleteConceptCalculationType(DeleteConceptCalculationTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteConceptCalculationTypeCommand(
              request.Id,
@@ -58,6 +67,8 @@ public class ConceptCalculationTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("ConceptCalculationType.GetConceptCalculationType")]
     public async Task<IActionResult> GetConceptCalculationTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -70,11 +81,13 @@ public class ConceptCalculationTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetConceptCalculationType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("ConceptCalculationType.GetConceptCalculationType")]
+    public async Task<IActionResult> GetConceptCalculationType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetConceptCalculationTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

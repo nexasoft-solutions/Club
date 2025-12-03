@@ -18,6 +18,7 @@ public sealed record UserResponse(
     string? QrUrl,
     DateTime? LastLoginDate,
     DateTime? PasswordSetDate,
+    bool? HasSetPassword,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     string? CreatedBy,

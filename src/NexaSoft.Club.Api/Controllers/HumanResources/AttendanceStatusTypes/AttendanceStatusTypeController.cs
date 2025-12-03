@@ -8,23 +8,28 @@ using NexaSoft.Club.Application.HumanResources.AttendanceStatusTypes.Queries.Get
 using NexaSoft.Club.Application.HumanResources.AttendanceStatusTypes.Queries.GetAttendanceStatusTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using NexaSoft.Club.Api.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.AttendanceStatusTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class AttendanceStatusTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateAttendanceStatusType(CreateAttendanceStatusTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("AttendanceStatusType.CreateAttendanceStatusType")]
+    public async Task<IActionResult> CreateAttendanceStatusType(CreateAttendanceStatusTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateAttendanceStatusTypeCommand(
              request.Code,
              request.Name,
              request.IsPaid,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -32,10 +37,12 @@ public class AttendanceStatusTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateAttendanceStatusType(UpdateAttendanceStatusTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("AttendanceStatusType.UpdateAttendanceStatusType")]
+    public async Task<IActionResult> UpdateAttendanceStatusType(UpdateAttendanceStatusTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateAttendanceStatusTypeCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.IsPaid,
@@ -48,7 +55,9 @@ public class AttendanceStatusTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteAttendanceStatusType(DeleteAttendanceStatusTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("AttendanceStatusType.DeleteAttendanceStatusType")]
+    public async Task<IActionResult> DeleteAttendanceStatusType(DeleteAttendanceStatusTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteAttendanceStatusTypeCommand(
              request.Id,
@@ -60,6 +69,8 @@ public class AttendanceStatusTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("AttendanceStatusType.GetAttendanceStatusType")]
     public async Task<IActionResult> GetAttendanceStatusTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -72,11 +83,13 @@ public class AttendanceStatusTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetAttendanceStatusType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("AttendanceStatusType.GetAttendanceStatusType")]
+    public async Task<IActionResult> GetAttendanceStatusType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetAttendanceStatusTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

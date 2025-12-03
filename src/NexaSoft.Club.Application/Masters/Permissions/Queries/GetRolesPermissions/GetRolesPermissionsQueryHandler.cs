@@ -16,10 +16,12 @@ public class GetRolesPermissionsQueryHandler(IRolePermissionRepository _reposito
 
             var list = response.Select(p => new RolesPermissionsResponse(
                 p.RoleId,
-                p.NombreRol,
+                p.NameRol,
                 p.PermissionId,
-                p.NombrePermiso,
-                p.ReferenciaControl
+                p.NamePermission,
+                p.Reference,
+                p.Source,
+                p.Action
             )).ToList();
 
 

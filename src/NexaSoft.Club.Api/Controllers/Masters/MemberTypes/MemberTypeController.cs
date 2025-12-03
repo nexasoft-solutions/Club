@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.Masters.MemberTypes.Queries.GetMemberType;
 using NexaSoft.Club.Application.Masters.MemberTypes.Queries.GetMemberTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.MemberTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class MemberTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("MemberType.CreateMemberType")]
     public async Task<IActionResult> CreateMemberType(CreateMemberTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateMemberTypeCommand(
@@ -36,7 +41,7 @@ public class MemberTypeController(ISender _sender) : ControllerBase
     public async Task<IActionResult> UpdateMemberType(UpdateMemberTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateMemberTypeCommand(
-           request.Id,
+             request.Id,
              request.TypeName,
              request.Description,
              request.HasFamilyDiscount,
@@ -50,6 +55,8 @@ public class MemberTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("MemberType.DeleteMemberType")]
     public async Task<IActionResult> DeleteMemberType(DeleteMemberTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteMemberTypeCommand(
@@ -62,6 +69,8 @@ public class MemberTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("MemberType.GetMemberType")]
     public async Task<IActionResult> GetMemberTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -75,6 +84,8 @@ public class MemberTypeController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("MemberType.GetMemberType")]
     public async Task<IActionResult> GetMemberType(
         long id,
         CancellationToken cancellationToken

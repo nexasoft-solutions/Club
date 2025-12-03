@@ -1,33 +1,35 @@
 using NexaSoft.Club.Application.Abstractions.Messaging;
+using NexaSoft.Club.Application.Abstractions.RequestHelpers;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Masters.Menus;
+using NexaSoft.Club.Domain.Specifications;
 
 namespace NexaSoft.Club.Application.Masters.MenuItems.Queries.GetMenus;
 
-public class GetMenusQueryHandler(IGenericRepository<MenuItemOption> _repository) : IQueryHandler<GetMenusQuery, List<MenuResponse>>
+public class GetMenusQueryHandler(IGenericRepository<MenuItemOption> _repository) : IQueryHandler<GetMenusQuery, Pagination<MenuResponse>>
 {
-    public async Task<Result<List<MenuResponse>>> Handle(GetMenusQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Pagination<MenuResponse>>> Handle(GetMenusQuery request, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _repository.ListAsync(cancellationToken);
+            var spec = new MenuSpecification(request.SpecParams);
+            var responses = await _repository.ListAsync(spec, cancellationToken);
+            var totalItems = await _repository.CountAsync(spec, cancellationToken);
 
-            var menus = result.Select(r => new MenuResponse
-            (
-                r.Id,
-                r.Label,
-                r.Icon,
-                r.Route,
-                r.ParentId
-            )).ToList();
+            var pagination = new Pagination<MenuResponse>(
+                    request.SpecParams.PageIndex,
+                    request.SpecParams.PageSize,
+                    totalItems,
+                    responses
+              );
 
-            return Result.Success(menus);
+            return Result.Success(pagination);
 
         }
         catch (Exception ex)
         {
             var errores = ex.Message;
-            return Result.Failure<List<MenuResponse>>(MenuItemErrores.ErrorConsulta);
+            return Result.Failure<Pagination<MenuResponse>>(MenuItemErrores.ErrorConsulta);
         }
     }
 }

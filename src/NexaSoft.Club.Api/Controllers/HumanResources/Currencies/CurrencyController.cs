@@ -8,21 +8,26 @@ using NexaSoft.Club.Application.HumanResources.Currencies.Queries.GetCurrency;
 using NexaSoft.Club.Application.HumanResources.Currencies.Queries.GetCurrencies;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.Currencies;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CurrencyController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateCurrency(CreateCurrencyRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Currency.CreateCurrency")]
+    public async Task<IActionResult> CreateCurrency(CreateCurrencyRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateCurrencyCommand(
              request.Code,
              request.Name,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -30,10 +35,12 @@ public class CurrencyController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateCurrency(UpdateCurrencyRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Currency.UpdateCurrency")]
+    public async Task<IActionResult> UpdateCurrency(UpdateCurrencyRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateCurrencyCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.UpdatedBy
@@ -44,7 +51,9 @@ public class CurrencyController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteCurrency(DeleteCurrencyRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Currency.DeleteCurrency")]
+    public async Task<IActionResult> DeleteCurrency(DeleteCurrencyRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteCurrencyCommand(
              request.Id,
@@ -56,6 +65,8 @@ public class CurrencyController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Currency.GetCurrency")]
     public async Task<IActionResult> GetCurrencies(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -68,11 +79,13 @@ public class CurrencyController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetCurrency(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Currency.GetCurrency")]
+    public async Task<IActionResult> GetCurrency(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetCurrencyQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

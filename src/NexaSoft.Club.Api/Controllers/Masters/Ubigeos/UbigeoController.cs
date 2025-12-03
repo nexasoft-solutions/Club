@@ -10,11 +10,13 @@ using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
 using NexaSoft.Club.Api.Controllers.Masters.Ubigeos.Requests;
 using NexaSoft.Club.Application.Masters.Ubigeos.Queries.GetTreeUbigeos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.Ubigeos;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UbigeoController(ISender _sender) : ControllerBase
 {
 

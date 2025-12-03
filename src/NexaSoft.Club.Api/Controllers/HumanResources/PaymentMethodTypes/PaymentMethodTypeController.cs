@@ -8,22 +8,27 @@ using NexaSoft.Club.Application.HumanResources.PaymentMethodTypes.Queries.GetPay
 using NexaSoft.Club.Application.HumanResources.PaymentMethodTypes.Queries.GetPaymentMethodTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.PaymentMethodTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PaymentMethodTypeController(ISender _sender) : ControllerBase
 {
 
-    [HttpPost]
-   public async Task<IActionResult> CreatePaymentMethodType(CreatePaymentMethodTypeRequest request, CancellationToken cancellationToken)
+    [HttpPost] 
+    [GeneratePermission]
+    [RequirePermission("PaymentMethodType.CreatePaymentMethodType")]
+    public async Task<IActionResult> CreatePaymentMethodType(CreatePaymentMethodTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePaymentMethodTypeCommand(
              request.Code,
              request.Name,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -31,10 +36,12 @@ public class PaymentMethodTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePaymentMethodType(UpdatePaymentMethodTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PaymentMethodType.UpdatePaymentMethodType")]
+    public async Task<IActionResult> UpdatePaymentMethodType(UpdatePaymentMethodTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePaymentMethodTypeCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.Description,
@@ -46,7 +53,9 @@ public class PaymentMethodTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePaymentMethodType(DeletePaymentMethodTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PaymentMethodType.DeletePaymentMethodType")]
+    public async Task<IActionResult> DeletePaymentMethodType(DeletePaymentMethodTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePaymentMethodTypeCommand(
              request.Id,
@@ -58,6 +67,8 @@ public class PaymentMethodTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("PaymentMethodType.GetPaymentMethodType")]
     public async Task<IActionResult> GetPaymentMethodTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -70,11 +81,13 @@ public class PaymentMethodTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPaymentMethodType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("PaymentMethodType.GetPaymentMethodType")]
+    public async Task<IActionResult> GetPaymentMethodType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPaymentMethodTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.Positions.Queries.GetPosition;
 using NexaSoft.Club.Application.HumanResources.Positions.Queries.GetPositions;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.Positions;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PositionController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreatePosition(CreatePositionRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Position.CreatePosition")]
+    public async Task<IActionResult> CreatePosition(CreatePositionRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePositionCommand(
              request.Code,
@@ -26,7 +31,7 @@ public class PositionController(ISender _sender) : ControllerBase
              request.EmployeeTypeId,
              request.BaseSalary,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -34,10 +39,12 @@ public class PositionController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePosition(UpdatePositionRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Position.UpdatePosition")]
+    public async Task<IActionResult> UpdatePosition(UpdatePositionRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePositionCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.DepartmentId,
@@ -52,7 +59,9 @@ public class PositionController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePosition(DeletePositionRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Position.DeletePosition")]
+    public async Task<IActionResult> DeletePosition(DeletePositionRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePositionCommand(
              request.Id,
@@ -64,6 +73,8 @@ public class PositionController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Position.GetPosition")]
     public async Task<IActionResult> GetPositions(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -76,11 +87,13 @@ public class PositionController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPosition(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Position.GetPosition")]
+    public async Task<IActionResult> GetPosition(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPositionQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

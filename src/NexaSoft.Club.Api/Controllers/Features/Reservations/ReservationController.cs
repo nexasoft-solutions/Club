@@ -10,15 +10,20 @@ using NexaSoft.Club.Api.Extensions;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using NexaSoft.Club.Api.Controllers.Features.Reservations.Requests;
 using NexaSoft.Club.Application.Features.Reservations.Queries.ReservationByWeek;
+using NexaSoft.Club.Api.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NexaSoft.Club.Api.Controllers.Features.Reservations;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ReservationController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("Reservation.CreateReservation")]
     public async Task<IActionResult> CreateReservation(CreateReservationRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateReservationCommand(
@@ -44,6 +49,8 @@ public class ReservationController(ISender _sender) : ControllerBase
   
 
     [HttpDelete]
+    [GeneratePermission] 
+    [RequirePermission("Reservation.DeleteReservation")]
     public async Task<IActionResult> DeleteReservation(DeleteReservationRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteReservationCommand(
@@ -56,6 +63,8 @@ public class ReservationController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Reservation.GetReservation")]
     public async Task<IActionResult> GetReservations(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -69,6 +78,8 @@ public class ReservationController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Reservation.GetReservation")]
     public async Task<IActionResult> GetReservation(
         long id,
         CancellationToken cancellationToken
@@ -81,6 +92,8 @@ public class ReservationController(ISender _sender) : ControllerBase
     }
 
     [HttpGet("by-week")]
+    [GeneratePermission]
+    [RequirePermission("Reservation.GetReservation")]
     public async Task<IActionResult> GetReservationByWeek(
         [FromQuery] GetReservationByWeekRequest request,
         CancellationToken cancellationToken

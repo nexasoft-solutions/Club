@@ -8,23 +8,28 @@ using NexaSoft.Club.Application.HumanResources.WorkSchedules.Queries.GetWorkSche
 using NexaSoft.Club.Application.HumanResources.WorkSchedules.Queries.GetWorkSchedules;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.WorkSchedules;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class WorkScheduleController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateWorkSchedule(CreateWorkScheduleRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("WorkSchedule.CreateWorkSchedule")]
+    public async Task<IActionResult> CreateWorkSchedule(CreateWorkScheduleRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateWorkScheduleCommand(
              request.EmployeeId,
              request.DayOfWeek,
              request.StartTime,
              request.EndTime,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -32,10 +37,12 @@ public class WorkScheduleController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateWorkSchedule(UpdateWorkScheduleRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("WorkSchedule.UpdateWorkSchedule")]
+    public async Task<IActionResult> UpdateWorkSchedule(UpdateWorkScheduleRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateWorkScheduleCommand(
-           request.Id,
+             request.Id,
              request.EmployeeId,
              request.DayOfWeek,
              request.StartTime,
@@ -48,7 +55,9 @@ public class WorkScheduleController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteWorkSchedule(DeleteWorkScheduleRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("WorkSchedule.DeleteWorkSchedule")]
+    public async Task<IActionResult> DeleteWorkSchedule(DeleteWorkScheduleRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteWorkScheduleCommand(
              request.Id,
@@ -60,6 +69,8 @@ public class WorkScheduleController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("WorkSchedule.GetWorkSchedule")]
     public async Task<IActionResult> GetWorkSchedules(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -72,11 +83,13 @@ public class WorkScheduleController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetWorkSchedule(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("WorkSchedule.GetWorkSchedule")]
+    public async Task<IActionResult> GetWorkSchedule(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetWorkScheduleQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

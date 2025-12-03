@@ -36,7 +36,7 @@ public class AuthService : IAuthService
         IGenericRepository<User> userRepository,
         IUserRoleRepository userRoleRepository,
         IUnitOfWork unitOfWork,
-        IOptions<JwtOptions> jwtOptions)  // <-- Usa IOptions aquí
+        IOptions<JwtOptions> jwtOptions)  
     {
         _dbContext = dbContext;
         _configuration = configuration;
@@ -171,17 +171,12 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
             new Claim("userName", user.UserName!),
-            new Claim("LastName", user.LastName!),
+            new Claim("FirstName", user.FirstName!),
             new Claim("FullName", user.FullName!),
-            new Claim("roleActive", activeRoleId.ToString())
+            new Claim("roleActive", activeRoleId.ToString()),
+            new Claim("rolesCount", roles.Count.ToString()),
+            new Claim("mustResetPassword", (user.MustResetPassword ?? false) ? "true" : "false")
         };
-
-        /*foreach (var role in roles)
-        {
-            claims.Add(new Claim("roles", role.Name!));
-            if (role.IsDefault)
-                claims.Add(new Claim("roleDefault", role.Id.ToString())); // o role.Id.ToString() si prefieres
-        }*/
 
         // Agrega los roles como una lista serializada en JSON
         var rolesInfo = roles.Select(role => new { id = role.Id, name = role.Name }).ToList();
@@ -192,17 +187,12 @@ public class AuthService : IAuthService
         if (defaultRole != null)
             claims.Add(new Claim("roleDefault", defaultRole.Id.ToString()));
 
-
-        foreach (var permission in permissions)
-        {
-            claims.Add(new Claim("permission", permission));
-        }
+        // Ya no se agregan los permisos al JWT
 
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Issuer"],
             claims: claims,
-            //expires: DateTime.UtcNow.AddHours(int.Parse(_configuration["Jwt:Expires"]!)),
             expires: DateTime.UtcNow.AddHours(_jwtOptions.GetExpiresInt()),
             signingCredentials: credentials
         );

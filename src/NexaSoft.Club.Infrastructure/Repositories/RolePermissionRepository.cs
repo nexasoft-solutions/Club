@@ -51,14 +51,15 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
            .AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId, cancellationToken);
     }
 
-    public async Task<List<string?>> GetPermissionNamesForRoleAsync(long roleId, CancellationToken cancellationToken = default)
+    public async Task<List<PermissionBasicResponse>> GetPermissionNamesForRoleAsync(long roleId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<RolePermission>()
             .Where(rp => rp.RoleId == roleId)
-            .Join(_dbContext.Set<Permission>(),
+            .Join(_dbContext.Set<Permission>()
+                .Where(p => p.DeletedAt == null),
                 rp => rp.PermissionId,
                 p => p.Id,
-                (rp, p) => p.Name)
+                (rp, p) => new PermissionBasicResponse(p.Id, p.Name))
             .ToListAsync(cancellationToken);
     }
 
@@ -94,15 +95,17 @@ public class RolePermissionRepository(ApplicationDbContext _dbContext) : IRolePe
                 r.Name,
                 rp.PermissionId,
                 p.Name,
-                p.ReferenciaControl
+                p.Reference,
+                p.Source,
+                p.Action
             )
         ).ToListAsync(cancellationToken);
 
         // ordena en memoria
         var ordered = result
-            .OrderBy(x => x.NombreRol)
-            .ThenBy(x => x.ReferenciaControl)
-            .ThenBy(x => x.NombrePermiso)
+            .OrderBy(x => x.NameRol)
+            .ThenBy(x => x.Reference)
+            .ThenBy(x => x.NamePermission)
             .ToList();
 
         return ordered;

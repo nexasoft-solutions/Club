@@ -25,9 +25,11 @@ public class UpdatePermissionCommandHandler(IGenericRepository<Permission> _repo
         entity.Update(
              command.Name,
              command.Description,
-             command.ReferenciaControl,
+             command.Reference,
+             command.Source,
+             command.Action,
              _dateTimeProvider.CurrentTime.ToUniversalTime(),
-             command.UsuarioModificacion
+             command.UpdatedBy
          );
 
         try

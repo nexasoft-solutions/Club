@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.Masters.MemberStatuses.Queries.GetMemberStatus;
 using NexaSoft.Club.Application.Masters.MemberStatuses.Queries.GetMemberStatuses;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.MemberStatuses;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class MemberStatusController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateMemberStatus(CreateMemberStatusRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("MemberStatus.CreateMemberStatus")]
+    public async Task<IActionResult> CreateMemberStatus(CreateMemberStatusRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateMemberStatusCommand(
              request.StatusName,
@@ -25,7 +30,7 @@ public class MemberStatusController(ISender _sender) : ControllerBase
              request.CanAccess,
              request.CanReserve,
              request.CanParticipate,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -33,10 +38,12 @@ public class MemberStatusController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateMemberStatus(UpdateMemberStatusRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("MemberStatus.UpdateMemberStatus")]
+    public async Task<IActionResult> UpdateMemberStatus(UpdateMemberStatusRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateMemberStatusCommand(
-           request.Id,
+             request.Id,
              request.StatusName,
              request.Description,
              request.CanAccess,
@@ -50,7 +57,9 @@ public class MemberStatusController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteMemberStatus(DeleteMemberStatusRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("MemberStatus.DeleteMemberStatus")]
+    public async Task<IActionResult> DeleteMemberStatus(DeleteMemberStatusRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteMemberStatusCommand(
              request.Id,
@@ -62,6 +71,8 @@ public class MemberStatusController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("MemberStatus.GetMemberStatus")]
     public async Task<IActionResult> GetMemberStatuses(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -74,11 +85,13 @@ public class MemberStatusController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetMemberStatus(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("MemberStatus.GetMemberStatus")]
+    public async Task<IActionResult> GetMemberStatus(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetMemberStatusQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

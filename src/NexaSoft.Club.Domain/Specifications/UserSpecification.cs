@@ -21,7 +21,7 @@ public class UserSpecification : BaseSpecification<User, UserResponse>
             {
                 switch (specParams.SearchFields.ToLower())
                 {
-                    case "nombrecompleto":
+                    case "fullname":
                         AddCriteria(x => x.FullName != null && x.FullName.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     case "username":
@@ -30,7 +30,7 @@ public class UserSpecification : BaseSpecification<User, UserResponse>
                     case "email":
                         AddCriteria(x => x.Email != null && x.Email.ToLower().Contains(specParams.Search.ToLower()));
                         break;
-                    case "userdni":
+                    case "dni":
                         AddCriteria(x => x.Dni != null && x.Dni.ToLower().Contains(specParams.Search.ToLower()));
                         break;
                     default:
@@ -79,6 +79,7 @@ public class UserSpecification : BaseSpecification<User, UserResponse>
                x.QrUrl,
                x.LastLoginDate,
                x.PasswordSetDate,
+               x.HasSetPassword,
                x.CreatedAt,
                x.UpdatedAt,
                x.CreatedBy,

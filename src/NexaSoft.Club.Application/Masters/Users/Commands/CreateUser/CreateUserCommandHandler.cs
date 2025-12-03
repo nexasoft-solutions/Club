@@ -3,6 +3,7 @@ using NexaSoft.Club.Application.Abstractions.Messaging;
 using NexaSoft.Club.Application.Abstractions.Time;
 using NexaSoft.Club.Domain.Abstractions;
 using NexaSoft.Club.Domain.Masters.Users;
+using NexaSoft.Club.Domain.Masters.Users.Events;
 using static NexaSoft.Club.Domain.Shareds.Enums;
 using BC = BCrypt.Net.BCrypt;
 
@@ -55,6 +56,10 @@ public class CreateUserCommandHandler(
       return Result.Failure<long>(UserErrores.Duplicado);
     }
 
+    // Generar contraseña temporal segura de 8 caracteres
+    string tempPassword = Guid.NewGuid().ToString("N").ToUpper().Replace("O", "A").Substring(0,8);
+    string hashedPassword = BC.HashPassword(tempPassword);
+
     var entity = User.Create(
         command.LastName,
         command.FirstName,
@@ -65,6 +70,8 @@ public class CreateUserCommandHandler(
         command.BirthDate,
         command.MemberId,
         (int)EstadosEnum.Activo,
+        true,
+        hashedPassword,
          _dateTimeProvider.CurrentTime.ToUniversalTime(),
         userName
         );
@@ -74,6 +81,9 @@ public class CreateUserCommandHandler(
       await _unitOfWork.BeginTransactionAsync(cancellationToken);
       await _repository.AddAsync(entity, cancellationToken);
       await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+      entity.RaiseDomainEvent(new UserCreateDomainEvent(entity.Id, tempPassword));
+
       await _unitOfWork.CommitAsync(cancellationToken);
       _logger.LogInformation("User con ID {UserId} creado satisfactoriamente", entity.Id);
 

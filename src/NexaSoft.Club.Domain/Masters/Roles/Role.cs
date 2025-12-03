@@ -1,4 +1,5 @@
 using NexaSoft.Club.Domain.Abstractions;
+using NexaSoft.Club.Domain.Masters.Menus;
 
 namespace NexaSoft.Club.Domain.Masters.Roles;
 
@@ -7,6 +8,9 @@ public class Role : Entity
     public string? Name { get; private set; }
     public string? Description { get; private set; }
     private Role() { }
+
+    public ICollection<MenuRole> MenuRoles { get; private set; } = new List<MenuRole>();
+
 
     public Role(
         string? name,

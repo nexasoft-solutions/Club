@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.HumanResources.CostCenters.Queries.GetCostCenter
 using NexaSoft.Club.Application.HumanResources.CostCenters.Queries.GetCostCenters;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.CostCenters;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CostCenterController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("CostCenter.CreateCostCenter")]
     public async Task<IActionResult> CreateCostCenter(CreateCostCenterRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateCostCenterCommand(
@@ -37,6 +42,8 @@ public class CostCenterController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("CostCenter.UpdateCostCenter")]
     public async Task<IActionResult> UpdateCostCenter(UpdateCostCenterRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateCostCenterCommand(
@@ -58,6 +65,8 @@ public class CostCenterController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("CostCenter.DeleteCostCenter")]
     public async Task<IActionResult> DeleteCostCenter(DeleteCostCenterRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteCostCenterCommand(
@@ -70,6 +79,8 @@ public class CostCenterController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("CostCenter.GetCostCenter")]
     public async Task<IActionResult> GetCostCenters(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -83,6 +94,8 @@ public class CostCenterController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("CostCenter.GetCostCenter")]
     public async Task<IActionResult> GetCostCenter(
         long id,
         CancellationToken cancellationToken

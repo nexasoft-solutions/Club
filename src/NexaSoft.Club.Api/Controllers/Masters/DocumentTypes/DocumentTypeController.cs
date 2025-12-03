@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.Masters.DocumentTypes.Queries.GetDocumentType;
 using NexaSoft.Club.Application.Masters.DocumentTypes.Queries.GetDocumentTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.DocumentTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class DocumentTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("DocumentType.CreateDocumentType")]
     public async Task<IActionResult> CreateDocumentType(CreateDocumentTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateDocumentTypeCommand(
@@ -31,6 +36,8 @@ public class DocumentTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("DocumentType.UpdateDocumentType")]
     public async Task<IActionResult> UpdateDocumentType(UpdateDocumentTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateDocumentTypeCommand(
@@ -46,6 +53,8 @@ public class DocumentTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("DocumentType.DeleteDocumentType")]
     public async Task<IActionResult> DeleteDocumentType(DeleteDocumentTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteDocumentTypeCommand(
@@ -58,6 +67,8 @@ public class DocumentTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("DocumentType.GetDocumentType")]
     public async Task<IActionResult> GetDocumentTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -71,6 +82,8 @@ public class DocumentTypeController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("DocumentType.GetDocumentType")]
     public async Task<IActionResult> GetDocumentType(
         long id,
         CancellationToken cancellationToken

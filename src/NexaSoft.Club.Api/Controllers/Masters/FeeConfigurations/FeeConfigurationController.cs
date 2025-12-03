@@ -11,15 +11,20 @@ using NexaSoft.Club.Api.Extensions;
 using NexaSoft.Club.Api.Controllers.Masters.FeeConfigurations.Requests;
 using NexaSoft.Club.Application.Masters.FeeConfigurations.Commands.CreateMemberTypeFeesBulk;
 using NexaSoft.Club.Application.Masters.FeeConfigurations.Queries.GetMemberTypeFee;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.FeeConfigurations;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class FeeConfigurationController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("FeeConfiguration.CreateFeeConfiguration")]
     public async Task<IActionResult> CreateFeeConfiguration(CreateFeeConfigurationRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateFeeConfigurationCommand(
@@ -39,6 +44,8 @@ public class FeeConfigurationController(ISender _sender) : ControllerBase
     }
 
     [HttpPost("bulk-member-type-fees")]
+    [GeneratePermission]
+    [RequirePermission("FeeConfiguration.CreateFeeConfiguration")]
     public async Task<IActionResult> CreateBulk(CreateMemberTypeFeesBulkRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateMemberTypeFeesBulkCommand(
@@ -56,6 +63,8 @@ public class FeeConfigurationController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("FeeConfiguration.UpdateFeeConfiguration")]
     public async Task<IActionResult> UpdateFeeConfiguration(UpdateFeeConfigurationRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateFeeConfigurationCommand(
@@ -76,6 +85,8 @@ public class FeeConfigurationController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("FeeConfiguration.DeleteFeeConfiguration")]
     public async Task<IActionResult> DeleteFeeConfiguration(DeleteFeeConfigurationRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteFeeConfigurationCommand(
@@ -88,6 +99,8 @@ public class FeeConfigurationController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("FeeConfiguration.GetFeeConfiguration")]
     public async Task<IActionResult> GetFeeConfigurations(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -100,6 +113,8 @@ public class FeeConfigurationController(ISender _sender) : ControllerBase
     }
 
     [HttpGet("member-type-fees")]
+    [GeneratePermission]
+    [RequirePermission("FeeConfiguration.GetFeeConfiguration")]
     public async Task<IActionResult> GetMemberTypeFees(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -113,6 +128,8 @@ public class FeeConfigurationController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("FeeConfiguration.GetFeeConfiguration")]
     public async Task<IActionResult> GetFeeConfiguration(
         long id,
         CancellationToken cancellationToken

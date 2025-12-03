@@ -10,15 +10,20 @@ using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
 using NexaSoft.Club.Api.Controllers.Masters.SpaceRates.Requests;
 using NexaSoft.Club.Application.Masters.SpaceRates.Queries.GetSpaceRateByMemberType;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.SpaceRates;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SpaceRateController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("SpaceRate.CreateSpaceRate")]
     public async Task<IActionResult> CreateSpaceRate(CreateSpaceRateRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateSpaceRateCommand(
@@ -34,6 +39,8 @@ public class SpaceRateController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("SpaceRate.UpdateSpaceRate")]
     public async Task<IActionResult> UpdateSpaceRate(UpdateSpaceRateRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateSpaceRateCommand(
@@ -50,6 +57,8 @@ public class SpaceRateController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("SpaceRate.DeleteSpaceRate")]
     public async Task<IActionResult> DeleteSpaceRate(DeleteSpaceRateRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteSpaceRateCommand(
@@ -62,6 +71,8 @@ public class SpaceRateController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("SpaceRate.GetSpaceRate")]
     public async Task<IActionResult> GetSpaceRates(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -75,6 +86,8 @@ public class SpaceRateController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("SpaceRate.GetSpaceRate")]
     public async Task<IActionResult> GetSpaceRate(
         long id,
         CancellationToken cancellationToken
@@ -87,6 +100,8 @@ public class SpaceRateController(ISender _sender) : ControllerBase
     }
 
     [HttpGet("ByMemberType")]
+    [GeneratePermission]
+    [RequirePermission("SpaceRate.GetSpaceRate")]
     public async Task<IActionResult> GetSpaceRateByMemberType(
         [FromQuery] GetSpaceRateByMemberTypeRequest request,
         CancellationToken cancellationToken

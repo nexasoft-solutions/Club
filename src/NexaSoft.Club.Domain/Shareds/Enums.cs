@@ -227,4 +227,17 @@ public static class Enums
 
     }
 
+    public enum UserTypeEnum
+    {
+        [Description("Miembro")]
+        Miembro = 1,
+
+        [Description("Administrativo")]
+        Administrativo = 2,
+
+        [Description("Usuario")]
+        Usuario = 3
+        
+    }
+
 }

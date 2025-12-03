@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.LegalParameters.Queries.GetLegalP
 using NexaSoft.Club.Application.HumanResources.LegalParameters.Queries.GetLegalParameters;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.LegalParameters;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class LegalParameterController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateLegalParameter(CreateLegalParameterRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("LegalParameter.CreateLegalParameter")]
+    public async Task<IActionResult> CreateLegalParameter(CreateLegalParameterRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateLegalParameterCommand(
              request.Code,
@@ -28,7 +33,7 @@ public class LegalParameterController(ISender _sender) : ControllerBase
              request.EndDate,
              request.Category,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -36,10 +41,12 @@ public class LegalParameterController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateLegalParameter(UpdateLegalParameterRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("LegalParameter.UpdateLegalParameter")]
+    public async Task<IActionResult> UpdateLegalParameter(UpdateLegalParameterRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateLegalParameterCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.Value,
@@ -56,7 +63,9 @@ public class LegalParameterController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteLegalParameter(DeleteLegalParameterRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("LegalParameter.DeleteLegalParameter")]
+    public async Task<IActionResult> DeleteLegalParameter(DeleteLegalParameterRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteLegalParameterCommand(
              request.Id,
@@ -68,6 +77,8 @@ public class LegalParameterController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("LegalParameter.GetLegalParameter")]
     public async Task<IActionResult> GetLegalParameters(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -80,11 +91,13 @@ public class LegalParameterController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetLegalParameter(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("LegalParameter.GetLegalParameter")]
+    public async Task<IActionResult> GetLegalParameter(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetLegalParameterQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

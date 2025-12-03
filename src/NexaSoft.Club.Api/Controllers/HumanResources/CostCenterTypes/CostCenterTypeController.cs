@@ -8,22 +8,27 @@ using NexaSoft.Club.Application.HumanResources.CostCenterTypes.Queries.GetCostCe
 using NexaSoft.Club.Application.HumanResources.CostCenterTypes.Queries.GetCostCenterTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.CostCenterTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CostCenterTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateCostCenterType(CreateCostCenterTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("CostCenterType.CreateCostCenterType")]
+    public async Task<IActionResult> CreateCostCenterType(CreateCostCenterTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateCostCenterTypeCommand(
              request.Code,
              request.Name,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -31,10 +36,12 @@ public class CostCenterTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateCostCenterType(UpdateCostCenterTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("CostCenterType.UpdateCostCenterType")]
+    public async Task<IActionResult> UpdateCostCenterType(UpdateCostCenterTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateCostCenterTypeCommand(
-           request.Id,
+             request.Id,
              request.Code,
              request.Name,
              request.Description,
@@ -46,7 +53,9 @@ public class CostCenterTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteCostCenterType(DeleteCostCenterTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("CostCenterType.DeleteCostCenterType")]
+    public async Task<IActionResult> DeleteCostCenterType(DeleteCostCenterTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteCostCenterTypeCommand(
              request.Id,
@@ -58,6 +67,8 @@ public class CostCenterTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("CostCenterType.GetCostCenterType")]
     public async Task<IActionResult> GetCostCenterTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -70,11 +81,13 @@ public class CostCenterTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetCostCenterType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("CostCenterType.GetCostCenterType")]
+    public async Task<IActionResult> GetCostCenterType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetCostCenterTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

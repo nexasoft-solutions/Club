@@ -18,7 +18,7 @@ public class MenuItemOption : Entity
 
     public ICollection<MenuRole> Roles { get; private set; } = new List<MenuRole>();
 
-    public int EstadoMenu { get; private set; } = (int)EstadosEnum.Activo;
+    public int StateMenu { get; private set; } = (int)EstadosEnum.Activo;
 
     private MenuItemOption() { }
 
@@ -37,7 +37,7 @@ public class MenuItemOption : Entity
         Icon = icon;
         Route = route;
         ParentId = parentId;
-        EstadoMenu = (int)EstadosEnum.Activo;
+        StateMenu = (int)EstadosEnum.Activo;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
         UpdatedBy = updatedBy;
@@ -88,7 +88,7 @@ public class MenuItemOption : Entity
 
     public void Delete(DateTime utcNow, string deletedBy)
     {
-        EstadoMenu = (int)EstadosEnum.Eliminado;
+        StateMenu = (int)EstadosEnum.Eliminado;
         DeletedAt = utcNow;
         DeletedBy = deletedBy;
     }

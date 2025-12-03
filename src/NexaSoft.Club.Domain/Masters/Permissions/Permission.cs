@@ -7,7 +7,10 @@ public class Permission : Entity
 {
     public string? Name { get; private set; }
     public string? Description { get; private set; }
-    public string? ReferenciaControl { get; private set; }
+    public string? Reference { get; private set; }
+
+    public string? Source { get; private set; }
+    public string? Action { get; private set; }
 
     // Campo privado para la relación (nomenclatura consistente)
     private readonly List<RolePermission> _rolePermissions = new();
@@ -19,7 +22,9 @@ public class Permission : Entity
     public Permission(
         string? name,
         string? description,
-        string? referenciaControl,
+        string? reference,
+        string? source,
+        string? action,
         DateTime createdAt,
         string? createdBy,
         string? updatedBy = null,
@@ -28,7 +33,9 @@ public class Permission : Entity
     {
         Name = name;
         Description = description;
-        ReferenciaControl = referenciaControl;
+        Reference = reference;
+        Source = source;
+        Action = action;
         CreatedAt = createdAt;
         CreatedBy = createdBy;
         UpdatedBy = updatedBy;
@@ -38,7 +45,9 @@ public class Permission : Entity
     public static Permission Create(
         string? name,
         string? description,
-        string? referenciaControl,
+        string? reference,
+        string? source,
+        string? action,
         DateTime fechaCreacion,
         string? createdAt
     )
@@ -46,7 +55,9 @@ public class Permission : Entity
         var entity = new Permission(
             name,
             description,
-            referenciaControl,
+            reference,
+            source,
+            action,
             fechaCreacion,
             createdAt
         );
@@ -56,14 +67,18 @@ public class Permission : Entity
     public Result Update(
          string? name,
          string? description,
-         string? referenciaControl,
+         string? reference,
+         string? source,
+         string? action,
          DateTime utcNow,
          string? updatedAt
      )
     {
         Name = name;
         Description = description;
-        ReferenciaControl = referenciaControl;
+        Reference = reference;
+        Source = source;
+        Action = action;
         UpdatedAt = utcNow;
         UpdatedBy = UpdatedBy;
         return Result.Success();

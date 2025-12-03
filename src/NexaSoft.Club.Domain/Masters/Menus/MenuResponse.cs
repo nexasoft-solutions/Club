@@ -6,5 +6,15 @@ public sealed record MenuResponse
     string? Label,
     string? Icon,
     string? Route,
+    long? ParentId,
+    List<MenuResponse>? Children = null
+);
+
+public sealed record MenuItemsResponse
+(
+    long Id,
+    string? Label,
+    string? Icon,
+    string? Route,
     long? ParentId
 );

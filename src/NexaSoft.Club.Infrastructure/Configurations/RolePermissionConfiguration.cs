@@ -20,8 +20,8 @@ public class RolePermissionConfiguration: IEntityTypeConfiguration<RolePermissio
             .IsRequired();           
 
         // Índice para búsquedas por PermissionId
-        builder.HasIndex(rp => rp.PermissionId)
-            .HasDatabaseName("ix_rolepermissions_permissionid");
+        builder.HasIndex(rp => new { rp.RoleId, rp.PermissionId })
+            .HasDatabaseName("ix_rolepermissions_role_permission");
     }
 
 }

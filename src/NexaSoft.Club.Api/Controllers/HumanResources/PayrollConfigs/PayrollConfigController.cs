@@ -8,23 +8,28 @@ using NexaSoft.Club.Application.HumanResources.PayrollConfigs.Queries.GetPayroll
 using NexaSoft.Club.Application.HumanResources.PayrollConfigs.Queries.GetPayrollConfigs;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.PayrollConfigs;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PayrollConfigController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreatePayrollConfig(CreatePayrollConfigRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollConfig.CreatePayrollConfig")]
+    public async Task<IActionResult> CreatePayrollConfig(CreatePayrollConfigRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePayrollConfigCommand(
              request.CompanyId,
              request.PayPeriodTypeId,
              request.RegularHoursPerDay,
              request.WorkDaysPerWeek,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -32,10 +37,12 @@ public class PayrollConfigController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdatePayrollConfig(UpdatePayrollConfigRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollConfig.UpdatePayrollConfig")]
+    public async Task<IActionResult> UpdatePayrollConfig(UpdatePayrollConfigRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePayrollConfigCommand(
-           request.Id,
+             request.Id,
              request.CompanyId,
              request.PayPeriodTypeId,
              request.RegularHoursPerDay,
@@ -48,7 +55,9 @@ public class PayrollConfigController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeletePayrollConfig(DeletePayrollConfigRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("PayrollConfig.DeletePayrollConfig")]
+    public async Task<IActionResult> DeletePayrollConfig(DeletePayrollConfigRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePayrollConfigCommand(
              request.Id,
@@ -60,6 +69,8 @@ public class PayrollConfigController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("PayrollConfig.GetPayrollConfig")]
     public async Task<IActionResult> GetPayrollConfigs(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -72,11 +83,13 @@ public class PayrollConfigController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetPayrollConfig(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("PayrollConfig.GetPayrollConfig")]
+    public async Task<IActionResult> GetPayrollConfig(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetPayrollConfigQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

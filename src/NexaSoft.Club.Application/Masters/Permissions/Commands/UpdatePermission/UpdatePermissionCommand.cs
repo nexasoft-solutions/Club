@@ -7,6 +7,8 @@ public sealed record UpdatePermissionCommand
     long Id,
     string? Name,
     string? Description,
-    string? ReferenciaControl,
-    string? UsuarioModificacion
+    string? Reference,
+    string? Source,
+    string? Action,
+    string? UpdatedBy
 ):ICommand<bool>;

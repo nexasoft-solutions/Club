@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.HumanResources.TimeRequestTypes.Queries.GetTimeR
 using NexaSoft.Club.Application.HumanResources.TimeRequestTypes.Queries.GetTimeRequestTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.TimeRequestTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class TimeRequestTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("TimeRequestType.CreateTimeRequestType")]
     public async Task<IActionResult> CreateTimeRequestType(CreateTimeRequestTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateTimeRequestTypeCommand(
@@ -33,6 +38,8 @@ public class TimeRequestTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("TimeRequestType.UpdateTimeRequestType")]
     public async Task<IActionResult> UpdateTimeRequestType(UpdateTimeRequestTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateTimeRequestTypeCommand(
@@ -50,6 +57,8 @@ public class TimeRequestTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("TimeRequestType.DeleteTimeRequestType")]
     public async Task<IActionResult> DeleteTimeRequestType(DeleteTimeRequestTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteTimeRequestTypeCommand(
@@ -62,6 +71,8 @@ public class TimeRequestTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("TimeRequestType.GetTimeRequestType")]
     public async Task<IActionResult> GetTimeRequestTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -75,6 +86,8 @@ public class TimeRequestTypeController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("TimeRequestType.GetTimeRequestType")]
     public async Task<IActionResult> GetTimeRequestType(
         long id,
         CancellationToken cancellationToken

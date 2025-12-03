@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.IncomeTaxScales.Queries.GetIncome
 using NexaSoft.Club.Application.HumanResources.IncomeTaxScales.Queries.GetIncomeTaxScales;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.IncomeTaxScales;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class IncomeTaxScaleController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateIncomeTaxScale(CreateIncomeTaxScaleRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("IncomeTaxScale.CreateIncomeTaxScale")]
+    public async Task<IActionResult> CreateIncomeTaxScale(CreateIncomeTaxScaleRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateIncomeTaxScaleCommand(
              request.ScaleYear,
@@ -27,7 +32,7 @@ public class IncomeTaxScaleController(ISender _sender) : ControllerBase
              request.Rate,
              request.ExcessOver,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -35,10 +40,12 @@ public class IncomeTaxScaleController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateIncomeTaxScale(UpdateIncomeTaxScaleRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("IncomeTaxScale.UpdateIncomeTaxScale")]
+    public async Task<IActionResult> UpdateIncomeTaxScale(UpdateIncomeTaxScaleRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateIncomeTaxScaleCommand(
-           request.Id,
+             request.Id,
              request.ScaleYear,
              request.MinIncome,
              request.MaxIncome,
@@ -54,7 +61,9 @@ public class IncomeTaxScaleController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteIncomeTaxScale(DeleteIncomeTaxScaleRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("IncomeTaxScale.DeleteIncomeTaxScale")]
+    public async Task<IActionResult> DeleteIncomeTaxScale(DeleteIncomeTaxScaleRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteIncomeTaxScaleCommand(
              request.Id,
@@ -66,6 +75,8 @@ public class IncomeTaxScaleController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("IncomeTaxScale.GetIncomeTaxScale")]
     public async Task<IActionResult> GetIncomeTaxScales(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -78,11 +89,13 @@ public class IncomeTaxScaleController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetIncomeTaxScale(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("IncomeTaxScale.GetIncomeTaxScale")]
+    public async Task<IActionResult> GetIncomeTaxScale(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetIncomeTaxScaleQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

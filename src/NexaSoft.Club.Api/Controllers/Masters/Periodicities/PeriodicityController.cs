@@ -8,15 +8,20 @@ using NexaSoft.Club.Application.Masters.Periodicities.Queries.GetPeriodicity;
 using NexaSoft.Club.Application.Masters.Periodicities.Queries.GetPeriodicities;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.Masters.Periodicities;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PeriodicityController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
+    [GeneratePermission]
+    [RequirePermission("Periodicity.CreatePeriodicity")]
     public async Task<IActionResult> CreatePeriodicity(CreatePeriodicityRequest request, CancellationToken cancellationToken)
     {
         var command = new CreatePeriodicityCommand(
@@ -30,6 +35,8 @@ public class PeriodicityController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
+    [GeneratePermission]
+    [RequirePermission("Periodicity.UpdatePeriodicity")]
     public async Task<IActionResult> UpdatePeriodicity(UpdatePeriodicityRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdatePeriodicityCommand(
@@ -44,6 +51,8 @@ public class PeriodicityController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
+    [GeneratePermission]
+    [RequirePermission("Periodicity.DeletePeriodicity")]
     public async Task<IActionResult> DeletePeriodicity(DeletePeriodicityRequest request, CancellationToken cancellationToken)
     {
         var command = new DeletePeriodicityCommand(
@@ -56,6 +65,8 @@ public class PeriodicityController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Periodicity.GetPeriodicity")]
     public async Task<IActionResult> GetPeriodicities(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -69,6 +80,8 @@ public class PeriodicityController(ISender _sender) : ControllerBase
 
 
     [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Periodicity.GetPeriodicity")]
     public async Task<IActionResult> GetPeriodicity(
         long id,
         CancellationToken cancellationToken

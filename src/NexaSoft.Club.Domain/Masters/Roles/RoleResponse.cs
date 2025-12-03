@@ -10,3 +10,10 @@ public sealed record RoleResponse
     string? CreatedBy,
     string? UpdatedBy
 );
+
+
+
+public sealed record PermissionBasicResponse
+(
+    long Id, string? Name
+);

@@ -20,8 +20,16 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
             .HasMaxLength(250)
             .IsRequired(false);
 
-        builder.Property(x => x.ReferenciaControl)
-            .HasMaxLength(50)
+        builder.Property(x => x.Reference)
+            .HasMaxLength(100)
+            .IsRequired();
+        
+        builder.Property(x => x.Source)
+            .HasMaxLength(60)
+            .IsRequired();
+
+        builder.Property(x => x.Action)
+            .HasMaxLength(30)
             .IsRequired();
 
         builder.Ignore(p => p.RolePermissions);
@@ -52,7 +60,14 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
             .IsUnique()
             .HasDatabaseName("ix_permission_name");
 
-        builder.HasIndex(x => x.ReferenciaControl)
-            .HasDatabaseName("ix_permission_referenciacontrol");
+        builder.HasIndex(x => x.Reference)
+            .HasDatabaseName("ix_permission_reference");
+
+        builder.HasIndex(x => new { x.Source, x.Action })
+            .IsUnique()
+            .HasDatabaseName("ix_permission_source_action");
+        
+        builder.HasIndex(x => x.Source)
+            .HasDatabaseName("ix_permission_source");
     }
 }

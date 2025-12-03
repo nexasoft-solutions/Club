@@ -8,22 +8,27 @@ using NexaSoft.Club.Application.HumanResources.ContractTypes.Queries.GetContract
 using NexaSoft.Club.Application.HumanResources.ContractTypes.Queries.GetContractTypes;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.ContractTypes;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ContractTypeController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateContractType(CreateContractTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ContractType.CreateContractType")]
+    public async Task<IActionResult> CreateContractType(CreateContractTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateContractTypeCommand(
              request.Code,
              request.Name,
              request.Description,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -31,7 +36,9 @@ public class ContractTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateContractType(UpdateContractTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ContractType.UpdateContractType")]
+    public async Task<IActionResult> UpdateContractType(UpdateContractTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateContractTypeCommand(
            request.Id,
@@ -46,7 +53,9 @@ public class ContractTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteContractType(DeleteContractTypeRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("ContractType.DeleteContractType")]
+    public async Task<IActionResult> DeleteContractType(DeleteContractTypeRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteContractTypeCommand(
              request.Id,
@@ -58,6 +67,8 @@ public class ContractTypeController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("ContractType.GetContractType")]
     public async Task<IActionResult> GetContractTypes(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -70,11 +81,13 @@ public class ContractTypeController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetContractType(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("ContractType.GetContractType")]
+    public async Task<IActionResult> GetContractType(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetContractTypeQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);

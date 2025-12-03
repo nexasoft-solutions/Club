@@ -8,16 +8,21 @@ using NexaSoft.Club.Application.HumanResources.Companies.Queries.GetCompany;
 using NexaSoft.Club.Application.HumanResources.Companies.Queries.GetCompanies;
 using NexaSoft.Club.Domain.Specifications;
 using NexaSoft.Club.Api.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using NexaSoft.Club.Api.Attributes;
 
 namespace NexaSoft.Club.Api.Controllers.HumanResources.Companies;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CompanyController(ISender _sender) : ControllerBase
 {
 
     [HttpPost]
-   public async Task<IActionResult> CreateCompany(CreateCompanyRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Company.CreateCompany")]
+    public async Task<IActionResult> CreateCompany(CreateCompanyRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateCompanyCommand(
              request.Ruc,
@@ -26,7 +31,7 @@ public class CompanyController(ISender _sender) : ControllerBase
              request.Address,
              request.Phone,
              request.Website,
-    request.CreatedBy
+             request.CreatedBy
         );
         var resultado = await _sender.Send(command, cancellationToken);
 
@@ -34,7 +39,9 @@ public class CompanyController(ISender _sender) : ControllerBase
     }
 
     [HttpPut]
-   public async Task<IActionResult> UpdateCompany(UpdateCompanyRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Company.UpdateCompany")]
+    public async Task<IActionResult> UpdateCompany(UpdateCompanyRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateCompanyCommand(
            request.Id,
@@ -52,7 +59,9 @@ public class CompanyController(ISender _sender) : ControllerBase
     }
 
     [HttpDelete]
-   public async Task<IActionResult> DeleteCompany(DeleteCompanyRequest request, CancellationToken cancellationToken)
+    [GeneratePermission]
+    [RequirePermission("Company.DeleteCompany")]
+    public async Task<IActionResult> DeleteCompany(DeleteCompanyRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteCompanyCommand(
              request.Id,
@@ -64,6 +73,8 @@ public class CompanyController(ISender _sender) : ControllerBase
     }
 
     [HttpGet]
+    [GeneratePermission]
+    [RequirePermission("Company.GetCompany")]
     public async Task<IActionResult> GetCompanies(
        [FromQuery] BaseSpecParams specParams,
        CancellationToken cancellationToken
@@ -76,11 +87,13 @@ public class CompanyController(ISender _sender) : ControllerBase
     }
 
 
-   [HttpGet("{id:long}")]
-   public async Task<IActionResult> GetCompany(
-       long id,
-       CancellationToken cancellationToken
-    )
+    [HttpGet("{id:long}")]
+    [GeneratePermission]
+    [RequirePermission("Company.GetCompany")]
+    public async Task<IActionResult> GetCompany(
+        long id,
+        CancellationToken cancellationToken
+     )
     {
         var query = new GetCompanyQuery(id);
         var resultado = await _sender.Send(query, cancellationToken);
